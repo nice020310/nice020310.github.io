@@ -8,7 +8,7 @@
       <link href="/2023/05/27/title/"/>
       <url>/2023/05/27/title/</url>
       
-        <content type="html"><![CDATA[<h6 id="title-测试"><a href="#title-测试" class="headerlink" title="title: 测试"></a>title: 测试</h6><p>date: 2023-05-27 10:14:22<br>categories:<br>    - 博客<br>tags:<br>    - 创建文章<br>comments: true #是否可以评论<br>layout: post<br>toc: true</p><span id="more"></span><p>、、、</p><h6 id="printf"><a href="#printf" class="headerlink" title="printf"></a>printf</h6><h6 id="、、、"><a href="#、、、" class="headerlink" title="、、、"></a>、、、</h6>]]></content>
+        <content type="html"><![CDATA[<h2 id="title：-网络爬虫1："><a href="#title：-网络爬虫1：" class="headerlink" title="title： 网络爬虫1："></a>title： 网络爬虫1：</h2><p>date: 2023-05-27 10:14:22<br>categories:  博客<br>tags: </p><ul><li>爬虫基本原理</li></ul><p>comments: true #是否可以评论<br>layout: post<br>toc: true</p><p>[% asset_img  1.jpg  图片1 %]</p><span id="more"></span>、、、<figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"></span><br><span class="line">requet = urllib.request.Request(<span class="string">&#x27;https://python.org&#x27;</span>)</span><br><span class="line">response = urllib.request.urlopen(request)</span><br><span class="line"><span class="built_in">print</span>(response.read().decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
       
       
       
