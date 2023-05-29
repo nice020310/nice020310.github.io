@@ -4,11 +4,24 @@
   
     
     <entry>
+      <title>math</title>
+      <link href="/2023/05/29/math1/"/>
+      <url>/2023/05/29/math1/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>网络爬虫</title>
       <link href="/2023/05/27/title/"/>
       <url>/2023/05/27/title/</url>
       
-        <content type="html"><![CDATA[<ul><li>爬虫基本原理</li></ul><img src="/.com//05/27/title/1.jpg" class title="示例图片 示例图片"><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"></span><br><span class="line">requet = urllib.request.Request(<span class="string">&#x27;https://python.org&#x27;</span>)</span><br><span class="line">response = urllib.request.urlopen(request)</span><br><span class="line"><span class="built_in">print</span>(response.read().decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+        <content type="html"><![CDATA[<ul><li>爬虫基本原理</li></ul><p><img src="/.com//1.jpg" alt="示例图片" title="示例图片"></p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> urllib.request</span><br><span class="line"></span><br><span class="line">requet = urllib.request.Request(<span class="string">&#x27;https://python.org&#x27;</span>)</span><br><span class="line">response = urllib.request.urlopen(request)</span><br><span class="line"><span class="built_in">print</span>(response.read().decode(<span class="string">&#x27;utf-8&#x27;</span>))</span><br><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
       
       
       <categories>
