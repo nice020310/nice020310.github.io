@@ -8,7 +8,7 @@
       <link href="/2023/07/05/HTML/"/>
       <url>/2023/07/05/HTML/</url>
       
-        <content type="html"><![CDATA[]]></content>
+        <content type="html"><![CDATA[<h3 id="HTML的语言特征"><a href="#HTML的语言特征" class="headerlink" title="HTML的语言特征"></a><strong>HTML的语言特征</strong></h3><p>l HTML代码是由头和体组成。</p><html><p>​<head></head></p><p>​<title> 标题</title></p><p>​<body>需要展示给用户看的信息内容</body></p></html> <html>标签就相当于 java类 大括号<head>中存放的都是网页的说明性内容，例如标题    </head><ul><li><p>HTML文件的扩展名为html或者htm。Htm是老的命名规范，html的新的</p></li><li><p>HTML文件由浏览器直接解析执行，无需编译，直接由上到下依次解析执行。</p></li><li><p>HTML标签通常由开始标签和结束标签组成。例如:<font>内容体</font>开始标签和结束标签之间的内容叫做内容体</p></li><li><p>HTML没有内容体的标签叫做空标签。仅由一个标签组成。例如：<br>  自关闭</p></li><li><p>HTML标签不区分大小写，为了方便阅读，建议使用小写。</p></li><li><p>HTML标签是有属性的，格式为：属性名&#x3D;”属性值”，属性值用引号引起。引号包含单引号和双引号</p></li></ul><p>HTML标签建议包裹嵌套，不建议交叉嵌套</p><p>‘’’</p><html> <head>     <title>html 快速入门</title>     </head><body>         <font color="red"></font>     </body> <p>‘’’</p></html></html>]]></content>
       
       
       
