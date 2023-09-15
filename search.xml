@@ -4,6 +4,44 @@
   
     
     <entry>
+      <title>python.md</title>
+      <link href="/2023/09/15/python-md/"/>
+      <url>/2023/09/15/python-md/</url>
+      
+        <content type="html"><![CDATA[]]></content>
+      
+      
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>数据结构.md</title>
+      <link href="/2023/09/15/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-md/"/>
+      <url>/2023/09/15/%E6%95%B0%E6%8D%AE%E7%BB%93%E6%9E%84-md/</url>
+      
+        <content type="html"><![CDATA[<h1 id="数据结构"><a href="#数据结构" class="headerlink" title="数据结构"></a>数据结构</h1><h2 id="1-什么是数据结构"><a href="#1-什么是数据结构" class="headerlink" title="1.什么是数据结构"></a>1.什么是数据结构</h2><p>数据结构(Data Structure)是计算机存储、组织数据的方式，指相互之间存在一种或多种特定关系的<br>数据元素的集合。</p><h2 id="2-什么是算法"><a href="#2-什么是算法" class="headerlink" title="2.什么是算法"></a>2.什么是算法</h2><p>算法(Algorithm):就是定义良好的计算过程，他取一个或一组的值为输入，并产生出一个或一组值作为<br>输出。简单来说算法就是一系列的计算步骤，用来将输入数据转化成输出结果。</p><h2 id="3-顺序表"><a href="#3-顺序表" class="headerlink" title="3.顺序表"></a>3.顺序表</h2><h2 id="4-时间空间复杂度"><a href="#4-时间空间复杂度" class="headerlink" title="4.时间空间复杂度"></a>4.时间空间复杂度</h2><p>基本语句重复执行的次数</p><figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">for i=1;i&lt;=n;i++</span><br><span class="line">   for j=1;j&lt;=i;j++</span><br><span class="line">    for(k=1;k&lt;=j;k++)</span><br></pre></td></tr></table></figure><p>O(n(n+1)(n+2)&#x2F;6)&#x3D;O(n^3);</p><h2 id="稀疏多项式的计算"><a href="#稀疏多项式的计算" class="headerlink" title="稀疏多项式的计算"></a>稀疏多项式的计算</h2><h2 id="代码区"><a href="#代码区" class="headerlink" title="代码区"></a>代码区</h2><h3 id="1-轮转数组"><a href="#1-轮转数组" class="headerlink" title="1.轮转数组"></a>1.轮转数组</h3><figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>]]></content>
+      
+      
+      <categories>
+          
+          <category> 数据结构 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 算法 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>数模.md</title>
       <link href="/2023/09/15/%E6%95%B0%E6%A8%A1-md/"/>
       <url>/2023/09/15/%E6%95%B0%E6%A8%A1-md/</url>
