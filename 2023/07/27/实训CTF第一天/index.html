@@ -1,0 +1,257 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>实训CTF第一天 | 避风港</title><meta name="author" content="Love"><meta name="copyright" content="Love"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="1.  robots协议题目描述:X老师上课讲了Robots协议，小宁同学却上课打了瞌睡，赶紧来教教小宁Robots协议是什么吧。 题目场景:http://61.147.171.105:58740  只需在http://61.147.171.105:58740加上/robots.txt，出现f1ag_1s_h3re.php，所以打开(http://61.147.171.105:58740/f1ag">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实训CTF第一天">
+<meta property="og:url" content="http://example.com/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%B8%80%E5%A4%A9/index.html">
+<meta property="og:site_name" content="避风港">
+<meta property="og:description" content="1.  robots协议题目描述:X老师上课讲了Robots协议，小宁同学却上课打了瞌睡，赶紧来教教小宁Robots协议是什么吧。 题目场景:http://61.147.171.105:58740  只需在http://61.147.171.105:58740加上/robots.txt，出现f1ag_1s_h3re.php，所以打开(http://61.147.171.105:58740/f1ag">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/gou.png">
+<meta property="article:published_time" content="2023-07-27T09:03:35.000Z">
+<meta property="article:modified_time" content="2023-07-27T09:04:25.552Z">
+<meta property="article:author" content="Love">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/gou.png"><link rel="shortcut icon" href="/img/meigui.png"><link rel="canonical" href="http://example.com/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%B8%80%E5%A4%A9/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '实训CTF第一天',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-07-27 17:04:25'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/gou.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/luori.png')"><nav id="nav"><span id="blog-info"><a href="/" title="避风港"><span class="site-name">避风港</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">实训CTF第一天</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-07-27T09:03:35.000Z" title="发表于 2023-07-27 17:03:35">2023-07-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-07-27T09:04:25.552Z" title="更新于 2023-07-27 17:04:25">2023-07-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%AE%9E%E8%AE%AD/">实训</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="实训CTF第一天"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('/img/luori.png');"></div><article class="post-content" id="article-container"><h2 id="1-robots协议"><a href="#1-robots协议" class="headerlink" title="1.  robots协议"></a>1.  robots协议</h2><p>题目描述:<br>X老师上课讲了Robots协议，小宁同学却上课打了瞌睡，赶紧来教教小宁Robots协议是什么吧。</p>
+<p>题目场景:<br><a target="_blank" rel="noopener" href="http://61.147.171.105:58740/">http://61.147.171.105:58740</a></p>
+<p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689766937638.png" alt="1689766937638"></p>
+<p>只需在<a href="http://61.147.171.105:58740加上/robots.txt，出现f1ag_1s_h3re.php，所以打开(http://61.147.171.105:58740/f1ag_1s_h3re.php)即可找到flag">http://61.147.171.105:58740加上/robots.txt，出现f1ag_1s_h3re.php，所以打开(http://61.147.171.105:58740/f1ag_1s_h3re.php)即可找到flag</a></p>
+<h2 id="2-disabled-button"><a href="#2-disabled-button" class="headerlink" title="2.  disabled_button"></a>2.  disabled_button</h2><p>disabled_button:<a target="_blank" rel="noopener" href="http://61.147.171.105:57160/%EF%BC%8C%E6%8C%89%E9%92%AE%E4%B8%8D%E8%83%BD%E6%8C%89%EF%BC%8C%E8%AF%B4%E6%98%8E%E5%9C%A8%E5%86%99%E9%A1%B5%E9%9D%A2%E7%9A%84%E6%97%B6%E5%80%99%E9%99%90%E5%88%B6%E4%BA%86%E8%BF%99%E4%B8%AA%E5%8A%9F%E8%83%BD%EF%BC%8CF12%E6%9F%A5%E7%9C%8B%E9%A1%B5%E9%9D%A2%E5%85%83%E7%B4%A0%EF%BC%8C%E5%8F%91%E7%8E%B0disable%EF%BC%8C%E5%B0%86%E5%85%B6%E4%BF%AE%E6%94%B9%E5%8D%B3%E5%8F%AF%E7%9C%8B%E5%88%B0flag">http://61.147.171.105:57160/，按钮不能按，说明在写页面的时候限制了这个功能，F12查看页面元素，发现disable，将其修改即可看到flag</a></p>
+<h2 id="3-view-source"><a href="#3-view-source" class="headerlink" title="3. view_source:"></a>3. view_source:</h2><p>view_source:<a target="_blank" rel="noopener" href="http://61.147.171.105:60874/,%E6%98%AF%E4%B8%80%E9%81%93%E7%AE%80%E5%8D%95%E6%9F%A5%E7%9C%8B%E9%A1%B5%E9%9D%A2%E4%BB%A3%E7%A0%81%EF%BC%8Cf12%E5%8D%B3%E5%8F%AF%E7%9C%8B%E5%88%B0">http://61.147.171.105:60874/,是一道简单查看页面代码，f12即可看到</a></p>
+<h2 id="4-计算器"><a href="#4-计算器" class="headerlink" title="4.计算器"></a>4.计算器</h2><p>计算器：<a target="_blank" rel="noopener" href="http://114.67.175.224:13512/%EF%BC%8C%E7%AE%80%E5%8D%95%E8%AE%A1%E7%AE%97%E9%A2%98%EF%BC%8C%E4%BD%86%E6%98%AF%E5%8F%AA%E8%83%BD%E8%BE%93%E5%85%A51%E4%BD%8D%E6%95%B0%E5%AD%97%EF%BC%8C%E6%9F%A5%E7%9C%8B%E9%A1%B5%E9%9D%A2%E4%BB%A3%E7%A0%81%E5%8F%91%E7%8E%B0%E8%BE%93%E5%85%A5%E9%95%BF%E5%BA%A6%E5%8F%97%E5%88%B0%E9%99%90%E5%88%B6%EF%BC%8C%E8%BF%9B%E8%A1%8C%E4%BF%AE%E6%94%B9%EF%BC%8C%E5%A1%AB%E5%85%A5%E6%AD%A3%E7%A1%AE%E7%AD%94%E6%A1%88%E5%8D%B3%E5%8F%AF%E8%8E%B7%E5%8F%96flag">http://114.67.175.224:13512/，简单计算题，但是只能输入1位数字，查看页面代码发现输入长度受到限制，进行修改，填入正确答案即可获取flag</a></p>
+<h2 id="5-请求方式"><a href="#5-请求方式" class="headerlink" title="5.请求方式"></a>5.请求方式</h2><p>直接根据提示，抓包完发送到repeater中把get修改为CTFHUB进行发送</p>
+<h2 id="6-你必须让他停下"><a href="#6-你必须让他停下" class="headerlink" title="6.你必须让他停下"></a>6.你必须让他停下</h2><p>第一种方法关闭页面js，使其停止刷新，然后f12不断刷新，就会出现flag，第二钟，直接进行抓包，运气好刚好抓到出现flag的时候，不好就需要多次抓包，第三钟f12，在源代码一栏找到暂停脚本执行，即可</p>
+<h2 id="7-get-post"><a href="#7-get-post" class="headerlink" title="7.get_post:"></a>7.get_post:</h2><p>get_post:<a target="_blank" rel="noopener" href="http://61.147.171.105:60477/">http://61.147.171.105:60477/</a></p>
+<p>get方式，可以直接在url后面加?a=1，此时又出现提示，用post方式，采用burpsuite抓包，，发送到repeater里，把get修改为post，可以改成a=1&amp;b=2,或者在后面加b=2，此时改用post需要加入</p>
+<p>（在中间行） Content-Type: application/x-www-form-urlencoded，发送即可</p>
+<h2 id="8-xff-referer"><a href="#8-xff-referer" class="headerlink" title="8.xff_referer"></a>8.xff_referer</h2><p>xff_referer:<a target="_blank" rel="noopener" href="http://61.147.171.105:53014/%EF%BC%8C%E6%9B%B4%E6%94%B9ip%E9%9C%80%E8%A6%81X-Forwarded-For">http://61.147.171.105:53014/，更改ip需要X-Forwarded-For</a>: 加对应IP地址，后出现提示，需要使用谷歌浏览器打开，采用referer：<a target="_blank" rel="noopener" href="http://www.google.com,发送即可获得flag/">www.google.com，发送即可获得flag</a></p>
+<h2 id="9-爆破"><a href="#9-爆破" class="headerlink" title="9.爆破"></a>9.爆破</h2><p>采用burpsuite的intruder模块，选用狙击手模式，选中需要爆破对象进行add，在payloads里把密码库导入进行爆破即可</p>
+<h2 id="10-phpinfo"><a href="#10-phpinfo" class="headerlink" title="10.phpinfo"></a>10.phpinfo</h2><p>在网站URL后面加这将显示出当前PHP服务器的详细信息，包括PHP版本、已加载的模块、配置选项等。</p>
+<p>即可找到flag</p>
+<h2 id="11-文件上传：无障碍–蚁剑"><a href="#11-文件上传：无障碍–蚁剑" class="headerlink" title="11.文件上传：无障碍–蚁剑"></a>11.文件上传：无障碍–蚁剑</h2><p>需要编写一句话木马，进行绕过，老师已给出<!--?php
+eval($_POST['sec_test']);
+?-->，其中sec_test就是连接密码，需要把文件后缀改为.php进行文件上传，得到文件相对路径，在蚁剑右键添加数据</p>
+<p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689772115918.png" alt="1689772115918"></p>
+<p>URL地址就是网站地址加相对路径，密码就是一句话木马里注入的sec_test，点击连接连接成功，进入里面即可发现flag文件</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Love</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%B8%80%E5%A4%A9/">http://example.com/2023/07/27/实训CTF第一天/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">避风港</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CTF/">CTF</a></div><div class="post_share"><div class="social-share" data-image="/img/gou.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%BA%8C%E5%A4%A9/" title="实训CTF第二天"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">实训CTF第二天</div></div></a></div><div class="next-post pull-right"><a href="/2023/07/05/HTML/" title="HTML"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">HTML</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%BA%8C%E5%A4%A9/" title="实训CTF第二天"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-27</div><div class="title">实训CTF第二天</div></div></a></div><div><a href="/2023/11/07/%E5%AF%86%E7%A0%81/" title="密码"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-07</div><div class="title">密码</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/gou.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">Love</div><div class="author-info__description">归途也还可爱</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/nice020310/nice020310.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/nice020310" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_72757552" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1490166708@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-robots%E5%8D%8F%E8%AE%AE"><span class="toc-number">1.</span> <span class="toc-text">1.  robots协议</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-disabled-button"><span class="toc-number">2.</span> <span class="toc-text">2.  disabled_button</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-view-source"><span class="toc-number">3.</span> <span class="toc-text">3. view_source:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E8%AE%A1%E7%AE%97%E5%99%A8"><span class="toc-number">4.</span> <span class="toc-text">4.计算器</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E8%AF%B7%E6%B1%82%E6%96%B9%E5%BC%8F"><span class="toc-number">5.</span> <span class="toc-text">5.请求方式</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E4%BD%A0%E5%BF%85%E9%A1%BB%E8%AE%A9%E4%BB%96%E5%81%9C%E4%B8%8B"><span class="toc-number">6.</span> <span class="toc-text">6.你必须让他停下</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-get-post"><span class="toc-number">7.</span> <span class="toc-text">7.get_post:</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-xff-referer"><span class="toc-number">8.</span> <span class="toc-text">8.xff_referer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E7%88%86%E7%A0%B4"><span class="toc-number">9.</span> <span class="toc-text">9.爆破</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-phpinfo"><span class="toc-number">10.</span> <span class="toc-text">10.phpinfo</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%EF%BC%9A%E6%97%A0%E9%9A%9C%E7%A2%8D%E2%80%93%E8%9A%81%E5%89%91"><span class="toc-number">11.</span> <span class="toc-text">11.文件上传：无障碍–蚁剑</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/01/20/%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/" title="傅里叶变换">傅里叶变换</a><time datetime="2024-01-20T02:37:02.000Z" title="发表于 2024-01-20 10:37:02">2024-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/12/07/%E6%95%B0%E7%94%B5/" title="数电">数电</a><time datetime="2023-12-07T12:25:25.000Z" title="发表于 2023-12-07 20:25:25">2023-12-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/08/NSGA2%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/" title="NSGA2遗传算法笔记">NSGA2遗传算法笔记</a><time datetime="2023-11-08T14:55:37.000Z" title="发表于 2023-11-08 22:55:37">2023-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/07/%E5%AF%86%E7%A0%81/" title="密码">密码</a><time datetime="2023-11-07T15:18:15.000Z" title="发表于 2023-11-07 23:18:15">2023-11-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/31/%E5%8A%9B%E6%89%A3%E9%9D%A2%E8%AF%95-%E9%A2%98%E5%BA%93/" title="无题">无题</a><time datetime="2023-10-31T15:25:04.633Z" title="发表于 2023-10-31 23:25:04">2023-10-31</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2024 By Love</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="60198" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

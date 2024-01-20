@@ -1,0 +1,295 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>实训CTF第二天 | 避风港</title><meta name="author" content="Love"><meta name="copyright" content="Love"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="一、密码题型（一些上课讲的，也有没讲到的我在网上找到的，可以看看）解密网站http://tool.bugku.com/ http://www.hiencode.com/，基本都有 1.摩斯密码特征：点和横的组合。 可用https://tool.lu/ko_KR/morse/ 2.移位密码（1）栅栏密码e.g.  一只小羊翻过了2个栅栏 这个2就是移位数 特征：大小写和字符，其实就是分组替换加密，h">
+<meta property="og:type" content="article">
+<meta property="og:title" content="实训CTF第二天">
+<meta property="og:url" content="http://example.com/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%BA%8C%E5%A4%A9/index.html">
+<meta property="og:site_name" content="避风港">
+<meta property="og:description" content="一、密码题型（一些上课讲的，也有没讲到的我在网上找到的，可以看看）解密网站http://tool.bugku.com/ http://www.hiencode.com/，基本都有 1.摩斯密码特征：点和横的组合。 可用https://tool.lu/ko_KR/morse/ 2.移位密码（1）栅栏密码e.g.  一只小羊翻过了2个栅栏 这个2就是移位数 特征：大小写和字符，其实就是分组替换加密，h">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/gou.png">
+<meta property="article:published_time" content="2023-07-27T09:04:54.000Z">
+<meta property="article:modified_time" content="2023-09-03T08:22:06.549Z">
+<meta property="article:author" content="Love">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/gou.png"><link rel="shortcut icon" href="/img/meigui.png"><link rel="canonical" href="http://example.com/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%BA%8C%E5%A4%A9/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '实训CTF第二天',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-09-03 16:22:06'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/gou.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/luori.png')"><nav id="nav"><span id="blog-info"><a href="/" title="避风港"><span class="site-name">避风港</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">实训CTF第二天</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-07-27T09:04:54.000Z" title="发表于 2023-07-27 17:04:54">2023-07-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-09-03T08:22:06.549Z" title="更新于 2023-09-03 16:22:06">2023-09-03</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%AE%9E%E8%AE%AD/">实训</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="实训CTF第二天"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('/img/luori.png');"></div><article class="post-content" id="article-container"><h1 id="一、密码题型（一些上课讲的，也有没讲到的我在网上找到的，可以看看）"><a href="#一、密码题型（一些上课讲的，也有没讲到的我在网上找到的，可以看看）" class="headerlink" title="一、密码题型（一些上课讲的，也有没讲到的我在网上找到的，可以看看）"></a>一、密码题型（一些上课讲的，也有没讲到的我在网上找到的，可以看看）</h1><p>解密网站<a target="_blank" rel="noopener" href="http://tool.bugku.com/">http://tool.bugku.com/</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.hiencode.com/%EF%BC%8C%E5%9F%BA%E6%9C%AC%E9%83%BD%E6%9C%89">http://www.hiencode.com/，基本都有</a></p>
+<h2 id="1-摩斯密码"><a href="#1-摩斯密码" class="headerlink" title="1.摩斯密码"></a>1.摩斯密码</h2><p>特征：点和横的组合。</p>
+<p>可用<a target="_blank" rel="noopener" href="https://tool.lu/ko_KR/morse/">https://tool.lu/ko_KR/morse/</a></p>
+<h2 id="2-移位密码"><a href="#2-移位密码" class="headerlink" title="2.移位密码"></a>2.移位密码</h2><h3 id="（1）栅栏密码"><a href="#（1）栅栏密码" class="headerlink" title="（1）栅栏密码"></a>（1）栅栏密码</h3><p>e.g. </p>
+<p>一只小羊翻过了2个栅栏</p>
+<p>这个2就是移位数</p>
+<p>特征：大小写和字符，其实就是分组替换加密，<a target="_blank" rel="noopener" href="http://tool.bugku.com/jiemi/">http://tool.bugku.com/jiemi/</a></p>
+<p>可依据key的格式进行寻找</p>
+<p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689855535829.png" alt="1689855535829"></p>
+<h3 id=""><a href="#" class="headerlink" title=""></a><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689855576830.png" alt="1689855576830"></h3><p>先进行ASCLL解密，得一串字符，依据key格式，即CTF{}，进行列排序</p>
+<p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689855647502.png" alt="1689855647502"></p>
+<h3 id="2-云影密码"><a href="#2-云影密码" class="headerlink" title="(2)云影密码"></a>(2)云影密码<img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689855498137.png" alt="1689855498137"></h3><h2 id="3-ASCLL-Hex编码"><a href="#3-ASCLL-Hex编码" class="headerlink" title="3. ASCLL Hex编码"></a>3. ASCLL Hex编码</h2><p>举例</p>
+<p>原⽂：flag_{swjctfpx123456} </p>
+<p>编码后得到： 66 6c 61 67 5f 7b 73 77 6a 63 74 66 70 78 31 32 33 34 35 36 7d</p>
+<p>特征 两位数字或字母组合</p>
+<h2 id="4-url-encode"><a href="#4-url-encode" class="headerlink" title="4. url encode"></a>4. url encode</h2><p>URL编码原理 url编码⼜叫百分号编码，是统⼀资源定位(URL)编码⽅式。 </p>
+<p>URL地址（常说⽹址）规定了常⽤的数字和字⺟可以直接使⽤，另外⼀批作为特殊⽤户字符也可以直接⽤ </p>
+<p>（/,:@等），剩下的其它所有字符必须通过 %xx编码处理。 现在已经成为⼀种规范了，基本所有程序语⾔都有 </p>
+<p>这种编码，如js：有encodeURI、encodeURIComponent，PHP有 urlencode、urldecode等。 </p>
+<p>那么urlencode编码结果是 %20 编码⽅法很简单,在该字节ascii码的的16进制字符前⾯加%。如空格字符, ascii码 </p>
+<p>是32,对应16进制是“20 ”。</p>
+<p><strong>特征：%加数字</strong></p>
+<p>举例</p>
+<p>将下列数据⽤url encode进⾏解码 </p>
+<p>%66%20%6c%20%61%20%67%20%7b%20%68%20%61%20%70%20%70%20%79%20%5f%20%65%20%76%20%65%20%72%20%79 </p>
+<p>%20%6f%20%6e%20%65%20%7d </p>
+<p>解码网站   <a target="_blank" rel="noopener" href="https://www.iamwawa.cn/urldecode.html">https://www.iamwawa.cn/urldecode.html</a></p>
+<h2 id="5-敲击码"><a href="#5-敲击码" class="headerlink" title="5.敲击码"></a>5.敲击码</h2><p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689854557081.png" alt="1689854557081"></p>
+<p><a target="_blank" rel="noopener" href="http://www.hiencode.com/tapcode.html">http://www.hiencode.com/tapcode.html</a></p>
+<h2 id="6-盲文"><a href="#6-盲文" class="headerlink" title="6.盲文"></a>6.盲文</h2><p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689854652406.png" alt="1689854652406"></p>
+<h2 id="7-Base家族"><a href="#7-Base家族" class="headerlink" title="7.Base家族"></a>7.Base家族</h2><p>有base16,32,64，其中base64最多</p>
+<p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689854836411.png" alt="1689854836411"></p>
+<p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689855049510.png" alt="1689855049510"></p>
+<p>特征：看到密文最后两个字符是相同的，就有可能是Base64编码过的，因为Base64编码结尾通常是 <strong>==</strong> 。<br>有可能和其他密码混合使用，进行二次加密/编码。<br>Base64 是编码（encode）</p>
+<p>举例</p>
+<p>e.g.</p>
+<p>也是Bugku里的一道题：</p>
+<p>e6Z9i<del>]8R</del>U<del>QHE{RnY{QXg</del>QnQ{^XVlRXlp^XI5Q6Q6SKY8jUAA</p>
+<p>结尾是 AA，有点像Base64编码，但是被加密过了，这么蠢的加密方式又有点像凯撒，看ASC II 码，发现 = 是 61， A是 65，往后延了4位，那么我们把密文所有数据的ASC II 码 减4，得到Base64的代码，再解码即得到明文flag: key{68743000650173230e4a58ee153c68e8}</p>
+<p>复合题就需要多种解码工具，要看特征选择正确的解码工具</p>
+<h2 id="8-曲路密码"><a href="#8-曲路密码" class="headerlink" title="8.曲路密码"></a>8.曲路密码</h2><p>曲路密码(Curve Cipher)是⼀种换位密码，需要事先双⽅约定密钥(也就是曲路路径)。 </p>
+<p>例如，明⽂为abcdefghijklmnopqrstuvwxy，填⼊5⾏5列表(事先约定填充的⾏列数) </p>
+<p>加密的回路线(事先约定填充的⾏列数)。</p>
+<p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689855414612.png" alt="1689855414612"></p>
+<p>照图划线</p>
+<h2 id="9-凯撒密码"><a href="#9-凯撒密码" class="headerlink" title="9.凯撒密码"></a>9.凯撒密码</h2><p>凯撒密码通过将字⺟移动⼀定的位数来实现加密和解密。明⽂中的所有字⺟都在字⺟表上向后 (或向前)按照⼀个 </p>
+<p>固定的数⽬进⾏偏移后被替换成密⽂。例如，当偏移量是3的时候，所有的字⺟A都将被替换成D，B变成E，依此 </p>
+<p>类推， X将变成A，Y变成B，Z变成C。在偏移量为4的时候，字⺟的替代结果如下所示</p>
+<p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689855710554.png" alt="1689855710554"></p>
+<h2 id="10-ROT密码（回转密码）"><a href="#10-ROT密码（回转密码）" class="headerlink" title="10.ROT密码（回转密码）"></a>10.ROT密码（回转密码）</h2><p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689855744111.png" alt="1689855744111"></p>
+<p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689855985945.png" alt="1689855985945"></p>
+<h2 id="11-猪圈密码"><a href="#11-猪圈密码" class="headerlink" title="11.猪圈密码"></a>11.猪圈密码</h2><p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689855818321.png" alt="1689855818321"></p>
+<p><a target="_blank" rel="noopener" href="http://www.simonsingh.net/The_Black_Chamber/pigpen.html%EF%BC%8C%E4%B8%8A%E8%AF%BE%E7%9A%84%E4%BB%A3%E7%A0%81%EF%BC%8C%E5%8F%91%E4%BA%86%E4%B8%80%E4%B8%AAflag.txt,%E9%9C%80%E8%A6%81%E5%8A%A0base64%E5%A4%B4%EF%BC%8Cdata:image/png;base64,base64%E7%BC%96%E7%A0%81%E8%BD%AC%E5%9B%BE%E7%89%87%EF%BC%8C%E5%BE%97%E5%88%B0%E5%8F%AF%E4%BB%A5%E5%AF%B9%E7%85%A7%E5%9B%BE%E7%89%87%E8%A7%A3%E5%AF%86%E7%9A%84%E7%8C%AA%E5%9C%88%E5%AF%86%E7%A0%81">http://www.simonsingh.net/The_Black_Chamber/pigpen.html，上课的代码，发了一个flag.txt,需要加base64头，data:image/png;base64,base64编码转图片，得到可以对照图片解密的猪圈密码</a></p>
+<h2 id="12-组合密码（复合密码"><a href="#12-组合密码（复合密码" class="headerlink" title="12.组合密码（复合密码)"></a>12.组合密码（复合密码)</h2><p>bugku,<img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689856194868.png" alt="1689856194868"></p>
+<p>要根据题目的提醒，发现加密类型，这个需要用到 aWxvdmVjdGY8月前</p>
+<p>1、盲文解密 <a target="_blank" rel="noopener" href="https://www.qqxiuzi.cn/bianma/wenbenjiami.php?s=mangwen">https://www.qqxiuzi.cn/bianma/wenbenjiami.php?s=mangwen</a> 2、rabbit解密 <a target="_blank" rel="noopener" href="https://www.sojson.com/encrypt_rabbit.html">https://www.sojson.com/encrypt_rabbit.html</a> 3、音乐解密 <a target="_blank" rel="noopener" href="https://www.qqxiuzi.cn/bianma/wenbenjiami.php?s=yinyue">https://www.qqxiuzi.cn/bianma/wenbenjiami.php?s=yinyue</a> 4、得到答案</p>
+<p><img src="/.com//Users\Nice\AppData\Roaming\Typora\typora-user-images\1689856244597.png" alt="1689856244597"></p>
+<p>需要用到易经64卦，在进行python脚本</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Love</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%BA%8C%E5%A4%A9/">http://example.com/2023/07/27/实训CTF第二天/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">避风港</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CTF/">CTF</a></div><div class="post_share"><div class="social-share" data-image="/img/gou.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%B8%89%E5%A4%A9/" title="实训CTF第三天"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">实训CTF第三天</div></div></a></div><div class="next-post pull-right"><a href="/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%B8%80%E5%A4%A9/" title="实训CTF第一天"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">实训CTF第一天</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%B8%80%E5%A4%A9/" title="实训CTF第一天"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-27</div><div class="title">实训CTF第一天</div></div></a></div><div><a href="/2023/11/07/%E5%AF%86%E7%A0%81/" title="密码"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-11-07</div><div class="title">密码</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/gou.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">Love</div><div class="author-info__description">归途也还可爱</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/nice020310/nice020310.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/nice020310" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_72757552" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1490166708@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%B8%80%E3%80%81%E5%AF%86%E7%A0%81%E9%A2%98%E5%9E%8B%EF%BC%88%E4%B8%80%E4%BA%9B%E4%B8%8A%E8%AF%BE%E8%AE%B2%E7%9A%84%EF%BC%8C%E4%B9%9F%E6%9C%89%E6%B2%A1%E8%AE%B2%E5%88%B0%E7%9A%84%E6%88%91%E5%9C%A8%E7%BD%91%E4%B8%8A%E6%89%BE%E5%88%B0%E7%9A%84%EF%BC%8C%E5%8F%AF%E4%BB%A5%E7%9C%8B%E7%9C%8B%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">一、密码题型（一些上课讲的，也有没讲到的我在网上找到的，可以看看）</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E6%91%A9%E6%96%AF%E5%AF%86%E7%A0%81"><span class="toc-number">1.1.</span> <span class="toc-text">1.摩斯密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E7%A7%BB%E4%BD%8D%E5%AF%86%E7%A0%81"><span class="toc-number">1.2.</span> <span class="toc-text">2.移位密码</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%EF%BC%881%EF%BC%89%E6%A0%85%E6%A0%8F%E5%AF%86%E7%A0%81"><span class="toc-number">1.2.1.</span> <span class="toc-text">（1）栅栏密码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link"><span class="toc-number">1.2.2.</span> <span class="toc-text"></span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%BA%91%E5%BD%B1%E5%AF%86%E7%A0%81"><span class="toc-number">1.2.3.</span> <span class="toc-text">(2)云影密码</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-ASCLL-Hex%E7%BC%96%E7%A0%81"><span class="toc-number">1.3.</span> <span class="toc-text">3. ASCLL Hex编码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-url-encode"><span class="toc-number">1.4.</span> <span class="toc-text">4. url encode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%95%B2%E5%87%BB%E7%A0%81"><span class="toc-number">1.5.</span> <span class="toc-text">5.敲击码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E7%9B%B2%E6%96%87"><span class="toc-number">1.6.</span> <span class="toc-text">6.盲文</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-Base%E5%AE%B6%E6%97%8F"><span class="toc-number">1.7.</span> <span class="toc-text">7.Base家族</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%9B%B2%E8%B7%AF%E5%AF%86%E7%A0%81"><span class="toc-number">1.8.</span> <span class="toc-text">8.曲路密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-%E5%87%AF%E6%92%92%E5%AF%86%E7%A0%81"><span class="toc-number">1.9.</span> <span class="toc-text">9.凯撒密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-ROT%E5%AF%86%E7%A0%81%EF%BC%88%E5%9B%9E%E8%BD%AC%E5%AF%86%E7%A0%81%EF%BC%89"><span class="toc-number">1.10.</span> <span class="toc-text">10.ROT密码（回转密码）</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E7%8C%AA%E5%9C%88%E5%AF%86%E7%A0%81"><span class="toc-number">1.11.</span> <span class="toc-text">11.猪圈密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E7%BB%84%E5%90%88%E5%AF%86%E7%A0%81%EF%BC%88%E5%A4%8D%E5%90%88%E5%AF%86%E7%A0%81"><span class="toc-number">1.12.</span> <span class="toc-text">12.组合密码（复合密码)</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/01/20/%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/" title="傅里叶变换">傅里叶变换</a><time datetime="2024-01-20T02:37:02.000Z" title="发表于 2024-01-20 10:37:02">2024-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/12/07/%E6%95%B0%E7%94%B5/" title="数电">数电</a><time datetime="2023-12-07T12:25:25.000Z" title="发表于 2023-12-07 20:25:25">2023-12-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/08/NSGA2%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/" title="NSGA2遗传算法笔记">NSGA2遗传算法笔记</a><time datetime="2023-11-08T14:55:37.000Z" title="发表于 2023-11-08 22:55:37">2023-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/07/%E5%AF%86%E7%A0%81/" title="密码">密码</a><time datetime="2023-11-07T15:18:15.000Z" title="发表于 2023-11-07 23:18:15">2023-11-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/31/%E5%8A%9B%E6%89%A3%E9%9D%A2%E8%AF%95-%E9%A2%98%E5%BA%93/" title="无题">无题</a><time datetime="2023-10-31T15:25:04.633Z" title="发表于 2023-10-31 23:25:04">2023-10-31</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2024 By Love</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="60198" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

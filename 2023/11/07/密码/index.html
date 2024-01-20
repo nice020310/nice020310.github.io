@@ -1,0 +1,287 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>密码 | 避风港</title><meta name="author" content="Love"><meta name="copyright" content="Love"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="BUUCTF  Crypto1.世上无难事1，11.07以下是某国现任总统外发的一段指令，经过一种奇异的加密方式，毫无规律，看来只能分析了。请将这段语句还原成通顺语句，并从中找到key作为答案提交，答案是32位，包含小写字母。 注意：得到的 flag 请包上 flag{} 提交 VIZZB IFIUOJBWO NVXAP OBC XZZ UKHVN IFIUOJBWO HB XVIXW XAW V">
+<meta property="og:type" content="article">
+<meta property="og:title" content="密码">
+<meta property="og:url" content="http://example.com/2023/11/07/%E5%AF%86%E7%A0%81/index.html">
+<meta property="og:site_name" content="避风港">
+<meta property="og:description" content="BUUCTF  Crypto1.世上无难事1，11.07以下是某国现任总统外发的一段指令，经过一种奇异的加密方式，毫无规律，看来只能分析了。请将这段语句还原成通顺语句，并从中找到key作为答案提交，答案是32位，包含小写字母。 注意：得到的 flag 请包上 flag{} 提交 VIZZB IFIUOJBWO NVXAP OBC XZZ UKHVN IFIUOJBWO HB XVIXW XAW V">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/gou.png">
+<meta property="article:published_time" content="2023-11-07T15:18:15.000Z">
+<meta property="article:modified_time" content="2023-11-09T15:50:23.165Z">
+<meta property="article:author" content="Love">
+<meta property="article:tag" content="CTF">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/gou.png"><link rel="shortcut icon" href="/img/meigui.png"><link rel="canonical" href="http://example.com/2023/11/07/%E5%AF%86%E7%A0%81/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '密码',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-11-09 23:50:23'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/gou.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/luori.png')"><nav id="nav"><span id="blog-info"><a href="/" title="避风港"><span class="site-name">避风港</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">密码</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-11-07T15:18:15.000Z" title="发表于 2023-11-07 23:18:15">2023-11-07</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-11-09T15:50:23.165Z" title="更新于 2023-11-09 23:50:23">2023-11-09</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="密码"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('/img/luori.png');"></div><article class="post-content" id="article-container"><h2 id="BUUCTF-Crypto"><a href="#BUUCTF-Crypto" class="headerlink" title="BUUCTF  Crypto"></a>BUUCTF  Crypto</h2><h3 id="1-世上无难事1，11-07"><a href="#1-世上无难事1，11-07" class="headerlink" title="1.世上无难事1，11.07"></a>1.世上无难事1，11.07</h3><p>以下是某国现任总统外发的一段指令，经过一种奇异的加密方式，毫无规律，看来只能分析了。请将这段语句还原成通顺语句，并从中找到key作为答案提交，答案是32位，包含小写字母。 注意：得到的 flag 请包上 flag{} 提交</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">VIZZB IFIUOJBWO NVXAP OBC XZZ UKHVN IFIUOJBWO HB XVIXW XAW VXFI X QIXN VBD KQ IFIUOJBWO WBKAH NBWXO VBD XJBCN NKG QLKEIU DI XUI VIUI DKNV QNCWIANQ XN DXPIMKIZW VKHV QEVBBZ KA XUZKAHNBA FKUHKAKX XAW DI VXFI HBN QNCWIANQ NCAKAH KA MUBG XZZ XEUBQQ XGIUKEX MUBG PKAWIUHXUNIA NVUBCHV 12NV HUXWI XAW DI XUI SCQN QB HZXW NVXN XZZ EBCZW SBKA CQ NBWXO XAW DI DXAN NB NVXAP DXPIMKIZW MBU JIKAH QCEV XA BCNQNXAWKAH VBQN HKFI OBCUQIZFIQ X JKH UBCAW BM XLLZXCQI XAW NVI PIO KQ 640I11012805M211J0XJ24MM02X1IW09</span><br></pre></td></tr></tbody></table></figure>
+
+<p>观察后面640I11012805M211J0XJ24MM02X1IW09为32位恰巧为答案的个数</p>
+<p>key is  xxxx；猜测pio=key，用<a target="_blank" rel="noopener" href="https://quipqiup.com/">quipqiup - cryptoquip and cryptogram solver</a>，解题工具，得到flag</p>
+<h3 id="2-大帝的秘密武器1"><a href="#2-大帝的秘密武器1" class="headerlink" title="2.大帝的秘密武器1"></a>2.大帝的秘密武器1</h3><p>根据提示，将文件改为zip，得到密文和题目</p>
+<p>题目：</p>
+<p>公元前一百年，在罗马出生了一位对世界影响巨大的人物，他生前是罗马三巨头之一。他率先使用了一种简单的加密函，因此这种加密方法以他的名字命名。<br>以下密文被解开后可以获得一个有意义的单词：FRPHEVGL<br>你可以用这个相同的加密向量加密附件中的密文，作为答案进行提交。</p>
+<p>密文：ComeChina</p>
+<p>使用凯撒密码进行解码，当移位13位时，得到一个具有意义的单词security</p>
+<p>使用13位加密ComeChina，注意大小写</p>
+<h2 id="3-Windows系统密码1"><a href="#3-Windows系统密码1" class="headerlink" title="3.Windows系统密码1"></a>3.Windows系统密码1</h2><p>打开之后</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">Administrator:500:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::</span><br><span class="line">ctf:1002:06af9108f2e1fecf144e2e8adef09efd:a7fcb22a88038f35a8f39d503e7f0062:::</span><br><span class="line">Guest:501:aad3b435b51404eeaad3b435b51404ee:31d6cfe0d16ae931b73c59d7e0c089c0:::</span><br><span class="line">SUPPORT_388945a0:1001:aad3b435b51404eeaad3b435b51404ee:bef14eee40dffbc345eeb3f58e290d56:::</span><br></pre></td></tr></tbody></table></figure>
+
+<p>看到ctf，后面有两串，先试第一个，利用MD5解码器，没有得到，在用第二个解码，得到了</p>
+<h2 id="4-传统知识-古典密码"><a href="#4-传统知识-古典密码" class="headerlink" title="4.传统知识+古典密码"></a>4.传统知识+古典密码</h2><p>小明某一天收到一封密信，信中写了几个不同的年份<br>          辛卯，癸巳，丙戌，辛未，庚辰，癸酉，己卯，癸巳。<br>          信的背面还写有“+甲子”，请解出这段密文。</p>
+<p>key值：CTF{XXX}</p>
+<p>甲子年表可以找到对应，然后在加甲子就是+60，然后ASCII编码得到，字符，在进行栅栏编码，得到两个，在凯撒密码解码</p>
+<h2 id="5-丢失的MD5"><a href="#5-丢失的MD5" class="headerlink" title="5.丢失的MD5"></a>5.丢失的MD5</h2><figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">import hashlib   </span><br><span class="line">for i in range(32,127):</span><br><span class="line">    for j in range(32,127):</span><br><span class="line">        for k in range(32,127):</span><br><span class="line">            m=hashlib.md5()</span><br><span class="line">            m.update('TASC'+chr(i)+'O3RJMV'+chr(j)+'WDJKX'+chr(k)+'ZM')</span><br><span class="line">            des=m.hexdigest()</span><br><span class="line">            if 'e9032' in des and 'da' in des and '911513' in des:</span><br><span class="line">                print des</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个代码运行是错误的</p>
+<p>需要掌握一定Python基础</p>
+<p>进行修改</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">import hashlib</span><br><span class="line">for i in range(32, 127):</span><br><span class="line">    for j in range(32, 127):</span><br><span class="line">        for k in range(32, 127):</span><br><span class="line">            m = hashlib.md5()</span><br><span class="line">            m.update(('TASC' + chr(i) + 'O3RJMV' + chr(j) + 'WDJKX' + chr(k) + 'ZM').encode('utf-8'))</span><br><span class="line">            des = m.hexdigest()</span><br><span class="line">            if 'e9032' in des and 'da' in des and '911513' in des:</span><br><span class="line">                print(des)</span><br><span class="line"> </span><br></pre></td></tr></tbody></table></figure>
+
+
+
+
+
+<h2 id="6-新时代的步伐"><a href="#6-新时代的步伐" class="headerlink" title="6.新时代的步伐"></a>6.新时代的步伐</h2><h2 id="信息化时代的步伐"><a href="#信息化时代的步伐" class="headerlink" title="信息化时代的步伐"></a>信息化时代的步伐</h2><p>也许中国可以早早进入信息化时代，但是被清政府拒绝了。附件中是数十年后一位伟人说的话的密文。请翻译出明文(答案为一串中文！) 注意：得到的 flag 请包上 flag{} 提交</p>
+<p><a target="_blank" rel="noopener" href="https://files.buuoj.cn/files/25dad53083126fcb4a7cc92aafbaed80/a9bbf4f5-ef36-4c64-969d-12457c2ea25d.zip"> a9bbf4f5-ef36-4c64-969d-12457c2ea25d.zip</a></p>
+<p>先尝试了ASCII编码，不行，在从信息化时代联想电码，答案又是一串中文，中国电码进行尝试</p>
+<p>出现了中文计算机要从娃娃抓起</p>
+<h2 id="RSA1"><a href="#RSA1" class="headerlink" title="RSA1"></a>RSA1</h2><figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">Math is cool! Use the RSA algorithm to decode the secret message, c, p, q, and e are parameters for the RSA algorithm.</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">p =  9648423029010515676590551740010426534945737639235739800643989352039852507298491399561035009163427050370107570733633350911691280297777160200625281665378483</span><br><span class="line">q =  11874843837980297032092405848653656852760910154543380907650040190704283358909208578251063047732443992230647903887510065547947313543299303261986053486569407</span><br><span class="line">e =  65537</span><br><span class="line">c =  83208298995174604174773590298203639360540024871256126892889661345742403314929861939100492666605647316646576486526217457006376842280869728581726746401583705899941768214138742259689334840735633553053887641847651173776251820293087212885670180367406807406765923638973161375817392737747832762751690104423869019034</span><br><span class="line"></span><br><span class="line">Use RSA to find the secret message</span><br></pre></td></tr></tbody></table></figure>
+
+<p>用工具得到d，在用py代码解答</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">p =  <span class="number">9648423029010515676590551740010426534945737639235739800643989352039852507298491399561035009163427050370107570733633350911691280297777160200625281665378483</span></span><br><span class="line">q =  <span class="number">11874843837980297032092405848653656852760910154543380907650040190704283358909208578251063047732443992230647903887510065547947313543299303261986053486569407</span></span><br><span class="line">e =  <span class="number">65537</span></span><br><span class="line">c =  <span class="number">83208298995174604174773590298203639360540024871256126892889661345742403314929861939100492666605647316646576486526217457006376842280869728581726746401583705899941768214138742259689334840735633553053887641847651173776251820293087212885670180367406807406765923638973161375817392737747832762751690104423869019034</span></span><br><span class="line">d=<span class="number">56632047571190660567520341028861194862411428416862507034762587229995138605649836960220619903456392752115943299335385163216233744624623848874235303309636393446736347238627793022725260986466957974753004129210680401432377444984195145009801967391196615524488853620232925992387563270746297909112117451398527453977</span></span><br><span class="line">m=<span class="built_in">pow</span>(c,d,p*q)</span><br><span class="line"><span class="built_in">print</span>(m)</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<p>得到flag</p>
+<h2 id="求解RSA加密算法"><a href="#求解RSA加密算法" class="headerlink" title="求解RSA加密算法"></a>求解RSA加密算法</h2><h4 id="已知dp，n，e，c求m"><a href="#已知dp，n，e，c求m" class="headerlink" title="已知dp，n，e，c求m"></a>已知dp，n，e，c求m</h4><figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">import gmpy2 as gp</span><br><span class="line"></span><br><span class="line">e = 65537</span><br><span class="line">n = gp.mpz(248254007851526241177721526698901802985832766176221609612258877371620580060433101538328030305219918697643619814200930679612109885533801335348445023751670478437073055544724280684733298051599167660303645183146161497485358633681492129668802402065797789905550489547645118787266601929429724133167768465309665906113)</span><br><span class="line">dp = gp.mpz(905074498052346904643025132879518330691925174573054004621877253318682675055421970943552016695528560364834446303196939207056642927148093290374440210503657)</span><br><span class="line"></span><br><span class="line">c = gp.mpz(140423670976252696807533673586209400575664282100684119784203527124521188996403826597436883766041879067494280957410201958935737360380801845453829293997433414188838725751796261702622028587211560353362847191060306578510511380965162133472698713063592621028959167072781482562673683090590521214218071160287665180751)</span><br><span class="line"></span><br><span class="line">for x in range(1, e):</span><br><span class="line">    if(e*dp%x==1):</span><br><span class="line">        p=(e*dp-1)//x+1</span><br><span class="line">        if(n%p!=0):</span><br><span class="line">            continue</span><br><span class="line">        q=n//p</span><br><span class="line">        phin=(p-1)*(q-1)</span><br><span class="line">        d=gp.invert(e, phin)</span><br><span class="line">        m=gp.powmod(c, d, n)</span><br><span class="line">        if(len(hex(m)[2:])%2==1):</span><br><span class="line">            continue</span><br><span class="line">        print('--------------')</span><br><span class="line">        print(m)</span><br><span class="line">        print(hex(m)[2:])</span><br><span class="line">        print(bytes.fromhex(hex(m)[2:]))</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+
+
+<h4 id="2-已知n-dp-dq-c求d和明文m"><a href="#2-已知n-dp-dq-c求d和明文m" class="headerlink" title="2.已知n,dp,dq,c求d和明文m"></a>2.已知n,dp,dq,c求d和明文m</h4><figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">import gmpy2 as gp</span><br><span class="line"></span><br><span class="line">p = gp.mpz()</span><br><span class="line">q = gp.mpz()</span><br><span class="line">dp = gp.mpz()</span><br><span class="line">dq = gp.mpz()</span><br><span class="line">c = gp.mpz()</span><br><span class="line"></span><br><span class="line">n = p*q</span><br><span class="line">phin = (p-1)*(q-1)</span><br><span class="line">dd = gp.gcd(p-1, q-1)</span><br><span class="line">d=(dp-dq)//dd * gp.invert((q-1)//dd, (p-1)//dd) * (q-1) +dq</span><br><span class="line">print(d)</span><br><span class="line"></span><br><span class="line">m = gp.powmod(c, d, n)</span><br><span class="line">print('-------------------')</span><br><span class="line">print(m)</span><br><span class="line">print(hex(m)[2:])</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h4 id="3-已知n，e，c求m"><a href="#3-已知n，e，c求m" class="headerlink" title="3.已知n，e，c求m"></a>3.已知n，e，c求m</h4><figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">import gmpy2</span><br><span class="line">def Decrypt(c,e,p,q):</span><br><span class="line">	L=(p-1)*(q-1)</span><br><span class="line">	d=gmpy2.invert(e,L)</span><br><span class="line">	n=p*q</span><br><span class="line">	m=gmpy2.powmod(c,d,n)</span><br><span class="line">	flag=str(m)</span><br><span class="line">	print("flag{"+flag+"}")</span><br><span class="line">if __name__ == '__main__':</span><br><span class="line">	p =  9648423029010515676590551740010426534945737639235739800643989352039852507298491399561035009163427050370107570733633350911691280297777160200625281665378483</span><br><span class="line">	q =  11874843837980297032092405848653656852760910154543380907650040190704283358909208578251063047732443992230647903887510065547947313543299303261986053486569407</span><br><span class="line">	e =  65537</span><br><span class="line">	c =  83208298995174604174773590298203639360540024871256126892889661345742403314929861939100492666605647316646576486526217457006376842280869728581726746401583705899941768214138742259689334840735633553053887641847651173776251820293087212885670180367406807406765923638973161375817392737747832762751690104423869019034</span><br><span class="line">	Decrypt(c,e,p,q)</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h4 id="4-已知ne求d"><a href="#4-已知ne求d" class="headerlink" title="4.已知ne求d"></a>4.已知ne求d</h4><figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">import gmpy2</span><br><span class="line">from Crypto.Util import number</span><br><span class="line">p = 473398607161</span><br><span class="line">q = 4511491</span><br><span class="line">e = 17</span><br><span class="line">d = gmpy2.invert(e,(p-1)*(q-1))</span><br><span class="line">print (d)</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+<h4 id="5-已知n，e求d和key"><a href="#5-已知n，e求d和key" class="headerlink" title="5.已知n，e求d和key"></a>5.已知n，e求d和key</h4><figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">import gmpy2</span><br><span class="line">import rsa</span><br><span class="line"></span><br><span class="line">p = 285960468890451637935629440372639283459</span><br><span class="line">q = 304008741604601924494328155975272418463</span><br><span class="line">e = 65537</span><br><span class="line">n = 86934482296048119190666062003494800588905656017203025617216654058378322103517</span><br><span class="line"></span><br><span class="line">d = gmpy2.invert(e,(q-1)*(p-1))</span><br><span class="line">print(d)</span><br><span class="line"></span><br><span class="line">d = 81176168860169991027846870170527607562179635470395365333547868786951080991441</span><br><span class="line"></span><br><span class="line">key = rsa.PrivateKey(n,e,d,p,q)</span><br><span class="line">print(key)</span><br><span class="line"></span><br><span class="line">with open("flag.enc","rb") as f:</span><br><span class="line">	print(rsa.decrypt(f.read(),key).decode())</span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure>
+
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Love</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2023/11/07/%E5%AF%86%E7%A0%81/">http://example.com/2023/11/07/密码/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">避风港</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/CTF/">CTF</a></div><div class="post_share"><div class="social-share" data-image="/img/gou.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/11/08/NSGA2%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/" title="NSGA2遗传算法笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">NSGA2遗传算法笔记</div></div></a></div><div class="next-post pull-right"><a href="/2023/10/31/%E5%8A%9B%E6%89%A3%E9%9D%A2%E8%AF%95-%E9%A2%98%E5%BA%93/" title=""><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info"></div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%B8%80%E5%A4%A9/" title="实训CTF第一天"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-27</div><div class="title">实训CTF第一天</div></div></a></div><div><a href="/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%BA%8C%E5%A4%A9/" title="实训CTF第二天"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-07-27</div><div class="title">实训CTF第二天</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/gou.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">Love</div><div class="author-info__description">归途也还可爱</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/nice020310/nice020310.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/nice020310" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_72757552" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1490166708@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#BUUCTF-Crypto"><span class="toc-number">1.</span> <span class="toc-text">BUUCTF  Crypto</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E4%B8%96%E4%B8%8A%E6%97%A0%E9%9A%BE%E4%BA%8B1%EF%BC%8C11-07"><span class="toc-number">1.1.</span> <span class="toc-text">1.世上无难事1，11.07</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E5%A4%A7%E5%B8%9D%E7%9A%84%E7%A7%98%E5%AF%86%E6%AD%A6%E5%99%A81"><span class="toc-number">1.2.</span> <span class="toc-text">2.大帝的秘密武器1</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-Windows%E7%B3%BB%E7%BB%9F%E5%AF%86%E7%A0%811"><span class="toc-number">2.</span> <span class="toc-text">3.Windows系统密码1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E4%BC%A0%E7%BB%9F%E7%9F%A5%E8%AF%86-%E5%8F%A4%E5%85%B8%E5%AF%86%E7%A0%81"><span class="toc-number">3.</span> <span class="toc-text">4.传统知识+古典密码</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E4%B8%A2%E5%A4%B1%E7%9A%84MD5"><span class="toc-number">4.</span> <span class="toc-text">5.丢失的MD5</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%96%B0%E6%97%B6%E4%BB%A3%E7%9A%84%E6%AD%A5%E4%BC%90"><span class="toc-number">5.</span> <span class="toc-text">6.新时代的步伐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BF%A1%E6%81%AF%E5%8C%96%E6%97%B6%E4%BB%A3%E7%9A%84%E6%AD%A5%E4%BC%90"><span class="toc-number">6.</span> <span class="toc-text">信息化时代的步伐</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RSA1"><span class="toc-number">7.</span> <span class="toc-text">RSA1</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%B1%82%E8%A7%A3RSA%E5%8A%A0%E5%AF%86%E7%AE%97%E6%B3%95"><span class="toc-number">8.</span> <span class="toc-text">求解RSA加密算法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%B7%B2%E7%9F%A5dp%EF%BC%8Cn%EF%BC%8Ce%EF%BC%8Cc%E6%B1%82m"><span class="toc-number">8.0.1.</span> <span class="toc-text">已知dp，n，e，c求m</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-%E5%B7%B2%E7%9F%A5n-dp-dq-c%E6%B1%82d%E5%92%8C%E6%98%8E%E6%96%87m"><span class="toc-number">8.0.2.</span> <span class="toc-text">2.已知n,dp,dq,c求d和明文m</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#3-%E5%B7%B2%E7%9F%A5n%EF%BC%8Ce%EF%BC%8Cc%E6%B1%82m"><span class="toc-number">8.0.3.</span> <span class="toc-text">3.已知n，e，c求m</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#4-%E5%B7%B2%E7%9F%A5ne%E6%B1%82d"><span class="toc-number">8.0.4.</span> <span class="toc-text">4.已知ne求d</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#5-%E5%B7%B2%E7%9F%A5n%EF%BC%8Ce%E6%B1%82d%E5%92%8Ckey"><span class="toc-number">8.0.5.</span> <span class="toc-text">5.已知n，e求d和key</span></a></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/01/20/%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/" title="傅里叶变换">傅里叶变换</a><time datetime="2024-01-20T02:37:02.000Z" title="发表于 2024-01-20 10:37:02">2024-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/12/07/%E6%95%B0%E7%94%B5/" title="数电">数电</a><time datetime="2023-12-07T12:25:25.000Z" title="发表于 2023-12-07 20:25:25">2023-12-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/08/NSGA2%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/" title="NSGA2遗传算法笔记">NSGA2遗传算法笔记</a><time datetime="2023-11-08T14:55:37.000Z" title="发表于 2023-11-08 22:55:37">2023-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/07/%E5%AF%86%E7%A0%81/" title="密码">密码</a><time datetime="2023-11-07T15:18:15.000Z" title="发表于 2023-11-07 23:18:15">2023-11-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/31/%E5%8A%9B%E6%89%A3%E9%9D%A2%E8%AF%95-%E9%A2%98%E5%BA%93/" title="无题">无题</a><time datetime="2023-10-31T15:25:04.633Z" title="发表于 2023-10-31 23:25:04">2023-10-31</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2024 By Love</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="60198" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

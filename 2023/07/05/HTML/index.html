@@ -1,0 +1,1070 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>HTML | 避风港</title><meta name="author" content="Love"><meta name="copyright" content="Love"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="HTML的语言特征l HTML代码是由头和体组成。   ​	 ​	 标题   ​	需要展示给用户看的信息内容      标签就相当于 java类 大括号  中存放的都是网页的说明性内容，例如标题     HTML文件的扩展名为html或者htm。Htm是老的命名规范，html的新的  HTML文件由浏览器直接解析执行，无需编译，直接由上到下依次解析执行。  HTML标签通常由开始标签和结束标签组成">
+<meta property="og:type" content="article">
+<meta property="og:title" content="HTML">
+<meta property="og:url" content="http://example.com/2023/07/05/HTML/index.html">
+<meta property="og:site_name" content="避风港">
+<meta property="og:description" content="HTML的语言特征l HTML代码是由头和体组成。   ​	 ​	 标题   ​	需要展示给用户看的信息内容      标签就相当于 java类 大括号  中存放的都是网页的说明性内容，例如标题     HTML文件的扩展名为html或者htm。Htm是老的命名规范，html的新的  HTML文件由浏览器直接解析执行，无需编译，直接由上到下依次解析执行。  HTML标签通常由开始标签和结束标签组成">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/gou.png">
+<meta property="article:published_time" content="2023-07-05T08:07:26.000Z">
+<meta property="article:modified_time" content="2023-07-05T14:04:53.097Z">
+<meta property="article:author" content="Love">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/gou.png"><link rel="shortcut icon" href="/img/meigui.png"><link rel="canonical" href="http://example.com/2023/07/05/HTML/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'HTML',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-07-05 22:04:53'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/gou.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/luori.png')"><nav id="nav"><span id="blog-info"><a href="/" title="避风港"><span class="site-name">避风港</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">HTML</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-07-05T08:07:26.000Z" title="发表于 2023-07-05 16:07:26">2023-07-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-07-05T14:04:53.097Z" title="更新于 2023-07-05 22:04:53">2023-07-05</time></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="HTML"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('/img/luori.png');"></div><article class="post-content" id="article-container"><h3 id="HTML的语言特征"><a href="#HTML的语言特征" class="headerlink" title="HTML的语言特征"></a><strong>HTML的语言特征</strong></h3><p>l HTML代码是由头和体组成。</p>
+
+
+<p>​	</p>
+<p>​	<title> 标题</title></p>
+
+
+<p>​	需要展示给用户看的信息内容</p>
+
+
+ 
+
+标签就相当于 java类 大括号
+
+中存放的都是网页的说明性内容，例如标题
+
+
+
+<ul>
+<li><p>HTML文件的扩展名为html或者htm。Htm是老的命名规范，html的新的</p>
+</li>
+<li><p>HTML文件由浏览器直接解析执行，无需编译，直接由上到下依次解析执行。</p>
+</li>
+<li><p>HTML标签通常由开始标签和结束标签组成。例如:<font>内容体</font>开始标签和结束标签之间的内容叫做内容体</p>
+</li>
+<li><p>HTML没有内容体的标签叫做空标签。仅由一个标签组成。例如：<br>  自关闭</p>
+</li>
+<li><p>HTML标签不区分大小写，为了方便阅读，建议使用小写。</p>
+</li>
+<li><p>HTML标签是有属性的，格式为：属性名=”属性值”，属性值用引号引起。引号包含单引号和双引号</p>
+</li>
+</ul>
+<p>HTML标签建议包裹嵌套，不建议交叉嵌套</p>
+<pre><code>&lt;head&gt;
+ &lt;title&gt;html 快速入门&lt;/title&gt;
+ &lt;body&gt;
+     &lt;font color="red"&gt;&lt;/font&gt;
+ &lt;/body&gt;
+</code></pre>
+ 
+#### **<font>**
+
+<p>字体标签，用于展示效果中修饰文字样式</p>
+<p>&lt;font 属性名=”属性值”&gt;文字</p></font><p></p>
+<p>Ø size:控制字体大小.最小1 ~ 最大7。 如果设置范围不在1~7之间，设置无效</p>
+<p>Ø color：控制字体颜色. 使用英文设置（例如：red,blue…） </p>
+<p>Ø face：控制字体类型。只能设置系统字库中存在的字体类型</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps1.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps2.jpg" alt="img"> </p>
+<h4 id="2-1-2、"><a href="#2-1-2、" class="headerlink" title="2.1.2、"></a><strong>2.1.2、<br></strong></h4><p>HTML源码中换行，浏览器解析时会自动忽略。</p>
+<p>换行标签，用于展示效果中换行</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps3.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps4.jpg" alt="img"> </p>
+<h4 id="2-1-3、"><a href="#2-1-3、" class="headerlink" title="2.1.3、"></a><strong>2.1.3、<p></p></strong></h4><p>段落标签，用于展示效果中划分段落。并且自动在段前和段后自动加空白行</p>
+<p>Ø align:段落内容的对齐方式</p>
+<p>默认是left， 内容居左</p>
+<p>Right  右</p>
+<p>Center 居中</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps5.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps6.jpg" alt="img"> </p>
+<h4 id="2-1-4、"><a href="#2-1-4、" class="headerlink" title="2.1.4、"></a><strong>2.1.4、<h1></h1></strong></h4><p>标题标签，用于展示效果中划分标题</p>
+<p>其中</p><h1>最大，</h1><h6>最小<p></p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps7.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps8.jpg" alt="img"> </p>
+</h6><h4 id="2-1-5、"><a href="#2-1-5、" class="headerlink" title="2.1.5、"></a><strong>2.1.5、</strong></h4><p>HTML源码中的多个空格，效果中最终会合并成一个。</p>
+<p>空格符号，用于展示效果中显示一个空白的位置</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps9.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps10.jpg" alt="img"> </p>
+<h4 id="2-1-6、HTML注释"><a href="#2-1-6、HTML注释" class="headerlink" title="2.1.6、HTML注释"></a><strong>2.1.6、HTML注释</strong></h4><p>用于注释HTML源码，不在HTML效果中展示。 </p>
+<p>只能在源码中看到，页面展示效果中是没有</p>
+<p>格式：<!--HTML注释内容 --></p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps11.jpg" alt="img"> </p>
+<p>效果：在HTML效果展示中不会显示，只能在源码中看到</p>
+<h3 id="2-2、图片标签"><a href="#2-2、图片标签" class="headerlink" title="2.2、	图片标签"></a><strong>2.2、</strong>	<strong>图片标签</strong></h3><h4 id="2-2-1、"><a href="#2-2-1、" class="headerlink" title="2.2.1、"></a><strong>2.2.1、<img></strong></h4><p>用于在页面效果中展示一张图片。</p>
+<p>Ø src：指明图片的路径。（必有属性）</p>
+<p>图片路径的写法：</p>
+<p>​	①内网路径：</p>
+<p>​		绝对路径：文件在硬盘上的具体位置。【不建议使用】</p>
+<p>​				例如：C:\ JavaWeb001_html\img\c_1.jpg</p>
+<p>​		相对路径：从引入者所在目录出发。【建议使用相对路径】</p>
+<p>​				例如：../img/c_1.jpg</p>
+<p>​				../表示上一层目录</p>
+<p>​				./表示当前目录</p>
+<p>​	<img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps12.jpg" alt="img"></p>
+<p>​	②互联网路径：</p>
+<p>​		必须前面加上http://</p>
+<p>​		例如：<a target="_blank" rel="noopener" href="http://www.baidu.com/xxx.jpg">http://www.baidu.com/xxx.jpg</a></p>
+<p>Ø width：图片宽度</p>
+<p>Ø height：图片的高度</p>
+<p>宽度和高度的设置：</p>
+<p>默认单位是px，像素。例如：width=”400”   其实设置的是 width=”400px”。固定设置方式</p>
+<p>百分比设置。例如：width=”50%”。  是父标签的百分比。 动态改变的。</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps13.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps14.jpg" alt="img"> </p>
+<h3 id="2-3、列表标签"><a href="#2-3、列表标签" class="headerlink" title="2.3、	列表标签"></a><strong>2.3、</strong>	<strong>列表标签</strong></h3><h4 id="2-3-1、"><a href="#2-3-1、" class="headerlink" title="2.3.1、"></a><strong>2.3.1、<ul></ul></strong></h4><p>无序列表标签，用于在效果中定义一个无序列表</p>
+<h4 id="2-3-2、"><a href="#2-3-2、" class="headerlink" title="2.3.2、"></a><strong>2.3.2、<li></li></strong></h4><p>列表条目项标签，用于在效果中定义一个列表的条目</p>
+<h4 id="2-3-3、"><a href="#2-3-3、" class="headerlink" title="2.3.3、"></a><strong>2.3.3、<ol></ol></strong></h4><p>有序列表标签，用于在效果中定义一个有序列表</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps15.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps16.jpg" alt="img"> </p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps17.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps18.jpg" alt="img"> </p>
+<h3 id="2-4、超链接标签"><a href="#2-4、超链接标签" class="headerlink" title="2.4、	超链接标签"></a><strong>2.4、</strong>	<strong>超链接标签</strong></h3><h4 id="2-4-1、"><a href="#2-4-1、" class="headerlink" title="2.4.1、"></a><strong>2.4.1、<a></a></strong></h4><p>超链接标签，用于在效果中定义一个可以点击跳转的链接</p>
+<p>Ø href：超链接跳转的路径 (必有属性)</p>
+<p>内网本机路径：相对路径和绝对路径</p>
+<p>互联网路径：http://地址</p>
+<p>本页：默认跳转到本页</p>
+<p>超链接正常工作：①a标签中必须有内容</p>
+<p>​				②a标签必须有href属性</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps19.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps20.jpg" alt="img"> </p>
+<p>注意：</p>
+<p>​	①a标签内容体，不仅仅是文字，也可以是其他内容，例如图片</p>
+<p>​	②a标签的href属性，不仅仅可以链接到html上，也可以链接到其他文件上，例如图片</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps21.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps22.jpg" alt="img"> </p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps23.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps24.jpg" alt="img"> </p>
+<h3 id="2-5、表格标签"><a href="#2-5、表格标签" class="headerlink" title="2.5、	表格标签"></a><strong>2.5、</strong>	<strong>表格标签</strong></h3><h4 id="2-5-1、"><a href="#2-5-1、" class="headerlink" title="2.5.1、"></a><strong>2.5.1、<table></table></strong></h4><p>表格标签，用于在效果中定义一个表格</p>
+<p>Ø border：设置表格的边框粗细</p>
+<p>Ø width：设置表格的宽度</p>
+<h4 id="2-5-2-、"><a href="#2-5-2-、" class="headerlink" title="2.5.2 、"></a><strong>2.5.2 、</strong></h4><p>表格的行标签，用于在效果中定义一个表格行</p>
+<h4 id="2-5-3、"><a href="#2-5-3、" class="headerlink" title="2.5.3、"></a><strong>2.5.3、</strong></h4><p>表格的单元格标签，用于在效果中定义一个表格行中的单元格</p>
+<p>表格的书写顺序：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps25.jpg" alt="img"> </p>
+<p>步骤1：定义一个表格 </p><table></table><p></p>
+<p>步骤2：定义表格中的一行  </p>
+<p>步骤3：在表格一行中定义单元格    内容就可以写在单元格中</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps26.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps27.jpg" alt="img"> </p>
+<h4 id="2-5-4、"><a href="#2-5-4、" class="headerlink" title="2.5.4、"></a><strong>2.5.4、</strong></h4><p>表格的表头单元格标签，用于在效果中定义一个表格行中的表头单元格</p>
+和唯一区别：内容 居中加粗
+
+ 
+
+ 
+
+ 
+
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps28.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps29.jpg" alt="img"> </p>
+<h4 id="2-5-5、单元格合并"><a href="#2-5-5、单元格合并" class="headerlink" title="2.5.5、单元格合并"></a><strong>2.5.5、单元格合并</strong></h4>或者都有两个单元格合并属性：
+
+ 
+
+<p>Ø colspan：跨列合并单元格</p>
+<p>Ø rowspan：跨行合并单元格</p>
+<p>合并步骤：</p>
+<p>① 确定合并哪几个单元格，确定是跨列合并还是跨行合并</p>
+<p>② 在第一个出现的单元格上书写 合并单元格属性</p>
+<p>③ 合并几个单元格，属性值就书写几</p>
+<p>④ 被合并的单元格必须删掉</p>
+<p>示例1：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps30.jpg" alt="img"> </p>
+<p>效果1：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps31.jpg" alt="img"> </p>
+<p>示例2：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps32.jpg" alt="img"> </p>
+<p>效果2：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps33.jpg" alt="img"> </p>
+<p>示例3：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps34.jpg" alt="img"> </p>
+<p>效果3：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps35.jpg" alt="img"> </p>
+<h3 id="2-6、块标签"><a href="#2-6、块标签" class="headerlink" title="2.6、块标签"></a><strong>2.6、块标签</strong></h3><h4 id="2-6-1、"><a href="#2-6-1、" class="headerlink" title="2.6.1、"></a><strong>2.6.1、<span></span></strong></h4><p>行级的块标签，用于在效果中 一行上定义一个块，进行内容显示。</p>
+<p>① span有多少内容，就会占用多大空间。</p>
+<p>②Span不会自动换行</p>
+<p>适用于少量数据展示</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps36.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps37.jpg" alt="img"> </p>
+<h4 id="2-6-2、"><a href="#2-6-2、" class="headerlink" title="2.6.2、"></a><strong>2.6.2、<div></div></strong></h4><p>块级的块标签，用于在效果中 定义一块，默认占满一行，进行内容的显示</p>
+<p>① 默认占满一行</p>
+<p>② 会自动换行</p>
+<p>适用于大量数据展示</p>
+<p>示例：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps38.jpg" alt="img"> </p>
+<p>效果：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps39.jpg" alt="img"> </p>
+<h4 id="2-6-3、Div和span的应用场景："><a href="#2-6-3、Div和span的应用场景：" class="headerlink" title="2.6.3、Div和span的应用场景："></a><strong>2</strong><strong>.6.3、<strong><strong>Div和</strong></strong>span的应用场景：</strong></h4><p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps40.jpg" alt="img"> </p>
+<h2 id="3、HTML的表单标签"><a href="#3、HTML的表单标签" class="headerlink" title="3、HTML的表单标签"></a><strong>3、HTML的表单标签</strong></h2><p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps41.jpg" alt="img"> </p>
+<h3 id="3-1、输入项标签"><a href="#3-1、输入项标签" class="headerlink" title="3.1、输入项标签"></a><strong>3.1、输入项标签</strong></h3><p><input>标签</p>
+<p>表单输入项标签之一，用户可以在该标签上 通过填写和选择 进行数据的输入。</p>
+<p>Ø type:设置该标签的种类</p>
+<p>ü text:文本框。 默认</p>
+<p>ü password:密码框。  内容为非明文</p>
+<p>ü radio:单选框。   在同一组内有单选效果</p>
+<p>ü checkbox:复选框。  在同一组内有复选效果</p>
+<p>ü submit:提交按钮。用于控制表单提交数据</p>
+<p>ü reset:重置按钮。 用于将表单输入项恢复到默认状态</p>
+<p>ü file:附件框。用于文件上传。</p>
+<p>ü hidden:隐藏域。一般用作提交服务器需要拿到，但用户不需要看到的数据。</p>
+<p>ü button:普通按钮。需要和JS事件一起用</p>
+<p>Ø name: 单选框、复选框进行数据的分组。/    设置该标签对应的参数名</p>
+<p>某个表单输入项需要通过参数列表提交，就必须设置name属性</p>
+<p>Ø value:设置该标签对应的参数值。   /   作为按钮的名字</p>
+<p>value属性的设置策略：</p>
+<p>​	①文本框、密码框这样的表单输入项，可以不强制指定value，因为用户可以自由输入</p>
+<p>​	②单选框、复选框这样的表单输入项，必须强制指定value，因为用户无法输入，只能选择，如果不指定value，那么提交上去的只有on</p>
+<p>Ø checked:设置单选框/复选框的默认选中状态</p>
+<p>Ø readonly:设置该标签的参数值只读，用户无法手动更改。数据是可以正常提交</p>
+<p>Ø disabled:设置该标签不可用，参数值无法更改，且参数值也无法提交</p>
+<p>参数列表的格式：</p>
+<p>参数名1=参数值1&amp;参数名2=参数值2&amp;参数名3=参数值3…….</p>
+<p>例如：username=zhangsan&amp;password=123&amp;sex=man</p>
+<p>示例1：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps42.jpg" alt="img"> </p>
+<p>效果1：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps43.jpg" alt="img"> </p>
+<p>示例2：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps44.jpg" alt="img"> </p>
+<p>效果2：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps45.jpg" alt="img"> </p>
+<p>示例3：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps46.jpg" alt="img"> </p>
+<p>效果3：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps47.jpg" alt="img"> </p>
+<h3 id="3-2、选择框标签"><a href="#3-2、选择框标签" class="headerlink" title="3.2、选择框标签"></a><strong>3.2、选择框标签</strong></h3><p><select></select>标签  定义一个选择框</p>
+<p>Ø name: 设置该标签对应的参数名</p>
+<p>Ø multiple：设置该标签选项全部显示，并且可以进行多选提交。默认为单选。</p>
+<option></option>标签
+
+<p>选项标签，用于为一个选择框添加一个选项</p>
+<p>Ø value:设置需要提交的参数值。</p>
+<p>Ø selected:设置选项的默认选中状态</p>
+<p>注意事项：</p>
+<p>​	Option的内容体一般是用来进行展示</p>
+<p>​	参数值 应该是option的value属性值</p>
+<p>示例1：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps48.jpg" alt="img"> </p>
+<p>效果1：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps49.jpg" alt="img"> </p>
+<p>示例2：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps50.jpg" alt="img"> </p>
+<p>效果2：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps51.jpg" alt="img"> </p>
+<p>示例3：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps52.jpg" alt="img"> </p>
+<p>效果3：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps53.jpg" alt="img"> </p>
+<h3 id="3-3、文本域标签"><a href="#3-3、文本域标签" class="headerlink" title="3.3、文本域标签"></a><strong>3.3、文本域标签</strong></h3><textarea></textarea>标签
+
+<p>表单输入项标签之一，用户可以在该标签上 通过输入 进行数据的输入。</p>
+<p>Ø name: 设置该标签对应的参数名</p>
+<p>文本域和文本框区别：</p>
+<p>① 文本框不能换行，文本域可以</p>
+<p>② 文本框参数值是value属性，文本域参数值是标签的内容体</p>
+<p>示例1：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps54.jpg" alt="img"> </p>
+<p>效果1：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps55.jpg" alt="img"> </p>
+<p>示例2：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps56.jpg" alt="img"> </p>
+<p>效果2：</p>
+<p><img src="file:///C:\Users\Nice\AppData\Local\Temp\ksohtml27660\wps57.jpg" alt="img"> </p>
+<h3 id="3-4、表单标签"><a href="#3-4、表单标签" class="headerlink" title="3.4、表单标签"></a><strong>3.4、表单标签</strong></h3><form></form>标签。
+
+<p>用于在效果中定义一个表单，用于提交用户填写的数据。</p>
+<p>Ø action:将数据提交到何处。</p>
+<p>默认提交到本页。</p>
+<p>本机内网路径：</p>
+<p>​		相对路径：</p>
+<p>​		绝对路径：</p>
+<p>互联网路径：</p>
+<p>​		<a target="_blank" rel="noopener" href="http://www.baidu.com/xxx">http://www.baidu.com/xxx</a></p>
+<p>Ø method:将数据以何种方式提交</p>
+<p>默认为：get</p>
+<p>提交方式可定义：get     或者     post</p>
+<p>Get提交方式特点：把数据拼接到地址栏上</p>
+<p>Post提交方式特点：没有把提交数据拼接到地址栏上。请求体</p>
+<p>Get和post提交方式区别：</p>
+<p>① get提交的参数列表拼接到了地址栏后面</p>
+<p>post方式不会 拼接地址栏</p>
+<p>​			②get方式提交的数据 敏感信息不安全</p>
+<p>​				Post方式提交的数据  相对安全</p>
+<p>​			③get方式提交的数据量 有限的</p>
+<p>​			   Post方式从理论上提交的数据量 无限大</p>
+<p>尽量使用post方式提交表单</p>
+<h3 id="3-5、提交表单注意事项"><a href="#3-5、提交表单注意事项" class="headerlink" title="3.5、提交表单注意事项"></a><strong>3.5、提交表单注意事项</strong></h3><h4 id="3-5-1、提交中文问题"><a href="#3-5-1、提交中文问题" class="headerlink" title="3.5.1、提交中文问题"></a><strong>3.5.1、提交中文问题</strong></h4><h5 id="3-5-1-1、为什么要使用URL编码？"><a href="#3-5-1-1、为什么要使用URL编码？" class="headerlink" title="3.5.1.1、为什么要使用URL编码？"></a><strong>3.5.1.1、为什么要使用URL编码？</strong></h5><p>正常提交数据：</p>
+<p>?password=123&amp;username=zhangsan</p>
+<p>非正常提交数据：</p>
+<p>?password=123#ohheih&amp;dlajfk&amp;dskfklas&amp;username=zhangsan</p>
+<p>URL编码解决方式：特殊符号，中文</p>
+<p>例如：&amp;   -à %26</p>
+<p>?password=123#ohheih&amp;dlajfk&amp;dskfklas&amp;username=zhangsan</p>
+<p>编码完：?password=123#ohheih %26dlajfk %26dskfklas&amp;username=zhangsan</p>
+<p>为了保证表单数据传递时能更好区分出name和value。</p>
+<p>保证数据传递的完整性</p>
+<h5 id="3-5-1-2、URL编码的表现形式-amp-本质"><a href="#3-5-1-2、URL编码的表现形式-amp-本质" class="headerlink" title="3.5.1.2、URL编码的表现形式&amp;本质"></a><strong>3.5.1.2、URL编码的表现形式&amp;本质</strong></h5><p>①你好，进行普通的编码，编码成字节数组。【使用的是页面规定的字符集，例如utf-8】</p>
+<p>② 字节数组中的每一个元素，都会从10进制，转为16进制</p>
+<p>③ 把已经转为16进制的字节数组，以%进行拼接 。拼接出的字符串，就是URL编码后的结果</p>
+<p>例如：你好，用UTF-8编码，编码的字节数组为：</p>
+<p>[-28, -67, -96, -27, -91, -67]</p>
+<p>URL编码后：</p>
+<p>%E4%BD%A0%E5%A5%BD</p>
+<p>html   表示颜色</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Love</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2023/07/05/HTML/">http://example.com/2023/07/05/HTML/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">避风港</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="/img/gou.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/07/27/%E5%AE%9E%E8%AE%ADCTF%E7%AC%AC%E4%B8%80%E5%A4%A9/" title="实训CTF第一天"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">实训CTF第一天</div></div></a></div><div class="next-post pull-right"><a href="/2023/06/01/6-1%E5%BF%AB%E4%B9%90/" title="6.1快乐"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">6.1快乐</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/gou.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">Love</div><div class="author-info__description">归途也还可爱</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">18</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">8</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">10</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/nice020310/nice020310.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/nice020310" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_72757552" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1490166708@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#HTML%E7%9A%84%E8%AF%AD%E8%A8%80%E7%89%B9%E5%BE%81"><span class="toc-number">1.</span> <span class="toc-text">HTML的语言特征</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-2%E3%80%81"><span class="toc-number">1.1.</span> <span class="toc-text">2.1.2、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-3%E3%80%81"><span class="toc-number">1.2.</span> <span class="toc-text">2.1.3、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-4%E3%80%81"><span class="toc-number">1.3.</span> <span class="toc-text">2.1.4、</span></a></li></ol></li></ol><li class="toc-item toc-level-1"><a class="toc-link" href="#2-1-4%E3%80%81"><span class="toc-number"></span> <span class="toc-text"></span></a></li><li class="toc-item toc-level-1"><a class="toc-link"><span class="toc-number"></span> <span class="toc-text">最大，最小
+示例：
+ 
+效果：
+ 
+2.1.5、HTML源码中的多个空格，效果中最终会合并成一个。
+空格符号，用于展示效果中显示一个空白的位置
+示例：
+ 
+效果：
+ 
+2.1.6、HTML注释用于注释HTML源码，不在HTML效果中展示。 
+只能在源码中看到，页面展示效果中是没有
+格式：
+示例：
+ 
+效果：在HTML效果展示中不会显示，只能在源码中看到
+2.2、	图片标签2.2.1、用于在页面效果中展示一张图片。
+Ø src：指明图片的路径。（必有属性）
+图片路径的写法：
+​	①内网路径：
+​		绝对路径：文件在硬盘上的具体位置。【不建议使用】
+​				例如：C:\ JavaWeb001_html\img\c_1.jpg
+​		相对路径：从引入者所在目录出发。【建议使用相对路径】
+​				例如：../img/c_1.jpg
+​				../表示上一层目录
+​				./表示当前目录
+​	
+​	②互联网路径：
+​		必须前面加上http://
+​		例如：http://www.baidu.com/xxx.jpg
+Ø width：图片宽度
+Ø height：图片的高度
+宽度和高度的设置：
+默认单位是px，像素。例如：width=”400”   其实设置的是 width=”400px”。固定设置方式
+百分比设置。例如：width=”50%”。  是父标签的百分比。 动态改变的。
+示例：
+ 
+效果：
+ 
+2.3、	列表标签2.3.1、无序列表标签，用于在效果中定义一个无序列表
+2.3.2、列表条目项标签，用于在效果中定义一个列表的条目
+2.3.3、有序列表标签，用于在效果中定义一个有序列表
+示例：
+ 
+效果：
+ 
+示例：
+ 
+效果：
+ 
+2.4、	超链接标签2.4.1、超链接标签，用于在效果中定义一个可以点击跳转的链接
+Ø href：超链接跳转的路径 (必有属性)
+内网本机路径：相对路径和绝对路径
+互联网路径：http://地址
+本页：默认跳转到本页
+超链接正常工作：①a标签中必须有内容
+​				②a标签必须有href属性
+示例：
+ 
+效果：
+ 
+注意：
+​	①a标签内容体，不仅仅是文字，也可以是其他内容，例如图片
+​	②a标签的href属性，不仅仅可以链接到html上，也可以链接到其他文件上，例如图片
+示例：
+ 
+效果：
+ 
+示例：
+ 
+效果：
+ 
+2.5、	表格标签2.5.1、表格标签，用于在效果中定义一个表格
+Ø border：设置表格的边框粗细
+Ø width：设置表格的宽度
+2.5.2 、表格的行标签，用于在效果中定义一个表格行
+2.5.3、表格的单元格标签，用于在效果中定义一个表格行中的单元格
+表格的书写顺序：
+ 
+步骤1：定义一个表格 
+步骤2：定义表格中的一行  
+步骤3：在表格一行中定义单元格    内容就可以写在单元格中
+示例：
+ 
+效果：
+ 
+2.5.4、表格的表头单元格标签，用于在效果中定义一个表格行中的表头单元格
+和唯一区别：内容 居中加粗
+
+ 
+
+ 
+
+ 
+
+示例：
+ 
+效果：
+ 
+2.5.5、单元格合并或者都有两个单元格合并属性：
+
+ 
+
+Ø colspan：跨列合并单元格
+Ø rowspan：跨行合并单元格
+合并步骤：
+① 确定合并哪几个单元格，确定是跨列合并还是跨行合并
+② 在第一个出现的单元格上书写 合并单元格属性
+③ 合并几个单元格，属性值就书写几
+④ 被合并的单元格必须删掉
+示例1：
+ 
+效果1：
+ 
+示例2：
+ 
+效果2：
+ 
+示例3：
+ 
+效果3：
+ 
+2.6、块标签2.6.1、行级的块标签，用于在效果中 一行上定义一个块，进行内容显示。
+① span有多少内容，就会占用多大空间。
+②Span不会自动换行
+适用于少量数据展示
+示例：
+ 
+效果：
+ 
+2.6.2、块级的块标签，用于在效果中 定义一块，默认占满一行，进行内容的显示
+① 默认占满一行
+② 会自动换行
+适用于大量数据展示
+示例：
+ 
+效果：
+ 
+2.6.3、Div和span的应用场景： 
+3、HTML的表单标签 
+3.1、输入项标签标签
+表单输入项标签之一，用户可以在该标签上 通过填写和选择 进行数据的输入。
+Ø type:设置该标签的种类
+ü text:文本框。 默认
+ü password:密码框。  内容为非明文
+ü radio:单选框。   在同一组内有单选效果
+ü checkbox:复选框。  在同一组内有复选效果
+ü submit:提交按钮。用于控制表单提交数据
+ü reset:重置按钮。 用于将表单输入项恢复到默认状态
+ü file:附件框。用于文件上传。
+ü hidden:隐藏域。一般用作提交服务器需要拿到，但用户不需要看到的数据。
+ü button:普通按钮。需要和JS事件一起用
+Ø name: 单选框、复选框进行数据的分组。/    设置该标签对应的参数名
+某个表单输入项需要通过参数列表提交，就必须设置name属性
+Ø value:设置该标签对应的参数值。   /   作为按钮的名字
+value属性的设置策略：
+​	①文本框、密码框这样的表单输入项，可以不强制指定value，因为用户可以自由输入
+​	②单选框、复选框这样的表单输入项，必须强制指定value，因为用户无法输入，只能选择，如果不指定value，那么提交上去的只有on
+Ø checked:设置单选框/复选框的默认选中状态
+Ø readonly:设置该标签的参数值只读，用户无法手动更改。数据是可以正常提交
+Ø disabled:设置该标签不可用，参数值无法更改，且参数值也无法提交
+参数列表的格式：
+参数名1=参数值1&amp;参数名2=参数值2&amp;参数名3=参数值3…….
+例如：username=zhangsan&amp;password=123&amp;sex=man
+示例1：
+ 
+效果1：
+ 
+示例2：
+ 
+效果2：
+ 
+示例3：
+ 
+效果3：
+ 
+3.2、选择框标签标签  定义一个选择框
+Ø name: 设置该标签对应的参数名
+Ø multiple：设置该标签选项全部显示，并且可以进行多选提交。默认为单选。
+标签
+
+选项标签，用于为一个选择框添加一个选项
+Ø value:设置需要提交的参数值。
+Ø selected:设置选项的默认选中状态
+注意事项：
+​	Option的内容体一般是用来进行展示
+​	参数值 应该是option的value属性值
+示例1：
+ 
+效果1：
+ 
+示例2：
+ 
+效果2：
+ 
+示例3：
+ 
+效果3：
+ 
+3.3、文本域标签标签
+
+表单输入项标签之一，用户可以在该标签上 通过输入 进行数据的输入。
+Ø name: 设置该标签对应的参数名
+文本域和文本框区别：
+① 文本框不能换行，文本域可以
+② 文本框参数值是value属性，文本域参数值是标签的内容体
+示例1：
+ 
+效果1：
+ 
+示例2：
+ 
+效果2：
+ 
+3.4、表单标签标签。
+
+用于在效果中定义一个表单，用于提交用户填写的数据。
+Ø action:将数据提交到何处。
+默认提交到本页。
+本机内网路径：
+​		相对路径：
+​		绝对路径：
+互联网路径：
+​		http://www.baidu.com/xxx
+Ø method:将数据以何种方式提交
+默认为：get
+提交方式可定义：get     或者     post
+Get提交方式特点：把数据拼接到地址栏上
+Post提交方式特点：没有把提交数据拼接到地址栏上。请求体
+Get和post提交方式区别：
+① get提交的参数列表拼接到了地址栏后面
+post方式不会 拼接地址栏
+​			②get方式提交的数据 敏感信息不安全
+​				Post方式提交的数据  相对安全
+​			③get方式提交的数据量 有限的
+​			   Post方式从理论上提交的数据量 无限大
+尽量使用post方式提交表单
+3.5、提交表单注意事项3.5.1、提交中文问题3.5.1.1、为什么要使用URL编码？正常提交数据：
+?password=123&amp;username=zhangsan
+非正常提交数据：
+?password=123#ohheih&amp;dlajfk&amp;dskfklas&amp;username=zhangsan
+URL编码解决方式：特殊符号，中文
+例如：&amp;   -à %26
+?password=123#ohheih&amp;dlajfk&amp;dskfklas&amp;username=zhangsan
+编码完：?password=123#ohheih %26dlajfk %26dskfklas&amp;username=zhangsan
+为了保证表单数据传递时能更好区分出name和value。
+保证数据传递的完整性
+3.5.1.2、URL编码的表现形式&amp;本质①你好，进行普通的编码，编码成字节数组。【使用的是页面规定的字符集，例如utf-8】
+② 字节数组中的每一个元素，都会从10进制，转为16进制
+③ 把已经转为16进制的字节数组，以%进行拼接 。拼接出的字符串，就是URL编码后的结果
+例如：你好，用UTF-8编码，编码的字节数组为：
+[-28, -67, -96, -27, -91, -67]
+URL编码后：
+%E4%BD%A0%E5%A5%BD
+html   表示颜色
+</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link"><span class="toc-number">0.0.0.1.</span> <span class="toc-text">最小
+示例：
+ 
+效果：
+ 
+2.1.5、HTML源码中的多个空格，效果中最终会合并成一个。
+空格符号，用于展示效果中显示一个空白的位置
+示例：
+ 
+效果：
+ 
+2.1.6、HTML注释用于注释HTML源码，不在HTML效果中展示。 
+只能在源码中看到，页面展示效果中是没有
+格式：
+示例：
+ 
+效果：在HTML效果展示中不会显示，只能在源码中看到
+2.2、	图片标签2.2.1、用于在页面效果中展示一张图片。
+Ø src：指明图片的路径。（必有属性）
+图片路径的写法：
+​	①内网路径：
+​		绝对路径：文件在硬盘上的具体位置。【不建议使用】
+​				例如：C:\ JavaWeb001_html\img\c_1.jpg
+​		相对路径：从引入者所在目录出发。【建议使用相对路径】
+​				例如：../img/c_1.jpg
+​				../表示上一层目录
+​				./表示当前目录
+​	
+​	②互联网路径：
+​		必须前面加上http://
+​		例如：http://www.baidu.com/xxx.jpg
+Ø width：图片宽度
+Ø height：图片的高度
+宽度和高度的设置：
+默认单位是px，像素。例如：width=”400”   其实设置的是 width=”400px”。固定设置方式
+百分比设置。例如：width=”50%”。  是父标签的百分比。 动态改变的。
+示例：
+ 
+效果：
+ 
+2.3、	列表标签2.3.1、无序列表标签，用于在效果中定义一个无序列表
+2.3.2、列表条目项标签，用于在效果中定义一个列表的条目
+2.3.3、有序列表标签，用于在效果中定义一个有序列表
+示例：
+ 
+效果：
+ 
+示例：
+ 
+效果：
+ 
+2.4、	超链接标签2.4.1、超链接标签，用于在效果中定义一个可以点击跳转的链接
+Ø href：超链接跳转的路径 (必有属性)
+内网本机路径：相对路径和绝对路径
+互联网路径：http://地址
+本页：默认跳转到本页
+超链接正常工作：①a标签中必须有内容
+​				②a标签必须有href属性
+示例：
+ 
+效果：
+ 
+注意：
+​	①a标签内容体，不仅仅是文字，也可以是其他内容，例如图片
+​	②a标签的href属性，不仅仅可以链接到html上，也可以链接到其他文件上，例如图片
+示例：
+ 
+效果：
+ 
+示例：
+ 
+效果：
+ 
+2.5、	表格标签2.5.1、表格标签，用于在效果中定义一个表格
+Ø border：设置表格的边框粗细
+Ø width：设置表格的宽度
+2.5.2 、表格的行标签，用于在效果中定义一个表格行
+2.5.3、表格的单元格标签，用于在效果中定义一个表格行中的单元格
+表格的书写顺序：
+ 
+步骤1：定义一个表格 
+步骤2：定义表格中的一行  
+步骤3：在表格一行中定义单元格    内容就可以写在单元格中
+示例：
+ 
+效果：
+ 
+2.5.4、表格的表头单元格标签，用于在效果中定义一个表格行中的表头单元格
+和唯一区别：内容 居中加粗
+
+ 
+
+ 
+
+ 
+
+示例：
+ 
+效果：
+ 
+2.5.5、单元格合并或者都有两个单元格合并属性：
+
+ 
+
+Ø colspan：跨列合并单元格
+Ø rowspan：跨行合并单元格
+合并步骤：
+① 确定合并哪几个单元格，确定是跨列合并还是跨行合并
+② 在第一个出现的单元格上书写 合并单元格属性
+③ 合并几个单元格，属性值就书写几
+④ 被合并的单元格必须删掉
+示例1：
+ 
+效果1：
+ 
+示例2：
+ 
+效果2：
+ 
+示例3：
+ 
+效果3：
+ 
+2.6、块标签2.6.1、行级的块标签，用于在效果中 一行上定义一个块，进行内容显示。
+① span有多少内容，就会占用多大空间。
+②Span不会自动换行
+适用于少量数据展示
+示例：
+ 
+效果：
+ 
+2.6.2、块级的块标签，用于在效果中 定义一块，默认占满一行，进行内容的显示
+① 默认占满一行
+② 会自动换行
+适用于大量数据展示
+示例：
+ 
+效果：
+ 
+2.6.3、Div和span的应用场景： 
+3、HTML的表单标签 
+3.1、输入项标签标签
+表单输入项标签之一，用户可以在该标签上 通过填写和选择 进行数据的输入。
+Ø type:设置该标签的种类
+ü text:文本框。 默认
+ü password:密码框。  内容为非明文
+ü radio:单选框。   在同一组内有单选效果
+ü checkbox:复选框。  在同一组内有复选效果
+ü submit:提交按钮。用于控制表单提交数据
+ü reset:重置按钮。 用于将表单输入项恢复到默认状态
+ü file:附件框。用于文件上传。
+ü hidden:隐藏域。一般用作提交服务器需要拿到，但用户不需要看到的数据。
+ü button:普通按钮。需要和JS事件一起用
+Ø name: 单选框、复选框进行数据的分组。/    设置该标签对应的参数名
+某个表单输入项需要通过参数列表提交，就必须设置name属性
+Ø value:设置该标签对应的参数值。   /   作为按钮的名字
+value属性的设置策略：
+​	①文本框、密码框这样的表单输入项，可以不强制指定value，因为用户可以自由输入
+​	②单选框、复选框这样的表单输入项，必须强制指定value，因为用户无法输入，只能选择，如果不指定value，那么提交上去的只有on
+Ø checked:设置单选框/复选框的默认选中状态
+Ø readonly:设置该标签的参数值只读，用户无法手动更改。数据是可以正常提交
+Ø disabled:设置该标签不可用，参数值无法更改，且参数值也无法提交
+参数列表的格式：
+参数名1=参数值1&amp;参数名2=参数值2&amp;参数名3=参数值3…….
+例如：username=zhangsan&amp;password=123&amp;sex=man
+示例1：
+ 
+效果1：
+ 
+示例2：
+ 
+效果2：
+ 
+示例3：
+ 
+效果3：
+ 
+3.2、选择框标签标签  定义一个选择框
+Ø name: 设置该标签对应的参数名
+Ø multiple：设置该标签选项全部显示，并且可以进行多选提交。默认为单选。
+标签
+
+选项标签，用于为一个选择框添加一个选项
+Ø value:设置需要提交的参数值。
+Ø selected:设置选项的默认选中状态
+注意事项：
+​	Option的内容体一般是用来进行展示
+​	参数值 应该是option的value属性值
+示例1：
+ 
+效果1：
+ 
+示例2：
+ 
+效果2：
+ 
+示例3：
+ 
+效果3：
+ 
+3.3、文本域标签标签
+
+表单输入项标签之一，用户可以在该标签上 通过输入 进行数据的输入。
+Ø name: 设置该标签对应的参数名
+文本域和文本框区别：
+① 文本框不能换行，文本域可以
+② 文本框参数值是value属性，文本域参数值是标签的内容体
+示例1：
+ 
+效果1：
+ 
+示例2：
+ 
+效果2：
+ 
+3.4、表单标签标签。
+
+用于在效果中定义一个表单，用于提交用户填写的数据。
+Ø action:将数据提交到何处。
+默认提交到本页。
+本机内网路径：
+​		相对路径：
+​		绝对路径：
+互联网路径：
+​		http://www.baidu.com/xxx
+Ø method:将数据以何种方式提交
+默认为：get
+提交方式可定义：get     或者     post
+Get提交方式特点：把数据拼接到地址栏上
+Post提交方式特点：没有把提交数据拼接到地址栏上。请求体
+Get和post提交方式区别：
+① get提交的参数列表拼接到了地址栏后面
+post方式不会 拼接地址栏
+​			②get方式提交的数据 敏感信息不安全
+​				Post方式提交的数据  相对安全
+​			③get方式提交的数据量 有限的
+​			   Post方式从理论上提交的数据量 无限大
+尽量使用post方式提交表单
+3.5、提交表单注意事项3.5.1、提交中文问题3.5.1.1、为什么要使用URL编码？正常提交数据：
+?password=123&amp;username=zhangsan
+非正常提交数据：
+?password=123#ohheih&amp;dlajfk&amp;dskfklas&amp;username=zhangsan
+URL编码解决方式：特殊符号，中文
+例如：&amp;   -à %26
+?password=123#ohheih&amp;dlajfk&amp;dskfklas&amp;username=zhangsan
+编码完：?password=123#ohheih %26dlajfk %26dskfklas&amp;username=zhangsan
+为了保证表单数据传递时能更好区分出name和value。
+保证数据传递的完整性
+3.5.1.2、URL编码的表现形式&amp;本质①你好，进行普通的编码，编码成字节数组。【使用的是页面规定的字符集，例如utf-8】
+② 字节数组中的每一个元素，都会从10进制，转为16进制
+③ 把已经转为16进制的字节数组，以%进行拼接 。拼接出的字符串，就是URL编码后的结果
+例如：你好，用UTF-8编码，编码的字节数组为：
+[-28, -67, -96, -27, -91, -67]
+URL编码后：
+%E4%BD%A0%E5%A5%BD
+html   表示颜色
+</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-5%E3%80%81"><span class="toc-number">0.1.</span> <span class="toc-text">2.1.5、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-1-6%E3%80%81HTML%E6%B3%A8%E9%87%8A"><span class="toc-number">0.2.</span> <span class="toc-text">2.1.6、HTML注释</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-2%E3%80%81%E5%9B%BE%E7%89%87%E6%A0%87%E7%AD%BE"><span class="toc-number">1.</span> <span class="toc-text">2.2、	图片标签</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-2-1%E3%80%81"><span class="toc-number">1.1.</span> <span class="toc-text">2.2.1、</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-3%E3%80%81%E5%88%97%E8%A1%A8%E6%A0%87%E7%AD%BE"><span class="toc-number">2.</span> <span class="toc-text">2.3、	列表标签</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-1%E3%80%81"><span class="toc-number">2.1.</span> <span class="toc-text">2.3.1、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-2%E3%80%81"><span class="toc-number">2.2.</span> <span class="toc-text">2.3.2、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-3-3%E3%80%81"><span class="toc-number">2.3.</span> <span class="toc-text">2.3.3、</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-4%E3%80%81%E8%B6%85%E9%93%BE%E6%8E%A5%E6%A0%87%E7%AD%BE"><span class="toc-number">3.</span> <span class="toc-text">2.4、	超链接标签</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-4-1%E3%80%81"><span class="toc-number">3.1.</span> <span class="toc-text">2.4.1、</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-5%E3%80%81%E8%A1%A8%E6%A0%BC%E6%A0%87%E7%AD%BE"><span class="toc-number">4.</span> <span class="toc-text">2.5、	表格标签</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-1%E3%80%81"><span class="toc-number">4.1.</span> <span class="toc-text">2.5.1、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-2-%E3%80%81"><span class="toc-number">4.2.</span> <span class="toc-text">2.5.2 、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-3%E3%80%81"><span class="toc-number">4.3.</span> <span class="toc-text">2.5.3、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-4%E3%80%81"><span class="toc-number">4.4.</span> <span class="toc-text">2.5.4、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-5-5%E3%80%81%E5%8D%95%E5%85%83%E6%A0%BC%E5%90%88%E5%B9%B6"><span class="toc-number">4.5.</span> <span class="toc-text">2.5.5、单元格合并</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-6%E3%80%81%E5%9D%97%E6%A0%87%E7%AD%BE"><span class="toc-number">5.</span> <span class="toc-text">2.6、块标签</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-1%E3%80%81"><span class="toc-number">5.1.</span> <span class="toc-text">2.6.1、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-2%E3%80%81"><span class="toc-number">5.2.</span> <span class="toc-text">2.6.2、</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#2-6-3%E3%80%81Div%E5%92%8Cspan%E7%9A%84%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF%EF%BC%9A"><span class="toc-number">5.3.</span> <span class="toc-text">2.6.3、Div和span的应用场景：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3%E3%80%81HTML%E7%9A%84%E8%A1%A8%E5%8D%95%E6%A0%87%E7%AD%BE"><span class="toc-number"></span> <span class="toc-text">3、HTML的表单标签</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#3-1%E3%80%81%E8%BE%93%E5%85%A5%E9%A1%B9%E6%A0%87%E7%AD%BE"><span class="toc-number">1.</span> <span class="toc-text">3.1、输入项标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-2%E3%80%81%E9%80%89%E6%8B%A9%E6%A1%86%E6%A0%87%E7%AD%BE"><span class="toc-number">2.</span> <span class="toc-text">3.2、选择框标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-3%E3%80%81%E6%96%87%E6%9C%AC%E5%9F%9F%E6%A0%87%E7%AD%BE"><span class="toc-number">3.</span> <span class="toc-text">3.3、文本域标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-4%E3%80%81%E8%A1%A8%E5%8D%95%E6%A0%87%E7%AD%BE"><span class="toc-number">4.</span> <span class="toc-text">3.4、表单标签</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-5%E3%80%81%E6%8F%90%E4%BA%A4%E8%A1%A8%E5%8D%95%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">5.</span> <span class="toc-text">3.5、提交表单注意事项</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#3-5-1%E3%80%81%E6%8F%90%E4%BA%A4%E4%B8%AD%E6%96%87%E9%97%AE%E9%A2%98"><span class="toc-number">5.1.</span> <span class="toc-text">3.5.1、提交中文问题</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#3-5-1-1%E3%80%81%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BD%BF%E7%94%A8URL%E7%BC%96%E7%A0%81%EF%BC%9F"><span class="toc-number">5.1.1.</span> <span class="toc-text">3.5.1.1、为什么要使用URL编码？</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-5-1-2%E3%80%81URL%E7%BC%96%E7%A0%81%E7%9A%84%E8%A1%A8%E7%8E%B0%E5%BD%A2%E5%BC%8F-amp-%E6%9C%AC%E8%B4%A8"><span class="toc-number">5.1.2.</span> <span class="toc-text">3.5.1.2、URL编码的表现形式&amp;本质</span></a></li></ol></li></ol></li></ol></li></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2024/01/20/%E5%82%85%E9%87%8C%E5%8F%B6%E5%8F%98%E6%8D%A2/" title="傅里叶变换">傅里叶变换</a><time datetime="2024-01-20T02:37:02.000Z" title="发表于 2024-01-20 10:37:02">2024-01-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/12/07/%E6%95%B0%E7%94%B5/" title="数电">数电</a><time datetime="2023-12-07T12:25:25.000Z" title="发表于 2023-12-07 20:25:25">2023-12-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/08/NSGA2%E9%81%97%E4%BC%A0%E7%AE%97%E6%B3%95%E7%AC%94%E8%AE%B0/" title="NSGA2遗传算法笔记">NSGA2遗传算法笔记</a><time datetime="2023-11-08T14:55:37.000Z" title="发表于 2023-11-08 22:55:37">2023-11-08</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/11/07/%E5%AF%86%E7%A0%81/" title="密码">密码</a><time datetime="2023-11-07T15:18:15.000Z" title="发表于 2023-11-07 23:18:15">2023-11-07</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2023/10/31/%E5%8A%9B%E6%89%A3%E9%9D%A2%E8%AF%95-%E9%A2%98%E5%BA%93/" title="无题">无题</a><time datetime="2023-10-31T15:25:04.633Z" title="发表于 2023-10-31 23:25:04">2023-10-31</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2024 By Love</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="60198" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
