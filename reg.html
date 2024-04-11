@@ -1,0 +1,174 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>注册界面</title>
+    <style>
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: none; /* 确保没有其他背景设置覆盖动画 */
+            animation: slideBackground 20s infinite;
+
+
+        }
+        @keyframes slideBackground {
+            0% { background-image: url('https://alifei04.cfp.cn/creative/vcg/nowarter800/new/VCG211260838696.jpg?x-oss-process=image/format,webp'); }
+            33% { background-image: url('https://alifei02.cfp.cn/creative/vcg/nowarter800/new/VCG41N846014486.jpg?x-oss-process=image/format,webp'); }
+            67% { background-image: url('https://tenfei05.cfp.cn/creative/vcg/nowarter800/new/VCG211260839695.jpg?x-oss-process=image/format,webp'); }
+            100% { background-image: url('https://alifei03.cfp.cn/creative/vcg/nowarter800/new/VCG211260052088.jpg?x-oss-process=image/format,webp'); }
+        }
+        .container {
+            position: absolute;
+            right: 50px;
+            top: 150px;
+            width: 350px;
+            padding: 20px;
+            margin: 0 auto;
+            background-color: #fff;
+            border-radius: 5px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form {
+            display: flex;
+            flex-direction: column;
+        }
+        input[type="text"],
+        input[type="password"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button {
+            padding: 10px;
+            background-color: #af4c4c;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        #send-verification {
+            background-color: #808080;
+            margin-bottom: 20px;
+        }
+    </style>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script src="js/md5.js"></script>
+</head>
+<body>
+<!-- <img src="ad-04.png" height="100%" width="100%"/> -->
+<div class="container">
+
+    <h1>注册</h1>
+    <div class="form">
+        <input type="text" id="phone" placeholder="手机号"/>
+        <input type="password" id="password" placeholder="密码"/>
+        <input type="password" id="confirmpassword" placeholder="确认密码"/>
+        <input type="text" id="verification" placeholder="短信验证码"/>
+        <button type="button" id="send-verification">发送验证码</button>
+        <button type="button" id="reg">注册</button>
+    </div>
+</div>
+<script>
+    $("#send-verification").click(function (){
+// 获取用户输入的手机号
+        var phone = $("#phone").val();
+        if (phone == ""){
+            alert("手机号不能为空");
+            return;
+        }
+        var reg = /^(?:(?:\+|00)86)?1[3-9]\d{9}$/;
+        if (!reg.test(phone)){
+            alert("手机号不符合规范");
+            return;
+        }
+        var button = document.getElementById('send-verification');
+        var countdown = 60; // 倒计时时间（以秒为单位）
+        button.disabled = true; // 禁用按钮
+// 更新按钮文本和倒计时
+        button.innerHTML = countdown + ' 秒后重新获取';
+        var timer = setInterval(function() {
+            countdown--;
+// 更新按钮文本和倒计时
+            button.innerHTML = countdown + ' 秒后重新获取';
+            if (countdown <= 0) {
+                clearInterval(timer);
+                button.disabled = false; // 启用按钮
+                button.innerHTML = '获取验证码';
+                // 可以在倒计时结束后执行其他操作
+            }
+        }, 1000);
+        // 需要将手机号发送给后端服务器，后端服务器再给手机号发送短信
+        $.ajax({
+            url: "http://localhost:8080/sendSMS",// 接口地址
+            data:{"phone":phone},//传输的数据
+            success: function (result,status,xmlhttp){
+                if (result.code == 0){// 发送成功
+                    // 保存key
+                    sessionStorage.setItem("key",xmlhttp.getResponseHeader("key"))
+                }
+                alert(result.message);
+            }
+        })
+    })
+    $("#reg").click(function () {
+        let phone = $("#phone").val();
+        //数据校验
+        if (phone == ""){
+            alert("手机号不能为空");
+            return;
+        }
+        var reg = /^(?:(?:\+|00)86)?1[3-9]\d{9}$/;
+        if (!reg.test(phone)){
+            alert("手机号不符合规范");
+            return;
+        }
+
+        let password = $("#password").val();
+        if (password == ""){
+            alert("密码不能为空");
+            return;
+        }
+
+        let confirmpassword = $("#confirmpassword").val();
+        if (password != confirmpassword){
+            alert("两次密码输入不一致");
+            return;
+        }
+
+        let verification = $("#verification").val();
+        if (verification == ""){
+            alert("验证码不能为空");
+            return;
+        }
+        //封装请求的参数
+        let params = {};
+        params.phone = phone;
+        //MD5加密
+        var md = md5(password);
+        params.password = md;
+        params.code = verification;
+        $.ajax({
+            url: "http://localhost:8080//reg",
+            type:"post",
+            data: JSON.stringify(params),
+            headers: {"key":sessionStorage.getItem("key")},//通过请求头传递key到服务器
+            contentType: "application/json;charset=utf-8",//告诉服务器发送的数据是json格式
+            success: function (result) {
+                alert(result.message)
+            }
+        })
+
+    })
+</script>
+</body>
+</html>>
