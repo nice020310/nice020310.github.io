@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent 学习打卡 Dashboard</title>
+  <link rel="stylesheet" href="./style.css?v=20260514-4">
+</head>
+<body>
+  <div class="agent-dashboard" id="agent-dashboard">
+    <div class="agent-dashboard__bg"></div>
+    <div class="agent-dashboard__glow agent-dashboard__glow--one"></div>
+    <div class="agent-dashboard__glow agent-dashboard__glow--two"></div>
+    <div class="agent-dashboard__glow agent-dashboard__glow--three"></div>
+
+    <div class="agent-dashboard__container">
+      <header class="agent-dashboard__nav card">
+        <div class="brand">
+          <div class="brand__logo">AI</div>
+          <div>
+            <h1 class="brand__title">AI Agent 学习打卡</h1>
+            <p class="brand__subtitle">Summer Internship Sprint</p>
+          </div>
+        </div>
+        <div class="nav-actions">
+          <span class="pill" id="nav-day-pill">Day 01</span>
+          <span class="pill pill--violet" id="nav-week-pill">第 1 周</span>
+          <button class="icon-button" id="theme-toggle" type="button" aria-label="切换主题">
+            <span id="theme-toggle-icon">☾</span>
+          </button>
+          <button class="secondary-button" id="export-data" type="button">导出数据</button>
+        </div>
+      </header>
+
+      <section class="hero card">
+        <div class="hero__content">
+          <p class="eyebrow">现代 AI 学习仪表盘</p>
+          <h2 class="hero__title">AI Agent 学习打卡</h2>
+          <p class="hero__desc">每天 2.5 小时，暑假完成 Agent 实习冲刺。把学习计划、打卡、番茄钟、日报入口、项目推进和面试训练放到同一个面板里。</p>
+          <div class="tag-row">
+            <span class="tag">Agent</span>
+            <span class="tag">RAG</span>
+            <span class="tag">LangGraph</span>
+          </div>
+          <div class="hero__actions">
+            <button class="primary-button" id="start-learning" type="button">开始今日学习</button>
+            <button class="ghost-button" id="view-roadmap" type="button">查看 10 周路线</button>
+          </div>
+        </div>
+        <div class="hero__progress card card--inner">
+          <div class="progress-ring-wrap">
+            <svg class="progress-ring" width="180" height="180" viewbox="0 0 180 180" aria-hidden="true">
+              <defs>
+                <linearGradient id="ringGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                  <stop offset="0%" stop-color="#8B5CF6"/>
+                  <stop offset="50%" stop-color="#3B82F6"/>
+                  <stop offset="100%" stop-color="#06B6D4"/>
+                </linearGradient>
+              </defs>
+              <circle cx="90" cy="90" r="72" class="progress-ring__track"/>
+              <circle cx="90" cy="90" r="72" class="progress-ring__value" id="summer-progress-ring"/>
+            </svg>
+            <div class="progress-ring__label">
+              <span>暑假总进度</span>
+              <strong id="summer-progress-text">0%</strong>
+            </div>
+          </div>
+          <div class="hero__stats">
+            <div>
+              <span class="muted">连续打卡</span>
+              <strong id="hero-streak">0 天</strong>
+            </div>
+            <div>
+              <span class="muted">总学习</span>
+              <strong id="hero-total-minutes">0 分钟</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="metrics-grid">
+        <article class="metric-card card">
+          <div class="metric-card__icon">🗓</div>
+          <div class="metric-card__content">
+            <p class="metric-card__label">当前周数</p>
+            <strong class="metric-card__value" id="metric-week">第 1 周</strong>
+            <p class="metric-card__trend" id="metric-week-trend">本周先把 Agent 基础闭环讲清楚。</p>
+          </div>
+        </article>
+        <article class="metric-card card">
+          <div class="metric-card__icon">⚡</div>
+          <div class="metric-card__content">
+            <p class="metric-card__label">当前 Day</p>
+            <strong class="metric-card__value" id="metric-day">Day 01</strong>
+            <p class="metric-card__trend" id="metric-day-trend">今天先跑通项目入口，再补充自己的理解。</p>
+          </div>
+        </article>
+        <article class="metric-card card">
+          <div class="metric-card__icon">🔥</div>
+          <div class="metric-card__content">
+            <p class="metric-card__label">连续打卡</p>
+            <strong class="metric-card__value" id="metric-streak">0 天</strong>
+            <p class="metric-card__trend" id="metric-streak-trend">打卡越稳，项目和面试表达越扎实。</p>
+          </div>
+        </article>
+        <article class="metric-card card">
+          <div class="metric-card__icon">⏱</div>
+          <div class="metric-card__content">
+            <p class="metric-card__label">总学习时长</p>
+            <strong class="metric-card__value" id="metric-total">0 分钟</strong>
+            <p class="metric-card__trend" id="metric-total-trend">每一次专注都会沉淀成长期能力。</p>
+          </div>
+        </article>
+      </section>
+
+      <main class="main-grid">
+        <section class="main-grid__left">
+          <article class="card section-card" id="today-task-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">今日任务</p>
+                <h3 id="today-title">Day 01：认识 LLM、Agent 和暑期总目标</h3>
+                <p class="section-desc" id="today-hours">建议学习时长：2.5 小时</p>
+              </div>
+              <div class="compact-progress">
+                <div class="compact-progress__text"><span>今日完成度</span><strong id="today-task-progress-text">0%</strong></div>
+                <div class="progress-bar"><span id="today-task-progress-bar"></span></div>
+              </div>
+            </div>
+
+            <div class="meta-strip">
+              <div class="meta-item">
+                <span class="meta-item__label">今日日报路径</span>
+                <strong id="summary-path">week01/Day01_xxx.md</strong>
+              </div>
+              <div class="meta-item">
+                <span class="meta-item__label">番茄完成数</span>
+                <strong id="today-pomodoros-badge">0 个</strong>
+              </div>
+              <div class="meta-item">
+                <span class="meta-item__label">学习状态</span>
+                <strong id="today-status-badge">未开始</strong>
+              </div>
+            </div>
+
+            <div class="tabs" id="task-tabs">
+              <button class="tab is-active" type="button" data-tab="theme">今日主题</button>
+              <button class="tab" type="button" data-tab="tasks">核心任务</button>
+              <button class="tab" type="button" data-tab="output">今日产出</button>
+              <button class="tab" type="button" data-tab="summary">总结模板</button>
+            </div>
+
+            <div class="tab-panels">
+              <div class="tab-panel is-active" data-panel="theme">
+                <p class="panel-title" id="today-theme-title">Day 01：认识 LLM、Agent 和暑期总目标</p>
+                <p class="panel-text" id="today-theme-text">先把这个暑假的目标和学习路径校准清楚，能用自己的话说清楚什么是 LLM、什么是 Agent，以及为什么 LLM 可以成为 Agent 的大脑。</p>
+              </div>
+              <div class="tab-panel" data-panel="tasks">
+                <div class="task-list" id="task-list"></div>
+              </div>
+              <div class="tab-panel" data-panel="output">
+                <ul class="output-list" id="today-output-list"></ul>
+              </div>
+              <div class="tab-panel" data-panel="summary">
+                <textarea id="summary-template" class="textarea" rows="12" placeholder="点击“生成总结模板”后，这里会自动填入今天的总结草稿。"></textarea>
+              </div>
+            </div>
+
+            <div class="section-actions">
+              <button class="secondary-button" id="save-task-progress" type="button">保存今日进度</button>
+              <button class="primary-button" id="generate-summary" type="button">生成总结模板</button>
+            </div>
+          </article>
+
+          <article class="card section-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">今日打卡</p>
+                <h3>记录今天的输入、收获和卡点</h3>
+              </div>
+              <span class="pill pill--green" id="encourage-pill">今天先完成一次扎实学习</span>
+            </div>
+            <div class="check-grid">
+              <label class="check-card">
+                <input id="started-learning" type="checkbox">
+                <span class="check-card__box"></span>
+                <span>今天已经开始学习</span>
+              </label>
+              <label class="check-card">
+                <input id="finished-learning" type="checkbox">
+                <span class="check-card__box"></span>
+                <span>今天计划已经完成</span>
+              </label>
+            </div>
+            <div class="form-grid">
+              <label class="field">
+                <span>今日学习时长（分钟）</span>
+                <input class="input" id="checkin-minutes" type="number" min="0" placeholder="例如 150">
+              </label>
+              <label class="field">
+                <span>完成番茄钟数量</span>
+                <input class="input" id="checkin-pomodoros" type="number" min="0" placeholder="例如 3">
+              </label>
+              <label class="field field--full">
+                <span>今日最大收获</span>
+                <textarea class="textarea" id="checkin-win" rows="3" placeholder="今天最重要的理解、代码突破或表达收获。"></textarea>
+              </label>
+              <label class="field field--full">
+                <span>今日卡住的问题</span>
+                <textarea class="textarea" id="checkin-blocker" rows="3" placeholder="今天还没完全弄懂的概念、代码错误或项目难点。"></textarea>
+              </label>
+              <label class="field field--full">
+                <span>明天计划</span>
+                <textarea class="textarea" id="checkin-plan" rows="3" placeholder="下一次打开页面时，你最想直接开始做什么。"></textarea>
+              </label>
+            </div>
+            <div class="section-actions">
+              <button class="primary-button" id="save-checkin" type="button">一键打卡</button>
+              <button class="ghost-button danger-button" id="open-reset-modal" type="button">清空数据</button>
+            </div>
+          </article>
+
+          <article class="card section-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">每周复盘</p>
+                <h3>本周最重要的学习复盘</h3>
+              </div>
+              <span class="pill pill--green" id="review-week-badge">第 1 周</span>
+            </div>
+            <div class="meta-strip meta-strip--compact">
+              <div class="meta-item">
+                <span class="meta-item__label">本周已完成</span>
+                <strong id="weekly-completed-days">0 / 7 天</strong>
+              </div>
+              <div class="meta-item">
+                <span class="meta-item__label">待补学天数</span>
+                <strong id="weekly-missed-days">7 天</strong>
+              </div>
+            </div>
+            <div class="form-grid">
+              <label class="field field--full">
+                <span>本周学了什么</span>
+                <textarea class="textarea" id="weekly-learned" rows="3" placeholder="总结这一周掌握了哪些概念、流程和代码能力。"></textarea>
+              </label>
+              <label class="field field--full">
+                <span>本周最大收获</span>
+                <textarea class="textarea" id="weekly-win" rows="3" placeholder="写下最值得保留到简历项目或面试表达里的收获。"></textarea>
+              </label>
+              <label class="field field--full">
+                <span>本周遇到的困难</span>
+                <textarea class="textarea" id="weekly-blocker" rows="3" placeholder="哪些地方还模糊，哪些问题需要补学。"></textarea>
+              </label>
+              <label class="field field--full">
+                <span>下周重点</span>
+                <textarea class="textarea" id="weekly-next" rows="3" placeholder="下一周要优先解决的内容和项目目标。"></textarea>
+              </label>
+            </div>
+            <div class="section-actions">
+              <button class="primary-button" id="save-weekly-review" type="button">保存周复盘</button>
+            </div>
+          </article>
+
+          <article class="card section-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">项目推进</p>
+                <h3>本周项目目标和下一步任务</h3>
+              </div>
+            </div>
+            <div class="project-grid">
+              <article class="project-card">
+                <div class="project-card__head">
+                  <strong>tutor_agent</strong>
+                  <span class="pill">客服 Agent</span>
+                </div>
+                <p id="project-tutor-status">当前重点：理解 order_parser、teacher_search、fee_calculator 的分工。</p>
+                <ul id="project-tutor-tasks"></ul>
+              </article>
+              <article class="project-card">
+                <div class="project-card__head">
+                  <strong>paper_reader_agent</strong>
+                  <span class="pill pill--violet">论文阅读</span>
+                </div>
+                <p id="project-paper-status">当前重点：在第 5-6 周搭好检索、切块和摘要闭环。</p>
+                <ul id="project-paper-tasks"></ul>
+              </article>
+            </div>
+          </article>
+        </section>
+
+        <aside class="main-grid__right">
+          <article class="card section-card timer-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">番茄钟</p>
+                <h3>专注学习节奏</h3>
+              </div>
+              <span class="pill" id="timer-mode-badge">学习阶段</span>
+            </div>
+            <div class="timer-display" id="timer-display">25:00</div>
+            <div class="preset-grid">
+              <button class="secondary-button preset-button is-active" id="preset-25-5" type="button">25 / 5</button>
+              <button class="secondary-button preset-button" id="preset-50-10" type="button">50 / 10</button>
+            </div>
+            <div class="form-grid">
+              <label class="field">
+                <span>专注时长（分钟）</span>
+                <input class="input" id="focus-minutes" type="number" min="1" value="25">
+              </label>
+              <label class="field">
+                <span>休息时长（分钟）</span>
+                <input class="input" id="break-minutes" type="number" min="1" value="5">
+              </label>
+            </div>
+            <div class="meta-strip meta-strip--compact">
+              <div class="meta-item">
+                <span class="meta-item__label">今日完成</span>
+                <strong id="timer-count">0 个番茄</strong>
+              </div>
+              <div class="meta-item">
+                <span class="meta-item__label">建议</span>
+                <strong id="timer-tip">先完成 2 个深度番茄</strong>
+              </div>
+            </div>
+            <div class="section-actions">
+              <button class="primary-button" id="timer-start" type="button">开始</button>
+              <button class="secondary-button" id="timer-pause" type="button">暂停</button>
+              <button class="ghost-button" id="timer-reset" type="button">重置</button>
+            </div>
+          </article>
+
+          <article class="card section-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">学习进度</p>
+                <h3>把今天、本周和暑假的节奏量化</h3>
+              </div>
+            </div>
+
+            <div class="progress-group">
+              <div class="progress-meta"><span>今日完成度</span><strong id="progress-today-label">0%</strong></div>
+              <div class="progress-bar"><span id="progress-today-bar" class="gradient-purple"></span></div>
+            </div>
+            <div class="progress-group">
+              <div class="progress-meta"><span>本周完成度</span><strong id="progress-week-label">0%</strong></div>
+              <div class="progress-bar"><span id="progress-week-bar" class="gradient-cyan"></span></div>
+            </div>
+            <div class="progress-group">
+              <div class="progress-meta"><span>暑假总进度</span><strong id="progress-summer-label">0%</strong></div>
+              <div class="progress-bar"><span id="progress-summer-bar" class="gradient-green"></span></div>
+            </div>
+
+            <div class="field">
+              <span>学习状态</span>
+              <div class="select-wrap">
+                <select class="select" id="daily-status">
+                  <option>未开始</option>
+                  <option>学习中</option>
+                  <option>已完成</option>
+                  <option>需要补学</option>
+                </select>
+              </div>
+            </div>
+            <div class="section-actions">
+              <button class="secondary-button" id="save-status" type="button">保存状态</button>
+            </div>
+          </article>
+
+          <article class="card section-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">学习提醒</p>
+                <h3>固定时间叫你开始学习</h3>
+              </div>
+            </div>
+            <div class="form-grid">
+              <label class="field">
+                <span>提醒时间</span>
+                <input class="input" id="reminder-time" type="time" value="20:00">
+              </label>
+              <label class="field field--full">
+                <span>提醒文案</span>
+                <input class="input" id="reminder-message" type="text" placeholder="该开始今天的 AI Agent 学习了">
+              </label>
+            </div>
+            <div class="meta-strip meta-strip--compact">
+              <div class="meta-item">
+                <span class="meta-item__label">浏览器通知</span>
+                <strong id="reminder-status">未开启</strong>
+              </div>
+              <div class="meta-item">
+                <span class="meta-item__label">页面内提醒</span>
+                <strong id="reminder-inline-status">已支持</strong>
+              </div>
+            </div>
+            <div class="section-actions">
+              <button class="secondary-button" id="save-reminder" type="button">保存提醒</button>
+              <button class="ghost-button" id="test-reminder" type="button">测试提醒</button>
+            </div>
+          </article>
+
+          <article class="card section-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">每日一题</p>
+                <h3>边学边练，强化表达和面试回答</h3>
+              </div>
+            </div>
+
+            <div class="field">
+              <span>题目分类</span>
+              <div class="select-wrap">
+                <select class="select" id="quiz-category">
+                  <option value="全部">全部</option>
+                  <option value="Agent">Agent</option>
+                  <option value="LLM">LLM</option>
+                  <option value="RAG">RAG</option>
+                  <option value="Python">Python</option>
+                  <option value="算法">算法</option>
+                  <option value="面试">面试</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="section-actions">
+              <button class="secondary-button" id="random-question" type="button">随机题目</button>
+              <button class="ghost-button" id="toggle-answer" type="button">显示参考答案</button>
+            </div>
+
+            <div class="question-box">
+              <p class="question-box__label">当前题目</p>
+              <h4 id="quiz-question">点击“随机题目”开始今天的思考训练。</h4>
+              <p class="question-box__answer is-hidden" id="quiz-answer"></p>
+            </div>
+
+            <label class="field field--full">
+              <span>我的回答</span>
+              <textarea class="textarea" id="quiz-response" rows="5" placeholder="先用自己的话回答，再展开参考答案对照。"></textarea>
+            </label>
+
+            <div class="section-actions">
+              <button class="primary-button" id="save-quiz-record" type="button">保存题目记录</button>
+            </div>
+          </article>
+
+          <article class="card section-card">
+            <div class="section-head">
+              <div>
+                <p class="eyebrow">最近记录</p>
+                <h3>最近 5 条学习操作</h3>
+              </div>
+              <label class="import-trigger">
+                <input id="import-data" type="file" accept=".json">
+                <span>导入数据</span>
+              </label>
+            </div>
+            <div class="recent-list" id="recent-list"></div>
+          </article>
+        </aside>
+      </main>
+
+      <section class="card section-card roadmap-card" id="roadmap-section">
+        <div class="section-head">
+          <div>
+            <p class="eyebrow">学习路线 Timeline</p>
+            <h3>10 周 AI Agent 学习路线</h3>
+            <p class="section-desc">点击任意一周展开目标和阶段产出，当前周会高亮展示。</p>
+          </div>
+        </div>
+
+        <div class="timeline" id="timeline"></div>
+      </section>
+    </div>
+
+    <div class="toast-stack" id="toast-stack"></div>
+
+    <div class="modal-overlay" id="confirm-modal" aria-hidden="true">
+      <div class="modal card" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <h3 id="modal-title">确认清空本地数据？</h3>
+        <p>这会删除学习进度、打卡记录、题目记录、周复盘、提醒设置和最近日志，而且无法撤销。</p>
+        <div class="section-actions">
+          <button class="ghost-button" id="cancel-reset" type="button">取消</button>
+          <button class="danger-button" id="confirm-reset" type="button">确认清空</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./app.js?v=20260514-4"></script>
+</body>
+</html>
