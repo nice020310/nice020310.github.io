@@ -1,0 +1,412 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>多媒体取证 Agent 今日学习笔记 | 避风港</title><meta name="author" content="Love"><meta name="copyright" content="Love"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="今天主要学习和完善的是 Multimedia-Forensics-Agent 这个项目。 这个项目和前几天的私厨 Agent 不太一样。私厨 Agent 更偏生活应用，而这个项目更偏研究辅助：面向数字水印、隐写术、图像取证、多媒体安全论文阅读和实验复现。今天做下来，感觉重点已经从“让模型回答问题”转向“把一个研究型 Agent 项目拆成清晰的工程模块”。 今天完成了什么今天主要把项目的 MVP 骨">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多媒体取证 Agent 今日学习笔记">
+<meta property="og:url" content="http://example.com/2026/05/31/2026-05-31-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html">
+<meta property="og:site_name" content="避风港">
+<meta property="og:description" content="今天主要学习和完善的是 Multimedia-Forensics-Agent 这个项目。 这个项目和前几天的私厨 Agent 不太一样。私厨 Agent 更偏生活应用，而这个项目更偏研究辅助：面向数字水印、隐写术、图像取证、多媒体安全论文阅读和实验复现。今天做下来，感觉重点已经从“让模型回答问题”转向“把一个研究型 Agent 项目拆成清晰的工程模块”。 今天完成了什么今天主要把项目的 MVP 骨">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/gou.png">
+<meta property="article:published_time" content="2026-05-31T09:10:00.000Z">
+<meta property="article:modified_time" content="2026-05-31T11:01:05.024Z">
+<meta property="article:author" content="Love">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="FastAPI">
+<meta property="article:tag" content="Streamlit">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="多媒体取证">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/gou.png"><link rel="shortcut icon" href="/img/meigui.png"><link rel="canonical" href="http://example.com/2026/05/31/2026-05-31-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '多媒体取证 Agent 今日学习笔记',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-05-31 19:01:05'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/gou.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">14</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div><div class="menus_item study-menu-entry"><a class="site-page" href="/study/"><i class="fa-fw fas fa-stopwatch"></i><span> 学习打卡</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/luori.png')"><nav id="nav"><span id="blog-info"><a href="/" title="避风港"><span class="site-name">避风港</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div><div class="menus_item study-menu-entry"><a class="site-page" href="/study/"><i class="fa-fw fas fa-stopwatch"></i><span> 学习打卡</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">多媒体取证 Agent 今日学习笔记</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-05-31T09:10:00.000Z" title="发表于 2026-05-31 17:10:00">2026-05-31</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-05-31T11:01:05.024Z" title="更新于 2026-05-31 19:01:05">2026-05-31</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI/">AI</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="多媒体取证 Agent 今日学习笔记"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('/img/luori.png');"></div><article class="post-content" id="article-container"><p>今天主要学习和完善的是 <code>Multimedia-Forensics-Agent</code> 这个项目。</p>
+<p>这个项目和前几天的私厨 Agent 不太一样。私厨 Agent 更偏生活应用，而这个项目更偏研究辅助：面向数字水印、隐写术、图像取证、多媒体安全论文阅读和实验复现。今天做下来，感觉重点已经从“让模型回答问题”转向“把一个研究型 Agent 项目拆成清晰的工程模块”。</p>
+<h2 id="今天完成了什么"><a href="#今天完成了什么" class="headerlink" title="今天完成了什么"></a>今天完成了什么</h2><p>今天主要把项目的 MVP 骨架搭起来了。</p>
+<p>项目目标是做一个多媒体取证研究助手，后续可以支持：</p>
+<ul>
+<li>上传论文 PDF 并提取文本</li>
+<li>基于论文内容做问答</li>
+<li>分析论文的研究问题、方法、数据集、指标和局限</li>
+<li>多篇论文对比</li>
+<li>计算图像质量指标，比如 MSE、PSNR、SSIM</li>
+<li>生成 Markdown 实验报告</li>
+</ul>
+<p>目前已经完成得比较实的是：</p>
+<ol>
+<li><code>FastAPI</code> 后端可以启动。</li>
+<li><code>Streamlit</code> 前端可以连接后端。</li>
+<li>后端拆出了 paper、image、report 三类 API。</li>
+<li>PDF 上传接口已经可以保存文件并提取前几页文本。</li>
+<li>用 <code>PyMuPDF</code> 实现了按页读取 PDF 文本。</li>
+<li>RAG、图像指标和报告生成模块先留好了接口。</li>
+</ol>
+<p>这一步虽然还不是完整 Agent，但项目结构已经比较清楚了。</p>
+<h2 id="后端：先把-API-骨架搭起来"><a href="#后端：先把-API-骨架搭起来" class="headerlink" title="后端：先把 API 骨架搭起来"></a>后端：先把 API 骨架搭起来</h2><p>后端入口在 <code>app/main.py</code>。</p>
+<p>这里主要做了几件事：</p>
+<ul>
+<li>创建 <code>FastAPI</code> 应用</li>
+<li>配置 CORS</li>
+<li>挂载论文接口</li>
+<li>挂载图像接口</li>
+<li>挂载报告接口</li>
+<li>提供 <code>/</code> 和 <code>/health</code> 两个基础检查接口</li>
+</ul>
+<p>项目启动后，首页接口会返回当前应用信息和功能列表，比如：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">features=[</span><br><span class="line">    <span class="string">"PDF upload and text extraction"</span>,</span><br><span class="line">    <span class="string">"Paper RAG question answering"</span>,</span><br><span class="line">    <span class="string">"Structured paper analysis"</span>,</span><br><span class="line">    <span class="string">"Multi-paper comparison"</span>,</span><br><span class="line">    <span class="string">"Image metrics: MSE, PSNR, SSIM"</span>,</span><br><span class="line">    <span class="string">"Markdown report generation"</span>,</span><br><span class="line">]</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里我觉得比较有收获的是：后端不一定一开始就把所有功能写完，但是可以先把模块边界设计出来。这样后面补 RAG、图像指标和报告生成时，不会全部堆在一个文件里。</p>
+<h2 id="Paper-API：PDF-上传和文本解析"><a href="#Paper-API：PDF-上传和文本解析" class="headerlink" title="Paper API：PDF 上传和文本解析"></a>Paper API：PDF 上传和文本解析</h2><p>今天最核心的接口是：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">POST /api/papers/upload</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个接口做了比较完整的上传流程：</p>
+<ol>
+<li>判断文件名是否存在。</li>
+<li>判断是不是 PDF。</li>
+<li>创建上传目录。</li>
+<li>用 <code>uuid4().hex</code> 生成唯一文件 ID。</li>
+<li>用 <code>Path(file.filename).name</code> 处理文件名，避免路径污染。</li>
+<li>读取上传内容。</li>
+<li>判断文件是否为空。</li>
+<li>保存到本地。</li>
+<li>调用 <code>load_pdf_pages()</code> 提取文本。</li>
+<li>返回 <code>file_id</code>、文件名、页数和前三页文本预览。</li>
+</ol>
+<p>关键逻辑类似这样：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">file_id = uuid4().<span class="built_in">hex</span></span><br><span class="line">safe_filename = Path(file.filename).name</span><br><span class="line">saved_path = UPLOAD_DIR / <span class="string">f"<span class="subst">{file_id}</span>_<span class="subst">{safe_filename}</span>"</span></span><br><span class="line"></span><br><span class="line">content = <span class="keyword">await</span> file.read()</span><br><span class="line">saved_path.write_bytes(content)</span><br><span class="line"></span><br><span class="line">pages = load_pdf_pages(<span class="built_in">str</span>(saved_path))</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个接口虽然简单，但它把文件上传、输入校验、文件保存、PDF 解析这几个环节串起来了。后面要做论文问答，第一步就是先把 PDF 变成可处理的文本。</p>
+<h2 id="PDF-Loader：用-PyMuPDF-按页读文本"><a href="#PDF-Loader：用-PyMuPDF-按页读文本" class="headerlink" title="PDF Loader：用 PyMuPDF 按页读文本"></a>PDF Loader：用 PyMuPDF 按页读文本</h2><p>PDF 解析逻辑在 <code>app/rag/pdf_loader.py</code>。</p>
+<p>这里用的是 <code>fitz</code>，也就是 PyMuPDF：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">document = fitz.<span class="built_in">open</span>(pdf_path)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后遍历每一页：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">for</span> page_index, page <span class="keyword">in</span> <span class="built_in">enumerate</span>(document):</span><br><span class="line">    text = page.get_text(<span class="string">"text"</span>).strip()</span><br><span class="line">    pages.append({</span><br><span class="line">        <span class="string">"page_number"</span>: page_index + <span class="number">1</span>,</span><br><span class="line">        <span class="string">"text"</span>: text,</span><br><span class="line">    })</span><br></pre></td></tr></tbody></table></figure>
+
+<p>最后记得关闭文档：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">document.close()</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这一步让我更清楚 RAG 的第一层不是向量库，而是“文档加载”。如果 PDF 都不能稳定读出来，后面的切分、检索、问答都没有基础。</p>
+<p>今天先做到按页提取文本，后续可以继续加：</p>
+<ul>
+<li>每页字符数统计</li>
+<li>空页面处理</li>
+<li>表格和图片区域处理</li>
+<li>OCR 支持</li>
+<li>PDF 元数据提取</li>
+</ul>
+<h2 id="前端：Streamlit-先跑通交互"><a href="#前端：Streamlit-先跑通交互" class="headerlink" title="前端：Streamlit 先跑通交互"></a>前端：Streamlit 先跑通交互</h2><p>前端在 <code>frontend/streamlit_app.py</code>。</p>
+<p>目前页面分成几个模块：</p>
+<ul>
+<li>Home</li>
+<li>Paper Upload &amp; QA</li>
+<li>Paper Analysis</li>
+<li>Multi-paper Comparison</li>
+<li>Image Metrics</li>
+<li>Markdown Reports</li>
+</ul>
+<p>现在真正跑通的是 <code>Paper Upload &amp; QA</code> 里的上传与文本预览。</p>
+<p>前端会先检查后端是否连通：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">response = requests.get(<span class="string">f"<span class="subst">{BACKEND_URL}</span>/health"</span>, timeout=<span class="number">3</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>上传 PDF 时，用 Streamlit 的文件上传组件：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">uploaded_pdf = st.file_uploader(<span class="string">"Upload a paper PDF"</span>, <span class="built_in">type</span>=[<span class="string">"pdf"</span>])</span><br></pre></td></tr></tbody></table></figure>
+
+<p>然后把文件发给后端：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">response = requests.post(</span><br><span class="line">    <span class="string">f"<span class="subst">{BACKEND_URL}</span>/api/papers/upload"</span>,</span><br><span class="line">    files=files,</span><br><span class="line">    timeout=<span class="number">60</span>,</span><br><span class="line">)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>后端返回结果后，前端会展示文件 ID、文件名、页数，以及前三页文本预览。</p>
+<p>这个流程跑通以后，前端就不只是一个展示页，而是真的能驱动后端做事情了。</p>
+<h2 id="模块拆分：先留接口，再逐步实现"><a href="#模块拆分：先留接口，再逐步实现" class="headerlink" title="模块拆分：先留接口，再逐步实现"></a>模块拆分：先留接口，再逐步实现</h2><p>项目里有几个模块目前还是占位状态，比如：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">class</span> <span class="title class_">RagEngine</span>:</span><br><span class="line">    <span class="keyword">def</span> <span class="title function_">ask</span>(<span class="params">self, question: <span class="built_in">str</span></span>) -&gt; RagAnswer:</span><br><span class="line">        <span class="keyword">raise</span> NotImplementedError(<span class="string">"RAG QA will be implemented in Step 2."</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>图像指标也是类似：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">calculate_image_metrics</span>(<span class="params">original_path: <span class="built_in">str</span>, processed_path: <span class="built_in">str</span></span>) -&gt; <span class="type">Dict</span>[<span class="built_in">str</span>, <span class="built_in">float</span>]:</span><br><span class="line">    <span class="keyword">raise</span> NotImplementedError(<span class="string">"Image metrics will be implemented in Step 3."</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>一开始看到 <code>NotImplementedError</code> 会觉得功能还没写，但从工程角度看，它其实也有意义：</p>
+<ul>
+<li>先确定模块职责</li>
+<li>先确定函数输入输出</li>
+<li>先让目录结构稳定下来</li>
+<li>后面逐步补实现</li>
+</ul>
+<p>这比想到哪写到哪更适合做一个长期项目。</p>
+<p>现在的项目结构大概是：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">app/api      接口层</span><br><span class="line">app/rag      PDF 加载、文本切分、检索、问答</span><br><span class="line">app/agents   论文分析、多论文比较、实验计划</span><br><span class="line">app/tools    图像指标、报告生成</span><br><span class="line">frontend     Streamlit 前端</span><br><span class="line">docs         项目文档</span><br><span class="line">tests        测试</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个结构比较清楚，也方便后面写简历或者面试介绍。</p>
+<h2 id="今天踩的坑和注意点"><a href="#今天踩的坑和注意点" class="headerlink" title="今天踩的坑和注意点"></a>今天踩的坑和注意点</h2><h3 id="1-文件上传不能直接相信文件名"><a href="#1-文件上传不能直接相信文件名" class="headerlink" title="1. 文件上传不能直接相信文件名"></a>1. 文件上传不能直接相信文件名</h3><p>上传文件时不能直接拿原始文件名拼路径。今天用了：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">safe_filename = Path(file.filename).name</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这样可以避免用户传入奇怪路径，导致文件保存到不该去的地方。</p>
+<h3 id="2-上传文件要判断空内容"><a href="#2-上传文件要判断空内容" class="headerlink" title="2. 上传文件要判断空内容"></a>2. 上传文件要判断空内容</h3><p>文件名对、扩展名对，不代表内容一定存在。</p>
+<p>所以接口里加了：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line"><span class="keyword">if</span> <span class="keyword">not</span> content:</span><br><span class="line">    <span class="keyword">raise</span> HTTPException(status_code=<span class="number">400</span>, detail=<span class="string">"Uploaded file is empty."</span>)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这种小判断很基础，但是真正写 API 时很必要。</p>
+<h3 id="3-PDF-解析是-RAG-的前置步骤"><a href="#3-PDF-解析是-RAG-的前置步骤" class="headerlink" title="3. PDF 解析是 RAG 的前置步骤"></a>3. PDF 解析是 RAG 的前置步骤</h3><p>今天没有直接上向量库，而是先把 PDF 解析跑通。</p>
+<p>这个顺序是对的：先 loader，再 splitter，再 retriever，再 answer。RAG 不是一上来就 FAISS，而是一条数据处理链。</p>
+<h3 id="4-测试脚本也要和代码同步"><a href="#4-测试脚本也要和代码同步" class="headerlink" title="4. 测试脚本也要和代码同步"></a>4. 测试脚本也要和代码同步</h3><p>项目里有几个测试脚本用来验证 PDF 解析和接口逻辑。今天也能看出来，测试脚本如果引用了旧函数名，就会和当前代码不一致。</p>
+<p>后面需要把这些临时脚本慢慢整理成正式测试，避免代码能跑、测试却过不了。</p>
+<h2 id="和昨天私厨-Agent-的区别"><a href="#和昨天私厨-Agent-的区别" class="headerlink" title="和昨天私厨 Agent 的区别"></a>和昨天私厨 Agent 的区别</h2><p>昨天的私厨 Agent 更偏完整应用链路：</p>
+<ul>
+<li>用户上传图片</li>
+<li>OSS 转公网 URL</li>
+<li>视觉模型识别</li>
+<li>搜索菜谱</li>
+<li>流式回答</li>
+<li>前端聊天展示</li>
+</ul>
+<p>今天这个多媒体取证 Agent 更偏研究工作流：</p>
+<ul>
+<li>读论文</li>
+<li>提取内容</li>
+<li>问答检索</li>
+<li>总结分析</li>
+<li>对比方法</li>
+<li>设计实验</li>
+<li>输出报告</li>
+</ul>
+<p>这两个项目都叫 Agent，但侧重点不一样。</p>
+<p>私厨 Agent 更像产品应用，多媒体取证 Agent 更像科研助手。前者重交互体验，后者重文档理解、分析结构和实验辅助。</p>
+<h2 id="今日收获"><a href="#今日收获" class="headerlink" title="今日收获"></a>今日收获</h2><p>今天最大的收获是：做 Agent 项目时，领域问题很重要。</p>
+<p>如果只是普通聊天，模型本身就能回答很多东西。但一旦进入多媒体取证这种方向，就必须把领域流程拆出来：</p>
+<ul>
+<li>论文怎么上传</li>
+<li>文本怎么提取</li>
+<li>内容怎么切分</li>
+<li>检索怎么做</li>
+<li>论文结构怎么分析</li>
+<li>实验指标怎么计算</li>
+<li>最终报告怎么生成</li>
+</ul>
+<p>Agent 不只是一个聊天框，而是围绕任务流程组织工具和数据。</p>
+<p>今天也更理解了 MVP 的意义：先不急着把所有功能都做完，而是把最小链路跑通。现在已经有了后端、前端、PDF 上传和文本提取，下一步就可以继续往 RAG QA 走。</p>
+<h2 id="后续计划"><a href="#后续计划" class="headerlink" title="后续计划"></a>后续计划</h2><p>接下来可以按这个顺序继续：</p>
+<ol>
+<li>实现 <code>split_text()</code>，把论文文本切成带 overlap 的 chunks。</li>
+<li>实现一个轻量检索版本，先不用急着接复杂向量库。</li>
+<li>给 <code>/api/papers/ask</code> 加上论文问答接口。</li>
+<li>实现图像质量指标：MSE、PSNR、SSIM。</li>
+<li>把论文分析结果整理成 Markdown 报告。</li>
+<li>最后再考虑 Docker 和更完整的部署。</li>
+</ol>
+<p>今天这一步算是把多媒体取证 Agent 的地基打好了。后面要做的，就是让它一点点从“能上传论文”变成“能帮我读论文、比方法、想实验”的研究助手。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Love</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2026/05/31/2026-05-31-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">http://example.com/2026/05/31/2026-05-31-多媒体取证Agent学习笔记/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">避风港</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Agent/">Agent</a><a class="post-meta__tags" href="/tags/FastAPI/">FastAPI</a><a class="post-meta__tags" href="/tags/Streamlit/">Streamlit</a><a class="post-meta__tags" href="/tags/RAG/">RAG</a><a class="post-meta__tags" href="/tags/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81/">多媒体取证</a></div><div class="post_share"><div class="social-share" data-image="/img/gou.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/05/30/2026-05-30-LangChain%E7%A7%81%E5%8E%A8Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="LangChain 私厨 Agent 今日学习笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">LangChain 私厨 Agent 今日学习笔记</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2026/05/30/2026-05-30-LangChain%E7%A7%81%E5%8E%A8Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="LangChain 私厨 Agent 今日学习笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-30</div><div class="title">LangChain 私厨 Agent 今日学习笔记</div></div></a></div><div><a href="/2026/05/29/LangChain%E5%AE%9E%E6%88%98Notebook/" title="LangChain 实战 Notebook"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-29</div><div class="title">LangChain 实战 Notebook</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/gou.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">Love</div><div class="author-info__description">归途也还可爱</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">24</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">14</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/nice020310/nice020310.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/nice020310" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_72757552" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1490166708@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8A%E5%A4%A9%E5%AE%8C%E6%88%90%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">今天完成了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%AB%AF%EF%BC%9A%E5%85%88%E6%8A%8A-API-%E9%AA%A8%E6%9E%B6%E6%90%AD%E8%B5%B7%E6%9D%A5"><span class="toc-number">2.</span> <span class="toc-text">后端：先把 API 骨架搭起来</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Paper-API%EF%BC%9APDF-%E4%B8%8A%E4%BC%A0%E5%92%8C%E6%96%87%E6%9C%AC%E8%A7%A3%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">Paper API：PDF 上传和文本解析</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#PDF-Loader%EF%BC%9A%E7%94%A8-PyMuPDF-%E6%8C%89%E9%A1%B5%E8%AF%BB%E6%96%87%E6%9C%AC"><span class="toc-number">4.</span> <span class="toc-text">PDF Loader：用 PyMuPDF 按页读文本</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%89%8D%E7%AB%AF%EF%BC%9AStreamlit-%E5%85%88%E8%B7%91%E9%80%9A%E4%BA%A4%E4%BA%92"><span class="toc-number">5.</span> <span class="toc-text">前端：Streamlit 先跑通交互</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E6%8B%86%E5%88%86%EF%BC%9A%E5%85%88%E7%95%99%E6%8E%A5%E5%8F%A3%EF%BC%8C%E5%86%8D%E9%80%90%E6%AD%A5%E5%AE%9E%E7%8E%B0"><span class="toc-number">6.</span> <span class="toc-text">模块拆分：先留接口，再逐步实现</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8A%E5%A4%A9%E8%B8%A9%E7%9A%84%E5%9D%91%E5%92%8C%E6%B3%A8%E6%84%8F%E7%82%B9"><span class="toc-number">7.</span> <span class="toc-text">今天踩的坑和注意点</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E6%96%87%E4%BB%B6%E4%B8%8A%E4%BC%A0%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5%E7%9B%B8%E4%BF%A1%E6%96%87%E4%BB%B6%E5%90%8D"><span class="toc-number">7.1.</span> <span class="toc-text">1. 文件上传不能直接相信文件名</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E4%B8%8A%E4%BC%A0%E6%96%87%E4%BB%B6%E8%A6%81%E5%88%A4%E6%96%AD%E7%A9%BA%E5%86%85%E5%AE%B9"><span class="toc-number">7.2.</span> <span class="toc-text">2. 上传文件要判断空内容</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-PDF-%E8%A7%A3%E6%9E%90%E6%98%AF-RAG-%E7%9A%84%E5%89%8D%E7%BD%AE%E6%AD%A5%E9%AA%A4"><span class="toc-number">7.3.</span> <span class="toc-text">3. PDF 解析是 RAG 的前置步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%B5%8B%E8%AF%95%E8%84%9A%E6%9C%AC%E4%B9%9F%E8%A6%81%E5%92%8C%E4%BB%A3%E7%A0%81%E5%90%8C%E6%AD%A5"><span class="toc-number">7.4.</span> <span class="toc-text">4. 测试脚本也要和代码同步</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%92%8C%E6%98%A8%E5%A4%A9%E7%A7%81%E5%8E%A8-Agent-%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">8.</span> <span class="toc-text">和昨天私厨 Agent 的区别</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8A%E6%97%A5%E6%94%B6%E8%8E%B7"><span class="toc-number">9.</span> <span class="toc-text">今日收获</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8E%E7%BB%AD%E8%AE%A1%E5%88%92"><span class="toc-number">10.</span> <span class="toc-text">后续计划</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/31/2026-05-31-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="多媒体取证 Agent 今日学习笔记">多媒体取证 Agent 今日学习笔记</a><time datetime="2026-05-31T09:10:00.000Z" title="发表于 2026-05-31 17:10:00">2026-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/30/2026-05-30-LangChain%E7%A7%81%E5%8E%A8Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="LangChain 私厨 Agent 今日学习笔记">LangChain 私厨 Agent 今日学习笔记</a><time datetime="2026-05-30T08:50:00.000Z" title="发表于 2026-05-30 16:50:00">2026-05-30</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/29/LangChain%E5%AE%9E%E6%88%98Notebook/" title="LangChain 实战 Notebook">LangChain 实战 Notebook</a><time datetime="2026-05-29T13:30:00.000Z" title="发表于 2026-05-29 21:30:00">2026-05-29</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/01/%E5%8A%9B%E6%89%A3%E9%9D%A2%E8%AF%95-%E9%A2%98%E5%BA%93/" title="无题">无题</a><time datetime="2025-03-01T03:13:23.851Z" title="发表于 2025-03-01 11:13:23">2025-03-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2025/03/01/title/" title="网络爬虫">网络爬虫</a><time datetime="2025-03-01T03:13:23.847Z" title="发表于 2025-03-01 11:13:23">2025-03-01</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2026 By Love</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="60198" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
