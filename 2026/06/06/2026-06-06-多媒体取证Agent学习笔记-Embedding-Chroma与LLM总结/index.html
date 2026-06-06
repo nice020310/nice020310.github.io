@@ -1,0 +1,499 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>多媒体取证 Agent 学习笔记：Embedding + Chroma 与 LLM 总结 | 避风港</title><meta name="author" content="Love"><meta name="copyright" content="Love"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="今天继续推进 Multimedia-Forensics-Agent 项目。 前几天已经完成了 PDF 上传、PyMuPDF 文本解析、按页切 chunk、TF-IDF 轻量检索、前端问答和来源页码展示。今天的重点是把项目从 TF-IDF 检索 + 模板回答 升级到更接近真实 RAG 的版本： Embedding 检索 + Chroma 向量库 + DeepSeek LLM 总结  这一步很关键，因">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多媒体取证 Agent 学习笔记：Embedding + Chroma 与 LLM 总结">
+<meta property="og:url" content="http://example.com/2026/06/06/2026-06-06-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Embedding-Chroma%E4%B8%8ELLM%E6%80%BB%E7%BB%93/index.html">
+<meta property="og:site_name" content="避风港">
+<meta property="og:description" content="今天继续推进 Multimedia-Forensics-Agent 项目。 前几天已经完成了 PDF 上传、PyMuPDF 文本解析、按页切 chunk、TF-IDF 轻量检索、前端问答和来源页码展示。今天的重点是把项目从 TF-IDF 检索 + 模板回答 升级到更接近真实 RAG 的版本： Embedding 检索 + Chroma 向量库 + DeepSeek LLM 总结  这一步很关键，因">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/gou.png">
+<meta property="article:published_time" content="2026-06-06T13:30:00.000Z">
+<meta property="article:modified_time" content="2026-06-06T11:10:21.115Z">
+<meta property="article:author" content="Love">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="FastAPI">
+<meta property="article:tag" content="Streamlit">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="多媒体取证">
+<meta property="article:tag" content="Chroma">
+<meta property="article:tag" content="Embedding">
+<meta property="article:tag" content="DeepSeek">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/gou.png"><link rel="shortcut icon" href="/img/meigui.png"><link rel="canonical" href="http://example.com/2026/06/06/2026-06-06-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Embedding-Chroma%E4%B8%8ELLM%E6%80%BB%E7%BB%93/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '多媒体取证 Agent 学习笔记：Embedding + Chroma 与 LLM 总结',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-06-06 19:10:21'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/gou.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">22</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">14</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div><div class="menus_item study-menu-entry"><a class="site-page" href="/study/"><i class="fa-fw fas fa-stopwatch"></i><span> 学习打卡</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/luori.png')"><nav id="nav"><span id="blog-info"><a href="/" title="避风港"><span class="site-name">避风港</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div><div class="menus_item study-menu-entry"><a class="site-page" href="/study/"><i class="fa-fw fas fa-stopwatch"></i><span> 学习打卡</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">多媒体取证 Agent 学习笔记：Embedding + Chroma 与 LLM 总结</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-06-06T13:30:00.000Z" title="发表于 2026-06-06 21:30:00">2026-06-06</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-06-06T11:10:21.115Z" title="更新于 2026-06-06 19:10:21">2026-06-06</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/AI/">AI</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="多媒体取证 Agent 学习笔记：Embedding + Chroma 与 LLM 总结"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('/img/luori.png');"></div><article class="post-content" id="article-container"><p>今天继续推进 <code>Multimedia-Forensics-Agent</code> 项目。</p>
+<p>前几天已经完成了 PDF 上传、PyMuPDF 文本解析、按页切 chunk、TF-IDF 轻量检索、前端问答和来源页码展示。今天的重点是把项目从 <code>TF-IDF 检索 + 模板回答</code> 升级到更接近真实 RAG 的版本：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">Embedding 检索 + Chroma 向量库 + DeepSeek LLM 总结</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这一步很关键，因为项目不再只是根据关键词找片段，也不再只是返回固定模板，而是开始具备“根据论文片段生成回答”的能力。</p>
+<p>不过也要诚实说明：目前还没有接入 LlamaIndex Workflow，也还没有接入 OpenAI Agents SDK 工具调用。今天完成的是 Agentic RAG 的基础能力。</p>
+<h2 id="1-今天的目标"><a href="#1-今天的目标" class="headerlink" title="1. 今天的目标"></a>1. 今天的目标</h2><p>今天主要完成了：</p>
+<ul>
+<li>理解为什么要从 TF-IDF 升级到 embedding</li>
+<li>在 FAISS 和 Chroma 之间选择 Chroma</li>
+<li>在 <code>requirements.txt</code> 中加入 <code>chromadb</code>、<code>sentence-transformers</code> 和 <code>openai</code></li>
+<li>改造 <code>app/rag/vector_store.py</code>，使用 embedding + Chroma 做语义检索</li>
+<li>改造 <code>app/rag/rag_engine.py</code>，让 RAG 引擎继续复用 <code>vector_store.search()</code></li>
+<li>接入 DeepSeek API，使用 OpenAI-compatible SDK 调用大模型</li>
+<li>新增 <code>app/llm/deepseek_client.py</code>，封装 LLM 调用</li>
+<li>设计 RAG prompt，要求模型只根据 sources 回答</li>
+<li>把 DeepSeekClient 接进 RagEngine，实现 LLM 总结回答</li>
+<li>前端继续保持 <code>answer + sources</code> 展示结构不变</li>
+</ul>
+<p>今天完成后的核心链路变成：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">PDF</span><br><span class="line">    -&gt; PyMuPDF 逐页解析</span><br><span class="line">    -&gt; 每页文本切成 chunks</span><br><span class="line">    -&gt; chunk 保留 page_number 和 text</span><br><span class="line">    -&gt; sentence-transformers 生成 embedding</span><br><span class="line">    -&gt; Chroma 保存 embedding、text、metadata</span><br><span class="line">    -&gt; 用户提问</span><br><span class="line">    -&gt; query 生成 embedding</span><br><span class="line">    -&gt; Chroma 检索相似 chunks</span><br><span class="line">    -&gt; RagEngine 拼接 sources context</span><br><span class="line">    -&gt; DeepSeek 根据 sources 生成回答</span><br><span class="line">    -&gt; 返回 answer 和 sources</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="2-为什么要从-TF-IDF-升级到-embedding"><a href="#2-为什么要从-TF-IDF-升级到-embedding" class="headerlink" title="2. 为什么要从 TF-IDF 升级到 embedding"></a>2. 为什么要从 TF-IDF 升级到 embedding</h2><p>之前的 TF-IDF 更像关键词匹配。</p>
+<p>它会关注一个词有没有出现、出现多少次。例如用户问：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">What evaluation metrics are used?</span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果论文里写的是：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">PSNR, SSIM and BER are adopted.</span><br></pre></td></tr></tbody></table></figure>
+
+<p>TF-IDF 不一定能稳定理解 <code>evaluation metrics</code> 和 <code>PSNR / SSIM / BER</code> 之间的关系。</p>
+<p>Embedding 更像语义表示。它会把文本变成语义向量，相近含义的句子在向量空间中距离更近。所以 embedding 更适合论文问答场景，尤其是用户问题和论文原文表达不完全一致的时候。</p>
+<p>今天理解到一个更准确的说法：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">TF-IDF：关键词统计向量</span><br><span class="line">Embedding：语义表示向量</span><br></pre></td></tr></tbody></table></figure>
+
+<p>严格来说，TF-IDF 也是向量，但它是基于词频统计的稀疏向量；embedding 是更偏语义的稠密向量。</p>
+<h2 id="3-为什么选择-Chroma-而不是-FAISS"><a href="#3-为什么选择-Chroma-而不是-FAISS" class="headerlink" title="3. 为什么选择 Chroma 而不是 FAISS"></a>3. 为什么选择 Chroma 而不是 FAISS</h2><p>今天比较了 FAISS 和 Chroma。</p>
+<p>FAISS 的特点：</p>
+<ul>
+<li>本地速度快</li>
+<li>更轻量</li>
+<li>更偏底层向量索引</li>
+<li>需要自己额外管理 metadata</li>
+</ul>
+<p>Chroma 的特点：</p>
+<ul>
+<li>更像轻量向量数据库</li>
+<li>可以同时管理 documents、embeddings、metadatas 和 ids</li>
+<li>更适合快速做 RAG Demo</li>
+<li>对保存 <code>page_number</code>、<code>text</code>、<code>file_id</code> 更友好</li>
+</ul>
+<p>当前项目优先选择 Chroma，原因是这个项目需要保留来源信息：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">{</span><br><span class="line">    <span class="string">"page_number"</span>: <span class="number">1</span>,</span><br><span class="line">    <span class="string">"text"</span>: <span class="string">"PSNR and SSIM are used as evaluation metrics."</span></span><br><span class="line">}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>如果只返回 chunk id，后面的 LLM 没有原文可总结，用户也没法知道答案来自论文第几页。</p>
+<p>所以今天的选择是：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">当前先用 Chroma 快速做出可展示的 Agentic RAG Demo。</span><br><span class="line">后续如果数据量变大、需要更高性能或更底层控制，再考虑 FAISS。</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个选择适合当前阶段，因为我还是初学者，项目目标是先把完整 RAG + LLM 链路跑通，而不是一开始就陷入底层向量索引细节。</p>
+<h2 id="4-改造-vector-store-py"><a href="#4-改造-vector-store-py" class="headerlink" title="4. 改造 vector_store.py"></a>4. 改造 vector_store.py</h2><p>今天把 <code>app/rag/vector_store.py</code> 从 TF-IDF 版本升级成 Chroma 版本。</p>
+<p>新的 <code>VectorStore</code> 负责：</p>
+<ul>
+<li>加载本地 embedding 模型</li>
+<li>接收 chunks</li>
+<li>从 chunk 中取出 <code>text</code></li>
+<li>从 chunk 中取出 <code>page_number</code></li>
+<li>使用 <code>SentenceTransformer</code> 生成 embedding</li>
+<li>把 documents、embeddings、metadatas 和 ids 存入 Chroma</li>
+<li>根据用户 query 检索 top_k 个相关 chunk</li>
+<li>返回带 <code>page_number</code> 和 <code>text</code> 的 sources</li>
+</ul>
+<p>测试命令：</p>
+<figure class="highlight powershell"><table><tbody><tr><td class="code"><pre><span class="line">python <span class="literal">-c</span> <span class="string">"from app.rag.vector_store import VectorStore; vs=VectorStore('test_demo'); vs.add_items([{'page_number':1,'text':'PSNR and SSIM are used as evaluation metrics.'},{'page_number':2,'text':'The method embeds watermark into image frequency domain.'}]); print(vs.search('What metrics are used?', top_k=1))"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>测试结果：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">[{<span class="string">'page_number'</span>: <span class="number">1</span>, <span class="string">'text'</span>: <span class="string">'PSNR and SSIM are used as evaluation metrics.'</span>}]</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个结果说明 embedding + Chroma 检索已经能根据问题找到相关 chunk，并且仍然保留页码。</p>
+<h2 id="5-改造-rag-engine-py"><a href="#5-改造-rag-engine-py" class="headerlink" title="5. 改造 rag_engine.py"></a>5. 改造 rag_engine.py</h2><p><code>rag_engine.py</code> 的职责不是直接管理 Chroma，也不是直接写 embedding 逻辑。</p>
+<p>它应该只负责组织 RAG 流程：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">接收问题</span><br><span class="line">    -&gt; 调用 vector_store.search()</span><br><span class="line">    -&gt; 拿到 sources</span><br><span class="line">    -&gt; 拼接 context</span><br><span class="line">    -&gt; 调用 LLM</span><br><span class="line">    -&gt; 返回 answer + sources</span><br></pre></td></tr></tbody></table></figure>
+
+<p>今天先验证了 embedding 检索接入后的 <code>RagEngine</code>：</p>
+<figure class="highlight powershell"><table><tbody><tr><td class="code"><pre><span class="line">python <span class="literal">-c</span> <span class="string">"from app.rag.rag_engine import RagEngine; chunks=[{'page_number':1,'text':'PSNR and SSIM are used as evaluation metrics.'},{'page_number':2,'text':'The method embeds watermark into image frequency domain.'}]; rag=RagEngine(chunks); print(rag.answer('What metrics are used?', top_k=1))"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>当时模板阶段的输出类似：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">I found relevant information on page 1.</span><br></pre></td></tr></tbody></table></figure>
+
+<p>后来接入 LLM 后，<code>RagEngine</code> 不再返回固定模板，而是把 sources 拼成 context，再交给 DeepSeek 生成回答。</p>
+<h2 id="6-每篇论文使用独立-collection"><a href="#6-每篇论文使用独立-collection" class="headerlink" title="6. 每篇论文使用独立 collection"></a>6. 每篇论文使用独立 collection</h2><p>今天还理解了一个很重要的问题：如果所有论文都用同一个 Chroma collection，就可能出现跨论文污染。</p>
+<p>比如用户上传论文 A 后又上传论文 B，如果两篇论文的 chunks 都混在同一个 collection 里，那么针对论文 A 的问题可能检索到论文 B 的内容。</p>
+<p>所以更合理的做法是：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">collection_name = <span class="string">f"paper_<span class="subst">{file_id}</span>"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>每篇论文用自己的 <code>file_id</code> 创建独立 collection。</p>
+<p>面试时可以这样解释：</p>
+<blockquote>
+<p>每篇论文的 chunk 和 metadata 应该隔离。用 file_id 创建独立 collection，可以避免用户针对当前论文提问时检索到其他论文内容。</p>
+</blockquote>
+<h2 id="7-接入-DeepSeek-LLM"><a href="#7-接入-DeepSeek-LLM" class="headerlink" title="7. 接入 DeepSeek LLM"></a>7. 接入 DeepSeek LLM</h2><p>今天没有直接使用 OpenAI 模型，而是选择了 DeepSeek API。</p>
+<p>DeepSeek 支持 OpenAI-compatible API，所以可以使用 <code>openai</code> Python SDK，只需要配置：</p>
+<figure class="highlight plaintext"><table><tbody><tr><td class="code"><pre><span class="line">LLM_PROVIDER=deepseek</span><br><span class="line">DEEPSEEK_API_KEY=your_deepseek_api_key_here</span><br><span class="line">DEEPSEEK_BASE_URL=https://api.deepseek.com</span><br><span class="line">DEEPSEEK_MODEL=deepseek-v4-flash</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里要注意：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">SDK 调用格式兼容，不代表 DeepSeek 和 OpenAI 是同一个服务。</span><br></pre></td></tr></tbody></table></figure>
+
+<p>更准确的理解是：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">使用 openai Python SDK</span><br><span class="line">base_url 指向 DeepSeek</span><br><span class="line">api_key 使用 DeepSeek 的 key</span><br><span class="line">model 使用 DeepSeek 的模型名</span><br></pre></td></tr></tbody></table></figure>
+
+<p>面试时可以这样讲：</p>
+<blockquote>
+<p>DeepSeek 提供 OpenAI-compatible API，所以我用 OpenAI Python SDK 作为统一客户端，通过配置 base_url、api_key 和 model 切换到 DeepSeek。这样业务层不需要关心具体供应商，后续也可以切换到 OpenAI 或其他兼容服务。</p>
+</blockquote>
+<h2 id="8-新增-deepseek-client-py"><a href="#8-新增-deepseek-client-py" class="headerlink" title="8. 新增 deepseek_client.py"></a>8. 新增 deepseek_client.py</h2><p>今天新增了：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">app/llm/deepseek_client.py</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个文件负责：</p>
+<ul>
+<li>读取 DeepSeek 配置</li>
+<li>初始化 OpenAI-compatible client</li>
+<li>设计 system prompt 和 user prompt</li>
+<li>调用 DeepSeek 生成回答</li>
+<li>返回回答文本</li>
+</ul>
+<p>它不负责：</p>
+<ul>
+<li>PDF 解析</li>
+<li>文本切 chunk</li>
+<li>Chroma 检索</li>
+<li>FastAPI 路由</li>
+<li>Streamlit 展示</li>
+</ul>
+<p>这样做的好处是模块职责清晰。</p>
+<p>如果后续要从 DeepSeek 换成 OpenAI，只需要改 LLM client 层，而不是到处改 <code>rag_engine.py</code>、<code>paper_api.py</code> 或前端代码。</p>
+<h2 id="9-RAG-Prompt-设计"><a href="#9-RAG-Prompt-设计" class="headerlink" title="9. RAG Prompt 设计"></a>9. RAG Prompt 设计</h2><p>今天专门设计了 RAG prompt，核心规则是：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">你是一个论文研读助手。</span><br><span class="line">你必须只根据给定的论文片段回答问题。</span><br><span class="line">如果片段信息不足，请回答“不确定，当前检索片段没有提供足够信息”。</span><br><span class="line">不要编造论文中没有出现的数据集、指标、方法、实验结果或结论。</span><br><span class="line">用户可以用中文或英文提问。</span><br><span class="line">除非用户明确要求英文回答，否则优先使用中文回答。</span><br><span class="line">如果片段中包含页码，请在回答末尾标注来源页码。</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个 prompt 解决两个问题：</p>
+<ol>
+<li>降低 RAG 幻觉</li>
+<li>支持中英文问题，但默认中文回答</li>
+</ol>
+<p>今天做了两个小测试。</p>
+<p>信息足够时：</p>
+<figure class="highlight powershell"><table><tbody><tr><td class="code"><pre><span class="line">python <span class="literal">-c</span> <span class="string">"from dotenv import load_dotenv; load_dotenv(); from app.llm.deepseek_client import DeepSeekClient; c=DeepSeekClient(); print(c.generate_answer('What metrics are used?', 'Page 1: PSNR and SSIM are used as evaluation metrics.'))"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>输出：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">根据检索到的信息，使用的评估指标是PSNR和SSIM。（来源：页码1）</span><br></pre></td></tr></tbody></table></figure>
+
+<p>信息不足时：</p>
+<figure class="highlight powershell"><table><tbody><tr><td class="code"><pre><span class="line">python <span class="literal">-c</span> <span class="string">"from dotenv import load_dotenv; load_dotenv(); from app.llm.deepseek_client import DeepSeekClient; c=DeepSeekClient(); print(c.generate_answer('What dataset is used?', 'Page 1: PSNR and SSIM are used as evaluation metrics.'))"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>输出：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">不确定，当前检索片段没有提供足够信息。</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这说明 prompt 已经能约束模型不要乱编。</p>
+<h2 id="10-把-LLM-接进-RagEngine"><a href="#10-把-LLM-接进-RagEngine" class="headerlink" title="10. 把 LLM 接进 RagEngine"></a>10. 把 LLM 接进 RagEngine</h2><p>最后把 <code>DeepSeekClient</code> 接进 <code>RagEngine</code>。</p>
+<p>新的回答流程是：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">用户问题</span><br><span class="line">    -&gt; Chroma 检索 sources</span><br><span class="line">    -&gt; build_context(sources)</span><br><span class="line">    -&gt; DeepSeekClient.generate_answer(question, context)</span><br><span class="line">    -&gt; 返回 RagAnswer(answer, sources)</span><br></pre></td></tr></tbody></table></figure>
+
+<p>测试命令：</p>
+<figure class="highlight powershell"><table><tbody><tr><td class="code"><pre><span class="line">python <span class="literal">-c</span> <span class="string">"from dotenv import load_dotenv; load_dotenv(); from app.rag.rag_engine import RagEngine; chunks=[{'page_number':1,'text':'PSNR and SSIM are used as evaluation metrics.'},{'page_number':2,'text':'The method embeds watermark into image frequency domain.'}]; rag=RagEngine(chunks, collection_name='rag_llm_test'); print(rag.answer('What metrics are used?', top_k=1))"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>输出：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">RagAnswer(answer='根据提供的论文片段，使用的评估指标是PSNR（峰值信噪比）和SSIM（结构相似性指标）。（来源：Page 1）', sources=[{'page_number': 1, 'text': 'PSNR and SSIM are used as evaluation metrics.'}])</span><br></pre></td></tr></tbody></table></figure>
+
+<p>再测试信息不足：</p>
+<figure class="highlight powershell"><table><tbody><tr><td class="code"><pre><span class="line">python <span class="literal">-c</span> <span class="string">"from dotenv import load_dotenv; load_dotenv(); from app.rag.rag_engine import RagEngine; chunks=[{'page_number':1,'text':'PSNR and SSIM are used as evaluation metrics.'}]; rag=RagEngine(chunks, collection_name='rag_llm_test_2'); print(rag.answer('What dataset is used?', top_k=1))"</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>输出：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">RagAnswer(answer='不确定，当前检索片段没有提供足够信息。', sources=[{'page_number': 1, 'text': 'PSNR and SSIM are used as evaluation metrics.'}])</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这一步完成后，项目已经可以说具备了：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">Embedding + Chroma 检索 + DeepSeek LLM 总结</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="11-前端为什么不用大改"><a href="#11-前端为什么不用大改" class="headerlink" title="11. 前端为什么不用大改"></a>11. 前端为什么不用大改</h2><p>虽然后端内部从模板回答升级成了 LLM 回答，但前端不需要大改。</p>
+<p>原因是 <code>/api/papers/ask</code> 的返回结构保持不变：</p>
+<figure class="highlight json"><table><tbody><tr><td class="code"><pre><span class="line"><span class="punctuation">{</span></span><br><span class="line">  <span class="attr">"answer"</span><span class="punctuation">:</span> <span class="string">"..."</span><span class="punctuation">,</span></span><br><span class="line">  <span class="attr">"sources"</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">    <span class="punctuation">{</span></span><br><span class="line">      <span class="attr">"page_number"</span><span class="punctuation">:</span> <span class="number">1</span><span class="punctuation">,</span></span><br><span class="line">      <span class="attr">"text"</span><span class="punctuation">:</span> <span class="string">"..."</span></span><br><span class="line">    <span class="punctuation">}</span></span><br><span class="line">  <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">}</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>前端依然只负责展示：</p>
+<ul>
+<li>answer</li>
+<li>Source index</li>
+<li>Page number</li>
+<li>source text</li>
+</ul>
+<p>这说明 API contract 是稳定的。</p>
+<p>后端内部可以从：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">TF-IDF + 模板回答</span><br></pre></td></tr></tbody></table></figure>
+
+<p>升级到：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">Embedding + Chroma + LLM 回答</span><br></pre></td></tr></tbody></table></figure>
+
+<p>但只要接口返回格式不变，前端就可以复用。</p>
+<h2 id="12-今天最重要的理解"><a href="#12-今天最重要的理解" class="headerlink" title="12. 今天最重要的理解"></a>12. 今天最重要的理解</h2><p>今天最重要的理解有几个：</p>
+<p>第一，RAG 不是直接让大模型读整篇论文，而是先检索相关片段，再让大模型基于片段回答。</p>
+<p>第二，TF-IDF 和 embedding 都是向量表示，但 TF-IDF 偏关键词统计，embedding 更偏语义理解。</p>
+<p>第三，sources 不能只返回 chunk id，而要返回 <code>page_number</code> 和 <code>text</code>。因为 LLM 需要文本作为上下文，用户也需要页码验证来源。</p>
+<p>第四，LLM 必须被 prompt 约束。论文问答场景不能编造数据集、指标、实验结果和结论。</p>
+<p>第五，模块职责要分清楚：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">vector_store.py：负责 embedding 检索</span><br><span class="line">rag_engine.py：负责组织 RAG 流程</span><br><span class="line">deepseek_client.py：负责 LLM 调用</span><br><span class="line">paper_api.py：负责 API 调度</span><br><span class="line">streamlit_app.py：负责前端展示</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="13-当前项目状态"><a href="#13-当前项目状态" class="headerlink" title="13. 当前项目状态"></a>13. 当前项目状态</h2><p>截至今天，项目状态是：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">已完成：</span><br><span class="line">PDF 上传</span><br><span class="line">PyMuPDF 解析</span><br><span class="line">按页切 chunk</span><br><span class="line">page_number 溯源</span><br><span class="line">Chroma embedding 检索</span><br><span class="line">DeepSeek LLM 总结</span><br><span class="line">中英文问题输入</span><br><span class="line">默认中文回答</span><br><span class="line">信息不足时回答不确定</span><br><span class="line">前端展示 answer 和 sources</span><br><span class="line"></span><br><span class="line">未完成：</span><br><span class="line">LlamaIndex Workflow</span><br><span class="line">OpenAI Agents SDK 工具调用</span><br><span class="line">多篇论文对比</span><br><span class="line">图像指标计算</span><br><span class="line">Markdown 报告下载</span><br><span class="line">Docker 部署</span><br></pre></td></tr></tbody></table></figure>
+
+<p>所以目前不能夸成完整 Agents SDK 项目，但可以说：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">项目已经从 TF-IDF RAG MVP 升级为 embedding + Chroma + LLM 的论文研读 RAG 系统，并为后续 Agent 工具调用和 Workflow 编排打好了基础。</span><br></pre></td></tr></tbody></table></figure>
+
+<h2 id="14-面试表达"><a href="#14-面试表达" class="headerlink" title="14. 面试表达"></a>14. 面试表达</h2><p>如果面试官问：</p>
+<blockquote>
+<p>你这个项目今天升级了什么？</p>
+</blockquote>
+<p>可以回答：</p>
+<blockquote>
+<p>我把原来的 TF-IDF 检索层升级成了 embedding + Chroma。原来系统更偏关键词匹配，现在可以用语义向量检索论文 chunk。同时我接入了 DeepSeek LLM，把原来的模板回答升级成基于 sources 的生成式回答。回答 prompt 明确要求只能根据检索片段回答，信息不足时回答不确定，并保留 page_number 做来源追溯。</p>
+</blockquote>
+<p>如果面试官问：</p>
+<blockquote>
+<p>为什么选择 Chroma？</p>
+</blockquote>
+<p>可以回答：</p>
+<blockquote>
+<p>因为当前项目是论文 RAG Demo，需要方便地保存 chunk text、page_number、file_id 等 metadata。Chroma 对文档和 metadata 管理更友好，适合快速做出可展示系统。FAISS 更偏底层和高性能，后续数据量变大时可以考虑。</p>
+</blockquote>
+<p>如果面试官问：</p>
+<blockquote>
+<p>你怎么降低 RAG 幻觉？</p>
+</blockquote>
+<p>可以回答：</p>
+<blockquote>
+<p>我从两层降低幻觉。第一层是检索层，只把 top-k 相关 chunk 作为上下文。第二层是 prompt 约束，要求模型只能根据 sources 回答，如果信息不足必须说不确定，并且不能编造论文中没有出现的数据集、指标、方法和实验结果。同时保留页码，方便用户回到原文验证。</p>
+</blockquote>
+<p>如果面试官问：</p>
+<blockquote>
+<p>为什么前端不用大改？</p>
+</blockquote>
+<p>可以回答：</p>
+<blockquote>
+<p>因为我保持了 <code>/api/papers/ask</code> 的返回结构不变，仍然返回 <code>answer</code> 和 <code>sources</code>。后端内部可以从模板回答升级到 LLM 回答，但 API contract 稳定，所以前端展示逻辑可以复用。</p>
+</blockquote>
+<h2 id="15-下一步计划"><a href="#15-下一步计划" class="headerlink" title="15. 下一步计划"></a>15. 下一步计划</h2><p>下一步准备进入第 4.3 阶段：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">接入 LlamaIndex Workflow</span><br></pre></td></tr></tbody></table></figure>
+
+<p>目标是把论文研读流程拆成多个步骤：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">检索论文相关内容</span><br><span class="line">    -&gt; 总结研究问题</span><br><span class="line">    -&gt; 提取方法流程</span><br><span class="line">    -&gt; 提取数据集和指标</span><br><span class="line">    -&gt; 生成复现实验计划</span><br><span class="line">    -&gt; 输出结构化结果</span><br></pre></td></tr></tbody></table></figure>
+
+<p>再往后进入第 4.4 阶段：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">OpenAI Agents SDK 工具调用</span><br></pre></td></tr></tbody></table></figure>
+
+<p>到那时可以设计一个 <code>PaperResearchAgent</code>，让它调用：</p>
+<ul>
+<li><code>search_paper_tool</code></li>
+<li><code>summarize_paper_tool</code></li>
+<li><code>extract_experiment_tool</code></li>
+<li><code>generate_reproduction_plan_tool</code></li>
+</ul>
+<p>今天这一阶段的意义是：先把 Agent 需要依赖的检索和生成能力打牢。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Love</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2026/06/06/2026-06-06-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Embedding-Chroma%E4%B8%8ELLM%E6%80%BB%E7%BB%93/">http://example.com/2026/06/06/2026-06-06-多媒体取证Agent学习笔记-Embedding-Chroma与LLM总结/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">避风港</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Agent/">Agent</a><a class="post-meta__tags" href="/tags/FastAPI/">FastAPI</a><a class="post-meta__tags" href="/tags/Streamlit/">Streamlit</a><a class="post-meta__tags" href="/tags/RAG/">RAG</a><a class="post-meta__tags" href="/tags/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81/">多媒体取证</a><a class="post-meta__tags" href="/tags/Chroma/">Chroma</a><a class="post-meta__tags" href="/tags/Embedding/">Embedding</a><a class="post-meta__tags" href="/tags/DeepSeek/">DeepSeek</a></div><div class="post_share"><div class="social-share" data-image="/img/gou.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/06/02/2026-06-02-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%89%8D%E7%AB%AF%E9%97%AE%E7%AD%94%E4%B8%8E%E6%9D%A5%E6%BA%90%E9%A1%B5%E7%A0%81/" title="多媒体取证 Agent 学习笔记：前端问答与来源页码追踪"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">多媒体取证 Agent 学习笔记：前端问答与来源页码追踪</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2026/05/31/2026-05-31-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="多媒体取证 Agent 学习笔记：从项目骨架到 PDF 上传解析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-31</div><div class="title">多媒体取证 Agent 学习笔记：从项目骨架到 PDF 上传解析</div></div></a></div><div><a href="/2026/06/01/2026-06-01-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-RAG%E5%9F%BA%E7%A1%80%E9%93%BE%E8%B7%AF/" title="多媒体取证 Agent 学习笔记：RAG 基础链路跑通"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-01</div><div class="title">多媒体取证 Agent 学习笔记：RAG 基础链路跑通</div></div></a></div><div><a href="/2026/06/02/2026-06-02-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%89%8D%E7%AB%AF%E9%97%AE%E7%AD%94%E4%B8%8E%E6%9D%A5%E6%BA%90%E9%A1%B5%E7%A0%81/" title="多媒体取证 Agent 学习笔记：前端问答与来源页码追踪"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-02</div><div class="title">多媒体取证 Agent 学习笔记：前端问答与来源页码追踪</div></div></a></div><div><a href="/2026/05/30/2026-05-30-LangChain%E7%A7%81%E5%8E%A8Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="LangChain 私厨 Agent 今日学习笔记"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-30</div><div class="title">LangChain 私厨 Agent 今日学习笔记</div></div></a></div><div><a href="/2026/05/29/LangChain%E5%AE%9E%E6%88%98Notebook/" title="LangChain 实战 Notebook"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-29</div><div class="title">LangChain 实战 Notebook</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/gou.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">Love</div><div class="author-info__description">归途也还可爱</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">27</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">22</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">14</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/nice020310/nice020310.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/nice020310" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_72757552" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1490166708@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#1-%E4%BB%8A%E5%A4%A9%E7%9A%84%E7%9B%AE%E6%A0%87"><span class="toc-number">1.</span> <span class="toc-text">1. 今天的目标</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#2-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E4%BB%8E-TF-IDF-%E5%8D%87%E7%BA%A7%E5%88%B0-embedding"><span class="toc-number">2.</span> <span class="toc-text">2. 为什么要从 TF-IDF 升级到 embedding</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#3-%E4%B8%BA%E4%BB%80%E4%B9%88%E9%80%89%E6%8B%A9-Chroma-%E8%80%8C%E4%B8%8D%E6%98%AF-FAISS"><span class="toc-number">3.</span> <span class="toc-text">3. 为什么选择 Chroma 而不是 FAISS</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#4-%E6%94%B9%E9%80%A0-vector-store-py"><span class="toc-number">4.</span> <span class="toc-text">4. 改造 vector_store.py</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#5-%E6%94%B9%E9%80%A0-rag-engine-py"><span class="toc-number">5.</span> <span class="toc-text">5. 改造 rag_engine.py</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#6-%E6%AF%8F%E7%AF%87%E8%AE%BA%E6%96%87%E4%BD%BF%E7%94%A8%E7%8B%AC%E7%AB%8B-collection"><span class="toc-number">6.</span> <span class="toc-text">6. 每篇论文使用独立 collection</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#7-%E6%8E%A5%E5%85%A5-DeepSeek-LLM"><span class="toc-number">7.</span> <span class="toc-text">7. 接入 DeepSeek LLM</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#8-%E6%96%B0%E5%A2%9E-deepseek-client-py"><span class="toc-number">8.</span> <span class="toc-text">8. 新增 deepseek_client.py</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#9-RAG-Prompt-%E8%AE%BE%E8%AE%A1"><span class="toc-number">9.</span> <span class="toc-text">9. RAG Prompt 设计</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#10-%E6%8A%8A-LLM-%E6%8E%A5%E8%BF%9B-RagEngine"><span class="toc-number">10.</span> <span class="toc-text">10. 把 LLM 接进 RagEngine</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#11-%E5%89%8D%E7%AB%AF%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E7%94%A8%E5%A4%A7%E6%94%B9"><span class="toc-number">11.</span> <span class="toc-text">11. 前端为什么不用大改</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#12-%E4%BB%8A%E5%A4%A9%E6%9C%80%E9%87%8D%E8%A6%81%E7%9A%84%E7%90%86%E8%A7%A3"><span class="toc-number">12.</span> <span class="toc-text">12. 今天最重要的理解</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#13-%E5%BD%93%E5%89%8D%E9%A1%B9%E7%9B%AE%E7%8A%B6%E6%80%81"><span class="toc-number">13.</span> <span class="toc-text">13. 当前项目状态</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#14-%E9%9D%A2%E8%AF%95%E8%A1%A8%E8%BE%BE"><span class="toc-number">14.</span> <span class="toc-text">14. 面试表达</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#15-%E4%B8%8B%E4%B8%80%E6%AD%A5%E8%AE%A1%E5%88%92"><span class="toc-number">15.</span> <span class="toc-text">15. 下一步计划</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/06/2026-06-06-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Embedding-Chroma%E4%B8%8ELLM%E6%80%BB%E7%BB%93/" title="多媒体取证 Agent 学习笔记：Embedding + Chroma 与 LLM 总结">多媒体取证 Agent 学习笔记：Embedding + Chroma 与 LLM 总结</a><time datetime="2026-06-06T13:30:00.000Z" title="发表于 2026-06-06 21:30:00">2026-06-06</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/02/2026-06-02-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%89%8D%E7%AB%AF%E9%97%AE%E7%AD%94%E4%B8%8E%E6%9D%A5%E6%BA%90%E9%A1%B5%E7%A0%81/" title="多媒体取证 Agent 学习笔记：前端问答与来源页码追踪">多媒体取证 Agent 学习笔记：前端问答与来源页码追踪</a><time datetime="2026-06-02T13:30:00.000Z" title="发表于 2026-06-02 21:30:00">2026-06-02</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/06/01/2026-06-01-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-RAG%E5%9F%BA%E7%A1%80%E9%93%BE%E8%B7%AF/" title="多媒体取证 Agent 学习笔记：RAG 基础链路跑通">多媒体取证 Agent 学习笔记：RAG 基础链路跑通</a><time datetime="2026-06-01T13:30:00.000Z" title="发表于 2026-06-01 21:30:00">2026-06-01</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/31/2026-05-31-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="多媒体取证 Agent 学习笔记：从项目骨架到 PDF 上传解析">多媒体取证 Agent 学习笔记：从项目骨架到 PDF 上传解析</a><time datetime="2026-05-31T09:10:00.000Z" title="发表于 2026-05-31 17:10:00">2026-05-31</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/05/30/2026-05-30-LangChain%E7%A7%81%E5%8E%A8Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="LangChain 私厨 Agent 今日学习笔记">LangChain 私厨 Agent 今日学习笔记</a><time datetime="2026-05-30T08:50:00.000Z" title="发表于 2026-05-30 16:50:00">2026-05-30</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2026 By Love</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="60198" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
