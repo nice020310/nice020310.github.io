@@ -4,6 +4,41 @@
   
     
     <entry>
+      <title>Workflow 节点化实践：为复合问题问答增加 Coverage 验证</title>
+      <link href="/2026/07/18/2026-07-18-workflow-coverage-verification/"/>
+      <url>/2026/07/18/2026-07-18-workflow-coverage-verification/</url>
+      
+        <content type="html"><![CDATA[<p>今天把原本偏串行的 <code>RagEngine</code> 进一步拆成了显式 Workflow，目标不是“让系统更聪明”，而是让复合问题场景里的行为更可解释、更稳定。</p><p>这次调整的核心是：把一个复杂问题拆成多个子问题，让每个子问题独立检索、独立校验，再根据证据覆盖情况决定最终回答状态，而不是在某一路缺证据时直接整体失败，或者更糟的是编造答案。</p><p>当前链路如下：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Query Analyze</span><br><span class="line">-&gt; Per-Subquery Retrieve / Rerank / Gate</span><br><span class="line">-&gt; Merge Sources</span><br><span class="line">-&gt; Structured Generate</span><br><span class="line">-&gt; Coverage Verify</span><br><span class="line">-&gt; Format Response</span><br></pre></td></tr></table></figure><p>这篇记录只覆盖今天已经明确实现和验证过的部分，不扩写尚未完成的能力。</p><h2 id="为什么要把主链路改成-Workflow"><a href="#为什么要把主链路改成-Workflow" class="headerlink" title="为什么要把主链路改成 Workflow"></a>为什么要把主链路改成 Workflow</h2><p>对于论文问答这类主链路任务，最重要的不是“自由决策”，而是：</p><ul><li>节点职责清晰</li><li>状态字段显式</li><li>失败路径可预测</li><li>输出结果能解释为什么回答、部分回答或拒答</li></ul><p>这也是 Workflow 和全 Agent 模式最本质的区别。</p><p>Workflow 适合固定、可审计、可回放的生产主链路；Agent 更适合工具选择高度动态、路径不稳定的任务。当前这个 Paper QA 场景，主干链路显然更适合前者。</p><h2 id="显式状态设计"><a href="#显式状态设计" class="headerlink" title="显式状态设计"></a>显式状态设计</h2><p>这次整理出的 <code>WorkflowState</code> 核心字段如下：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">request_id</span><br><span class="line">question / normalized_query / task_type</span><br><span class="line">sub_queries</span><br><span class="line">subquery_results / sources</span><br><span class="line">answer_parts / answer</span><br><span class="line">coverage / missing_sub_questions</span><br><span class="line">status / confidence / reason</span><br></pre></td></tr></table></figure><p>重点不是字段多，而是每个节点只能读取和更新约定字段，避免隐式共享变量把流程变成“能跑但不可控”的黑盒。</p><h2 id="节点契约与失败策略"><a href="#节点契约与失败策略" class="headerlink" title="节点契约与失败策略"></a>节点契约与失败策略</h2><p>今天明确了六个核心节点的输入、输出和失败策略：</p><table><thead><tr><th>节点</th><th>输入</th><th>输出</th><th>失败策略</th></tr></thead><tbody><tr><td>QueryAnalyzer</td><td>question</td><td>task_type、normalized_query、sub_queries、filters</td><td>回退为单个原问题</td></tr><tr><td>RetrieveNode</td><td>sub_queries</td><td>每个子问题的 sources&#x2F;status&#x2F;confidence</td><td>单子问题拒答或降级，不中断其他子问题</td></tr><tr><td>MergeNode</td><td>subquery results</td><td>chunk_id 去重后的 sources、sub_query_hits</td><td>保留有效路线</td></tr><tr><td>GenerateNode</td><td>supported subqueries + sources</td><td>answer_parts + citation chunk_ids</td><td>JSON 失败时有限修复一次</td></tr><tr><td>VerifyNode</td><td>answer_parts + sources</td><td>coverage、missing、invalid citations</td><td>删除无效引用，部分或整体拒答</td></tr><tr><td>FormatNode</td><td>state</td><td>兼容旧 API 的最终响应</td><td>保留已有 answer&#x2F;sources 字段</td></tr></tbody></table><p>这里最关键的不是拆节点本身，而是把“失败时怎么办”提前定义清楚。很多问答系统不稳定，不是因为检索或模型本身太差，而是因为失败路径没有工程化约束。</p><h2 id="这次实现的关键点"><a href="#这次实现的关键点" class="headerlink" title="这次实现的关键点"></a>这次实现的关键点</h2><p>今天已经落地的设计包括：</p><ul><li>新增轻量 typed Workflow，不额外引入 LangGraph，先避免 Python 3.8 兼容风险</li><li>Query Analyzer 默认走结构化 JSON 输出，解析失败时回退原问题</li><li>每个 <code>sub_query</code> 仍然复用现有 <code>Hybrid -&gt; Rerank -&gt; Gate</code> 链路</li><li>合并阶段按 <code>chunk_id</code> 去重，并记录每个证据片段支持哪些子问题</li><li>Generator 产出结构化 <code>answer_parts</code>，每段回答携带引用的 <code>citation chunk IDs</code></li><li>Verifier 检查引用是否合法，并据此重新计算覆盖率</li></ul><p>覆盖率的定义也单独固定了下来：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">coverage = 有有效证据且生成了合法引用答案的子问题数 / 子问题总数</span><br></pre></td></tr></table></figure><p>这让最终状态不再只依赖“模型有没有输出一段像样的话”，而是依赖“每个子问题是否真的被证据支持并被正确引用”。</p><h2 id="四种状态怎么判定"><a href="#四种状态怎么判定" class="headerlink" title="四种状态怎么判定"></a>四种状态怎么判定</h2><p>今天把状态优先级明确成了四类：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">coverage=0 -&gt; refused</span><br><span class="line">0&lt;coverage&lt;1 -&gt; partial</span><br><span class="line">coverage=1 且任一路 degraded -&gt; degraded</span><br><span class="line">coverage=1 且全部正常 -&gt; answered</span><br></pre></td></tr></table></figure><p>这套语义对复合问题非常重要。</p><p>如果用户一次问两个问题，而系统只能可靠回答其中一个，最合理的行为不是“硬凑一个完整答案”，也不是“一刀切全部拒绝”，而是返回 <code>partial</code>，明确缺失的是哪一部分。</p><h2 id="为什么要加-Coverage-Verify"><a href="#为什么要加-Coverage-Verify" class="headerlink" title="为什么要加 Coverage Verify"></a>为什么要加 Coverage Verify</h2><p>今天最重要的一个收获，是把“回答生成”与“回答可采信”分开。</p><p>生成阶段可以先产出结构化回答，但真正决定结果状态的是验证阶段。只要 citation 指向不存在的 <code>chunk_id</code>，或者某个子问题没有被有效证据覆盖，这一部分就不能计入 coverage。</p><p>这带来的价值有两个：</p><ol><li>能抑制“看起来答了，其实没证据”的假完成</li><li>能把部分失败显式暴露出来，而不是被一句流畅自然的总结掩盖</li></ol><p>对于面向论文、知识库或检索增强问答的系统，这一步比继续堆模型能力更关键。</p><h2 id="测试场景如何设计"><a href="#测试场景如何设计" class="headerlink" title="测试场景如何设计"></a>测试场景如何设计</h2><p>今天为这条链路设计的测试思路，重点放在确定性和边界行为上，而不是单个样例的主观效果：</p><ul><li>单问题退化为一个 <code>sub_query</code>，保持旧行为</li><li>复合问题拆成多个 <code>sub_queries</code> 并分别检索</li><li>多个子问题命中同一证据时按 <code>chunk_id</code> 去重</li><li><code>coverage=2/2</code> 返回 <code>answered</code></li><li><code>coverage=1/2</code> 返回 <code>partial</code></li><li><code>coverage=0/2</code> 不调用 Generator，直接 <code>refused</code></li><li>Analyzer 失败时回退原问题</li><li>非法 citation 会被 Verifier 删除并降低 coverage</li><li>某一路 degraded 不影响其他已完成子问题</li></ul><p>这类测试的目标不是证明系统“已经达到生产级”，而是证明它对复合问题的覆盖处理是可解释、可复现的。</p><h2 id="兼容旧-API-的考虑"><a href="#兼容旧-API-的考虑" class="headerlink" title="兼容旧 API 的考虑"></a>兼容旧 API 的考虑</h2><p>虽然内部链路明显复杂了，但对外接口仍然保持兼容。</p><p><code>/api/papers/ask</code> 继续保留这些字段：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">answer / sources / status / confidence / reason</span><br></pre></td></tr></table></figure><p>同时附加：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">request_id / task_type / sub_queries / coverage / missing_sub_questions</span><br></pre></td></tr></table></figure><p>这样做的好处是，旧客户端依然能读取 <code>answer</code> 和 <code>sources</code>，而新链路需要的可解释信息也能逐步暴露出来。</p><h2 id="今天的边界"><a href="#今天的边界" class="headerlink" title="今天的边界"></a>今天的边界</h2><p>今天没有把下面这些内容算进“已完成”：</p><ul><li>Agent Tool Selection</li><li>多 Agent 协作</li><li>持久化索引</li><li>完整 trace 与监控</li><li>语义级 claim entailment</li></ul><p>这几个方向都值得做，但它们不是今天这次节点化改造的完成标准。先把主链路的状态、节点契约和 coverage 语义打牢，比继续堆功能更重要。</p><h2 id="一个更准确的总结"><a href="#一个更准确的总结" class="headerlink" title="一个更准确的总结"></a>一个更准确的总结</h2><p>如果要用一句话概括今天的变化，可以这么说：</p><blockquote><p>我把原来的串行 RagEngine 拆成显式 Workflow。Query Analyzer 先把复合问题拆成子问题，每个子问题独立执行检索、重排和门控；系统按 chunk_id 合并证据，Generator 生成带 citation ID 的分项答案，Verifier 再检查引用合法性并计算 coverage。这样系统可以对缺失子问题做部分拒答，而不是因为某一路缺证据就整体失败，或者直接编造答案。</p></blockquote><p>这一步的意义，不只是“多加了几个节点”，而是把复合问题问答从“能跑”推进到“边界清楚、失败可解释、结果更可信”。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> AI </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Agent </tag>
+            
+            <tag> RAG </tag>
+            
+            <tag> Workflow </tag>
+            
+            <tag> Query Decomposition </tag>
+            
+            <tag> Coverage </tag>
+            
+            <tag> 工程实践 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>多媒体取证 Agent 学习笔记：Embedding + Chroma 与 LLM 总结</title>
       <link href="/2026/06/06/2026-06-06-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Embedding-Chroma%E4%B8%8ELLM%E6%80%BB%E7%BB%93/"/>
       <url>/2026/06/06/2026-06-06-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Embedding-Chroma%E4%B8%8ELLM%E6%80%BB%E7%BB%93/</url>
