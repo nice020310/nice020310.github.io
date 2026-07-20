@@ -4,6 +4,37 @@
   
     
     <entry>
+      <title>多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层</title>
+      <link href="/2026/07/20/2026-07-20-tool-enabled-workflow/"/>
+      <url>/2026/07/20/2026-07-20-tool-enabled-workflow/</url>
+      
+        <content type="html"><![CDATA[<p>今天整理的是 Day 5 的核心收获：在原有的 RAG Workflow 上增加一层受约束的工具能力，但不把系统包装成“已经完成的通用 Agent”。这次学习的重点不是追求更开放的自动规划，而是把摘要、指标提取和报告生成三类能力做成可验证、可审计、可测试的工具，并明确它们只能在既定节点执行。</p><h2 id="这次升级解决什么问题"><a href="#这次升级解决什么问题" class="headerlink" title="这次升级解决什么问题"></a>这次升级解决什么问题</h2><p>原先的基础链路更像标准 RAG：检索、合并证据、生成答案、做校验。它能回答问题，但不擅长承载结构化任务，例如：</p><ul><li>把论文证据整理成固定字段的摘要。</li><li>从证据里提取实验指标并保留引用。</li><li>在答案通过校验后再生成可落盘的报告。</li></ul><p>如果这些动作继续混在普通生成阶段里，问题会很明显：输入输出不稳定，失败路径难追踪，副作用难限制，也不容易做确定性测试。因此这次没有直接做“自由规划式 Agent”，而是先把能力收束到受控工具层。</p><h2 id="三个工具和它们的边界"><a href="#三个工具和它们的边界" class="headerlink" title="三个工具和它们的边界"></a>三个工具和它们的边界</h2><p>这次只引入三个白名单工具：</p><ul><li><code>summarize_paper</code>：消费带 citation 的证据，输出研究问题、方法、贡献、结论和限制。</li><li><code>extract_metrics</code>：从证据中提取指标名称、数值、数据集、基线，并保留 citation。</li><li><code>generate_report</code>：消费已经校验过的结构化结果与来源，生成 Markdown 报告路径和摘要。</li></ul><p>这里最重要的不是“能调工具”，而是每个工具都要有清晰契约：<code>name</code>、<code>description</code>、输入输出 schema、<code>timeout</code>、<code>error_code</code>、幂等边界以及敏感字段处理策略。这样工具调用才能从“模型随手拼函数”变成“服务端可控能力”。</p><h2 id="Router、State-与执行位置"><a href="#Router、State-与执行位置" class="headerlink" title="Router、State 与执行位置"></a>Router、State 与执行位置</h2><p>这次学习里，我把工具放在明确的 Workflow 节点上，而不是交给模型无限循环调用。</p><ul><li><code>ToolRouterNode</code> 只根据 <code>task_type</code> 从白名单里选择零个或一个工具。</li><li><code>WorkflowState</code> 增加 <code>tool_calls</code> 和 <code>tool_results</code>，用于记录调用元数据和业务结果。</li><li><code>summarize_paper</code> 与 <code>extract_metrics</code> 在 Merge 之后、Verify 之前执行。</li><li><code>generate_report</code> 只能在 Verify 之后执行，避免把未经校验的内容直接持久化。</li></ul><p>这套设计有一个明确态度：当前系统是 Tool-Enabled Workflow，而不是完整自主 Agent。它没有 observation loop、动态 replanning、长期 memory，也没有无限工具循环。这样做的好处是可预测、可审计，也更容易解释当前系统到底实现了什么、没有实现什么。</p><h2 id="为什么报告工具必须放在-Verify-之后"><a href="#为什么报告工具必须放在-Verify-之后" class="headerlink" title="为什么报告工具必须放在 Verify 之后"></a>为什么报告工具必须放在 Verify 之后</h2><p><code>generate_report</code> 是这次边界控制里最关键的一步。报告一旦生成，就意味着内容开始带有持久化副作用。如果把它放到 Verify 之前，未校验的引用、幻觉字段，甚至不合法的结论，都可能被写入文件并向外传播。</p><p>因此更稳妥的流程是：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Analyze -&gt; Retrieve -&gt; Merge -&gt; Tool(summary/metrics) -&gt; Verify -&gt; generate_report -&gt; Format</span><br></pre></td></tr></table></figure><p>先把证据变成结构化答案，再校验 citation 归属和 coverage，最后才允许生成报告。这一点本质上是在把“能生成什么”和“什么时候允许落盘”分开处理。</p><h2 id="失败策略和幂等性"><a href="#失败策略和幂等性" class="headerlink" title="失败策略和幂等性"></a>失败策略和幂等性</h2><p>今天另一个很重要的收获，是不能只讨论成功路径。</p><p>如果 <code>summarize_paper</code> 失败，不应该把整条链路直接打死，而是允许普通 Generator 兜底，最后返回 <code>degraded/summarize_paper_unavailable</code>。如果 <code>generate_report</code> 失败，但校验后的 <code>answer</code> 和 <code>sources</code> 已经合法，也不应该把已有结果一起丢掉，而是保留答案并返回 <code>degraded/report_generation_failed</code>。</p><p>报告生成还需要幂等。当前做法是对 <code>question</code>、校验后的 <code>answer_parts</code> 和 <code>source_ids</code> 做 canonical JSON 与 SHA-256，取前 24 位作为确定性的 <code>report_id</code> 和路径。这样相同内容重复请求时，系统返回已有产物，而不是无限生成同一份报告。</p><h2 id="这次学习里明确没有声称完成的部分"><a href="#这次学习里明确没有声称完成的部分" class="headerlink" title="这次学习里明确没有声称完成的部分"></a>这次学习里明确没有声称完成的部分</h2><p>这次内容也特意区分了“已实现”和“未实现”：</p><ul><li>还没有开放式 planning。</li><li>还没有长期 memory。</li><li>还没有多 Agent 协作。</li><li>还没有生产级分布式 Agent Runtime。</li><li>工具摘要仍然是 evidence-scoped summary，不是完整的全文 map-reduce 摘要。</li></ul><p>这部分边界在面试和项目复述里反而很重要。因为工程上最怕的不是能力做少，而是把没有完成的部分讲成已经上线的能力。</p><h2 id="我对这次升级的理解"><a href="#我对这次升级的理解" class="headerlink" title="我对这次升级的理解"></a>我对这次升级的理解</h2><p>如果把 Day 4 看作“把 RAG 拆成可验证 Workflow”，那 Day 5 更像是在这个 Workflow 里补上一层受约束的工具能力。核心并不是让模型更自由，而是让系统在结构化任务上更稳定：工具有契约，调用有白名单，执行有节点约束，失败有降级，落盘有幂等。</p><p>这也是我目前更认可的 Agent 落地方式：先把确定性和边界做好，再逐步增加动态能力，而不是一开始就把系统做成不可预测的黑盒。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 多媒体取证 Agent </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> Agent </tag>
+            
+            <tag> RAG </tag>
+            
+            <tag> Workflow </tag>
+            
+            <tag> 工具调用 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>多媒体取证 Agent 学习笔记：把串行 RAG 拆成可验证 Workflow</title>
       <link href="/2026/07/19/2026-07-19-workflow-coverage-verification/"/>
       <url>/2026/07/19/2026-07-19-workflow-coverage-verification/</url>
