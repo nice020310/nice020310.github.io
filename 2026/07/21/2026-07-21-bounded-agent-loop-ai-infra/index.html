@@ -1,0 +1,352 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束 | 避风港</title><meta name="author" content="Love"><meta name="copyright" content="Love"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="今天整理的是 Day 6 的核心收获：继续保留外层确定性的 RAG Workflow，只把“多步工具选择”收进一个有预算、有白名单、可审计的 Bounded Agent 闭环里。同时，这一天还系统补上了与这套设计直接相关的工程约束，包括 GPU 推理链路、Redis checkpoint、RabbitMQ 异步恢复，以及 JWT 场景下的工具授权边界。 这次学习的重点不是把系统包装成“已经完成的通">
+<meta property="og:type" content="article">
+<meta property="og:title" content="多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束">
+<meta property="og:url" content="http://example.com/2026/07/21/2026-07-21-bounded-agent-loop-ai-infra/index.html">
+<meta property="og:site_name" content="避风港">
+<meta property="og:description" content="今天整理的是 Day 6 的核心收获：继续保留外层确定性的 RAG Workflow，只把“多步工具选择”收进一个有预算、有白名单、可审计的 Bounded Agent 闭环里。同时，这一天还系统补上了与这套设计直接相关的工程约束，包括 GPU 推理链路、Redis checkpoint、RabbitMQ 异步恢复，以及 JWT 场景下的工具授权边界。 这次学习的重点不是把系统包装成“已经完成的通">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/gou.png">
+<meta property="article:published_time" content="2026-07-21T13:30:00.000Z">
+<meta property="article:modified_time" content="2026-07-21T14:03:40.170Z">
+<meta property="article:author" content="Love">
+<meta property="article:tag" content="Agent">
+<meta property="article:tag" content="RAG">
+<meta property="article:tag" content="Workflow">
+<meta property="article:tag" content="AI Infra">
+<meta property="article:tag" content="Redis">
+<meta property="article:tag" content="RabbitMQ">
+<meta property="article:tag" content="JWT">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/gou.png"><link rel="shortcut icon" href="/img/meigui.png"><link rel="canonical" href="http://example.com/2026/07/21/2026-07-21-bounded-agent-loop-ai-infra/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-07-21 22:03:40'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/gou.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">33</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">39</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div><div class="menus_item study-menu-entry"><a class="site-page" href="/study/"><i class="fa-fw fas fa-stopwatch"></i><span> 学习打卡</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/luori.png')"><nav id="nav"><span id="blog-info"><a href="/" title="避风港"><span class="site-name">避风港</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div><div class="menus_item study-menu-entry"><a class="site-page" href="/study/"><i class="fa-fw fas fa-stopwatch"></i><span> 学习打卡</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-21T13:30:00.000Z" title="发表于 2026-07-21 21:30:00">2026-07-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-21T14:03:40.170Z" title="更新于 2026-07-21 22:03:40">2026-07-21</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81-Agent/">多媒体取证 Agent</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('/img/luori.png');"></div><article class="post-content" id="article-container"><p>今天整理的是 Day 6 的核心收获：继续保留外层确定性的 RAG Workflow，只把“多步工具选择”收进一个有预算、有白名单、可审计的 Bounded Agent 闭环里。同时，这一天还系统补上了与这套设计直接相关的工程约束，包括 GPU 推理链路、Redis checkpoint、RabbitMQ 异步恢复，以及 JWT 场景下的工具授权边界。</p>
+<p>这次学习的重点不是把系统包装成“已经完成的通用自主 Agent”，而是明确一个更稳妥的落地方向：动态能力可以有，但必须被 Workflow、预算和权限边界约束住。</p>
+<h2 id="这次升级真正解决什么问题"><a href="#这次升级真正解决什么问题" class="headerlink" title="这次升级真正解决什么问题"></a>这次升级真正解决什么问题</h2><p>到 Day 5 为止，系统已经有受约束的工具层，但工具选择本身还是固定映射，更像 Tool-Enabled Workflow，而不是能根据中间结果动态决策的执行闭环。</p>
+<p>问题在于，一旦任务不再是“固定问题对应固定工具”，就会出现两个工程风险：</p>
+<ul>
+<li>全部继续写死，系统缺少根据证据结果切换动作的能力。</li>
+<li>全部交给开放式 Agent，自由度上去了，但可预测性、可测试性和可审计性明显下降。</li>
+</ul>
+<p>Day 6 的目标，就是在这两者之间找到一个受控中间态：让 Planner 能基于 <code>goal + observations</code> 动态选择动作，但整个闭环依然受外层 Workflow、白名单工具、轮次预算、时间预算和验证节点控制。</p>
+<h2 id="外层-Workflow-不动，只把动态决策放到内层"><a href="#外层-Workflow-不动，只把动态决策放到内层" class="headerlink" title="外层 Workflow 不动，只把动态决策放到内层"></a>外层 Workflow 不动，只把动态决策放到内层</h2><p>这一天最终固定下来的链路是：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">Analyze</span><br><span class="line">-&gt; Retrieve / Rerank / Gate</span><br><span class="line">-&gt; Merge</span><br><span class="line">-&gt; Bounded Agent Loop</span><br><span class="line">   -&gt; Planner</span><br><span class="line">   -&gt; summarize_paper / extract_metrics</span><br><span class="line">   -&gt; Observation</span><br><span class="line">   -&gt; Replan / Finish</span><br><span class="line">   -&gt; generate_report 仅登记为 pending post-verify action</span><br><span class="line">-&gt; Verify</span><br><span class="line">-&gt; Post-Verify Report</span><br><span class="line">-&gt; Format</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这里最关键的设计取舍是：Retrieve、Gate、Verify、状态流转和失败策略仍由代码控制；只有“该用哪个白名单工具、何时结束”这一层，交给 Planner 在受限闭环里动态决定。</p>
+<p>这意味着当前系统依然不是自由 Agent，而是 Workflow-Orchestrated Bounded Agent。它的动态性来自内层闭环，但系统主边界仍由外层状态机守住。</p>
+<h2 id="Bounded-Agent-最小闭环长什么样"><a href="#Bounded-Agent-最小闭环长什么样" class="headerlink" title="Bounded Agent 最小闭环长什么样"></a>Bounded Agent 最小闭环长什么样</h2><p>这次学习把 Agent 最小闭环明确成：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">Goal -&gt; Plan -&gt; Act -&gt; Observe -&gt; Replan / Finish</span><br></pre></td></tr></tbody></table></figure>
+
+<p>其中最重要的不是动作数量，而是 <code>observation</code> 的作用。它不只是执行日志，而是下一轮决策的输入：Planner 会读取当前 goal、允许的工具集合，以及历史 observations，决定下一步是继续摘要、提取指标、登记报告，还是直接结束。</p>
+<p>但 observation 也被严格约束。系统只保留结构化摘要、状态和 citation IDs，不保存完整 PDF、完整 prompt 或敏感凭证到 trace。这样做是为了避免短期 memory 失控膨胀，也避免把敏感信息带进可持久化调试链路。</p>
+<h2 id="这次把哪些边界真正工程化了"><a href="#这次把哪些边界真正工程化了" class="headerlink" title="这次把哪些边界真正工程化了"></a>这次把哪些边界真正工程化了</h2><p>Day 6 一个很大的进展，是把“受约束 Agent”从概念变成了可执行规则。</p>
+<h3 id="1-工具白名单和结构化动作"><a href="#1-工具白名单和结构化动作" class="headerlink" title="1. 工具白名单和结构化动作"></a>1. 工具白名单和结构化动作</h3><p>Planner 只允许选择三类工具：</p>
+<ul>
+<li><code>summarize_paper</code></li>
+<li><code>extract_metrics</code></li>
+<li><code>generate_report</code></li>
+</ul>
+<p>而且 Planner 不允许直接提供任意路径、任意参数或函数名，只能输出结构化动作，例如：</p>
+<figure class="highlight json"><table><tbody><tr><td class="code"><pre><span class="line"><span class="punctuation">{</span><span class="attr">"action"</span><span class="punctuation">:</span><span class="string">"tool"</span><span class="punctuation">,</span><span class="attr">"tool_name"</span><span class="punctuation">:</span><span class="string">"summarize_paper"</span><span class="punctuation">,</span><span class="attr">"reason"</span><span class="punctuation">:</span><span class="string">"..."</span><span class="punctuation">}</span></span><br><span class="line"><span class="punctuation">{</span><span class="attr">"action"</span><span class="punctuation">:</span><span class="string">"finish"</span><span class="punctuation">,</span><span class="attr">"reason"</span><span class="punctuation">:</span><span class="string">"..."</span><span class="punctuation">}</span></span><br></pre></td></tr></tbody></table></figure>
+
+<p>具体 payload 由服务端根据可信状态构造。这样做的价值很直接：模型只能表达“意图”，不能越权决定“怎么调、调什么参数、访问哪个路径”。</p>
+<h3 id="2-预算上限"><a href="#2-预算上限" class="headerlink" title="2. 预算上限"></a>2. 预算上限</h3><p>这次把三类预算都明确了：</p>
+<ul>
+<li>最多 3 次真实工具调用</li>
+<li>最多 5 轮 Planner 决策</li>
+<li>总 deadline 20 秒</li>
+</ul>
+<p>它们限制的是不同风险：工具调用限制外部成本和副作用，Planner 轮次限制空转和非法重复决策，deadline 限制整段执行的墙钟时间。三者不能相互替代。</p>
+<h3 id="3-重复动作检测"><a href="#3-重复动作检测" class="headerlink" title="3. 重复动作检测"></a>3. 重复动作检测</h3><p>系统为动作建立 signature，避免同一工具对同一输入重复执行。</p>
+<ul>
+<li>对已经成功的相同动作，直接复用 observation，不再再次调用。</li>
+<li>对已经失败的相同动作，阻断连续重试，要求 Planner 选择替代动作或结束。</li>
+</ul>
+<p>这一步非常关键。否则 Planner 很容易在局部失败后陷入“重复同一个动作 hoping it works”的死循环。</p>
+<h3 id="4-报告工具后置"><a href="#4-报告工具后置" class="headerlink" title="4. 报告工具后置"></a>4. 报告工具后置</h3><p><code>generate_report</code> 依然不能绕过 Verify。即使 Planner 选择了报告动作，系统也只把它登记为 <code>pending_post_verify_tool</code>，在 Verify 完成前结束 Agent 循环，等校验通过后才真正执行报告生成。</p>
+<p>这和 Day 5 的原则是一致的：报告一旦落盘，就属于持久化副作用，因此只能消费已经通过验证的答案与引用，不能提前执行。</p>
+<h2 id="这次学习里的-AI-Infra，不是旁支，而是-Agent-约束的现实依据"><a href="#这次学习里的-AI-Infra，不是旁支，而是-Agent-约束的现实依据" class="headerlink" title="这次学习里的 AI Infra，不是旁支，而是 Agent 约束的现实依据"></a>这次学习里的 AI Infra，不是旁支，而是 Agent 约束的现实依据</h2><p>这一天新增的 AI Infra 内容，和 Bounded Agent 不是两条平行线，而是同一个工程问题的两面。</p>
+<h3 id="推理链路为什么决定-Agent-预算"><a href="#推理链路为什么决定-Agent-预算" class="headerlink" title="推理链路为什么决定 Agent 预算"></a>推理链路为什么决定 Agent 预算</h3><p>这次把在线推理链路拆得很清楚：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">Gateway -&gt; Queue -&gt; Scheduler/Batch -&gt; Tokenizer -&gt; Prefill -&gt; Decode -&gt; Return</span><br></pre></td></tr></tbody></table></figure>
+
+<p>同时也明确了关键指标：</p>
+<ul>
+<li>TTFT</li>
+<li>TPOT</li>
+<li>tokens/s</li>
+<li>P95 / P99</li>
+<li>queue wait</li>
+<li>OOM</li>
+</ul>
+<p>对单轮问答来说，这些指标已经重要；对 Agent 来说更重要，因为每多一轮 Planner、每多一次工具后续推理，都会放大 token 成本、尾延迟和故障概率。也正因为如此，Day 6 才会强调 Agent 不能无限循环，必须把动态能力放进预算盒子里。</p>
+<h3 id="GPU-调度理解为什么要进入项目复述"><a href="#GPU-调度理解为什么要进入项目复述" class="headerlink" title="GPU 调度理解为什么要进入项目复述"></a>GPU 调度理解为什么要进入项目复述</h3><p>这一天也系统复盘了 GPU 显存和调度基础：</p>
+<ul>
+<li>显存由模型权重、KV cache、激活和临时工作区组成。</li>
+<li>prefill 偏计算密集，decode 偏内存带宽。</li>
+<li>batch 提高吞吐，但会增加显存压力、排队时间和尾延迟。</li>
+<li>真实调度要考虑队列、配额、优先级、bin packing、抢占和多租户隔离。</li>
+</ul>
+<p>这里最重要的不是“我已经做了 GPU 调度平台”，而是要准确表述真实性边界：当前只是完成概念理解和项目映射，没有实现真实生产级 GPU 调度系统。</p>
+<h2 id="Redis、RabbitMQ-和-JWT-为什么正好在这一天补上"><a href="#Redis、RabbitMQ-和-JWT-为什么正好在这一天补上" class="headerlink" title="Redis、RabbitMQ 和 JWT 为什么正好在这一天补上"></a>Redis、RabbitMQ 和 JWT 为什么正好在这一天补上</h2><p>因为一旦系统进入“多步动作 + 可能中断 + 可能重试 + 可能异步执行”的阶段，就必须考虑恢复、幂等和授权边界。</p>
+<h3 id="Redis：Checkpoint-只负责短期恢复"><a href="#Redis：Checkpoint-只负责短期恢复" class="headerlink" title="Redis：Checkpoint 只负责短期恢复"></a>Redis：Checkpoint 只负责短期恢复</h3><p>这次学习里给出了明确的 checkpoint 设计：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">agent:run:{tenant}:{run_id}</span><br></pre></td></tr></tbody></table></figure>
+
+<p>保存内容包括 round、status、observations 摘要、已使用 signatures、deadline 和 version，并结合 TTL 与 <code>version + Lua/CAS</code> 避免并发覆盖。</p>
+<p>但边界也讲得很清楚：Redis 只适合做短期恢复和排障，不适合作为长期真相源。完整 prompt、PDF 正文和 JWT 也不能写进去。</p>
+<h3 id="RabbitMQ：异步报告必须把幂等和恢复做全"><a href="#RabbitMQ：异步报告必须把幂等和恢复做全" class="headerlink" title="RabbitMQ：异步报告必须把幂等和恢复做全"></a>RabbitMQ：异步报告必须把幂等和恢复做全</h3><p>这次整理的关键点包括：</p>
+<ul>
+<li>API 创建 task 与 outbox 事件</li>
+<li>使用 publisher confirm、durable queue/message、manual ACK</li>
+<li>以 <code>task_id</code> 或 idempotency key 保证任务幂等</li>
+<li>ACK 丢失重投时返回已有结果，而不是重复生成</li>
+<li>失败消息有限重试后进入 DLQ</li>
+</ul>
+<p>这些内容和 Bounded Agent 是直接相连的：如果工具链将来进入异步执行，恢复逻辑必须知道哪些动作已经做过、哪些副作用必须幂等、哪些结果可以复用。</p>
+<h3 id="JWT：合法-Token-不等于有权调所有工具"><a href="#JWT：合法-Token-不等于有权调所有工具" class="headerlink" title="JWT：合法 Token 不等于有权调所有工具"></a>JWT：合法 Token 不等于有权调所有工具</h3><p>这一天对授权边界的总结也很到位：</p>
+<ul>
+<li>Authentication 解决“你是谁”</li>
+<li>Authorization 解决“你能对什么资源做什么”</li>
+</ul>
+<p>在工具调用场景下，真正可信的权限来源只能是服务端构造的 <code>ExecutionContext</code>，而不是 prompt 或 observation 里自称的身份。系统需要校验 tenant、资源归属、tool permission、配额，以及异步 Worker 场景下的重新授权，避免 IDOR 或越权调用。</p>
+<h2 id="这次最值得保留的项目话术"><a href="#这次最值得保留的项目话术" class="headerlink" title="这次最值得保留的项目话术"></a>这次最值得保留的项目话术</h2><p>如果要用一段话总结 Day 6，我会这样说：</p>
+<blockquote>
+<p>我保留了外层确定性的 RAG Workflow，只把多步工具选择放进一个 bounded agent loop。Planner 会根据 goal 和 observations 动态选择摘要、指标或报告工具，但受到白名单、最多三次工具调用、五轮规划、20 秒 deadline、重复动作检测和 Verify 节点约束。系统因此具备 Plan-Act-Observe-Replan 的闭环能力，但仍然是可测试、可审计、可降级的 Workflow-Orchestrated Bounded Agent，而不是开放式自由 Agent。</p>
+</blockquote>
+<p>这段话的价值在于，它既说明了这次确实补上了动态能力，也没有把尚未完成的长期 memory、多 Agent、分布式 runtime 或真实 GPU 调度平台讲成已经落地的成果。</p>
+<h2 id="Day-6-完成了什么，也明确没完成什么"><a href="#Day-6-完成了什么，也明确没完成什么" class="headerlink" title="Day 6 完成了什么，也明确没完成什么"></a>Day 6 完成了什么，也明确没完成什么</h2><p>从当天学习记录看，已经完成和固定下来的内容包括：</p>
+<ul>
+<li>在现有 Workflow 内加入 Bounded Agent 闭环</li>
+<li>增加结构化动作、工具白名单和服务端 payload builder</li>
+<li>加入动作去重、预算终止、失败回退和报告后置</li>
+<li>补齐相关测试，记录为 <code>47 passed</code></li>
+<li>完成 AI Infra、Redis checkpoint、RabbitMQ 异步恢复、JWT Tool 授权的项目化学习整理</li>
+</ul>
+<p>同时也明确保留了边界：</p>
+<ul>
+<li>还没有真实长期 memory</li>
+<li>还没有多 Agent 协作</li>
+<li>还没有生产级分布式 Agent Runtime</li>
+<li>还没有真实 DeepSeek Planner 质量验证</li>
+<li>还没有真实 Redis、RabbitMQ、GPU 环境下的生产演示</li>
+</ul>
+<p>这类边界表述并不是“保守”，而是工程上必要的准确性。系统真正可信，不只是因为它做了什么，还因为它明确知道自己还没做什么。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Love</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2026/07/21/2026-07-21-bounded-agent-loop-ai-infra/">http://example.com/2026/07/21/2026-07-21-bounded-agent-loop-ai-infra/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">避风港</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Agent/">Agent</a><a class="post-meta__tags" href="/tags/RAG/">RAG</a><a class="post-meta__tags" href="/tags/Workflow/">Workflow</a><a class="post-meta__tags" href="/tags/AI-Infra/">AI Infra</a><a class="post-meta__tags" href="/tags/Redis/">Redis</a><a class="post-meta__tags" href="/tags/RabbitMQ/">RabbitMQ</a><a class="post-meta__tags" href="/tags/JWT/">JWT</a></div><div class="post_share"><div class="social-share" data-image="/img/gou.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/07/20/2026-07-20-tool-enabled-workflow/" title="多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2026/07/16/2026-07-16-agentic-rag-workflow-design/" title="多媒体取证 Agent 学习笔记：Day 1 从现有 RAG 到 Agentic Workflow 设计"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-16</div><div class="title">多媒体取证 Agent 学习笔记：Day 1 从现有 RAG 到 Agentic Workflow 设计</div></div></a></div><div><a href="/2026/07/20/2026-07-20-tool-enabled-workflow/" title="多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-20</div><div class="title">多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层</div></div></a></div><div><a href="/2026/05/31/2026-05-31-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/" title="多媒体取证 Agent 学习笔记：从项目骨架到 PDF 上传解析"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-05-31</div><div class="title">多媒体取证 Agent 学习笔记：从项目骨架到 PDF 上传解析</div></div></a></div><div><a href="/2026/06/01/2026-06-01-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-RAG%E5%9F%BA%E7%A1%80%E9%93%BE%E8%B7%AF/" title="多媒体取证 Agent 学习笔记：RAG 基础链路跑通"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-01</div><div class="title">多媒体取证 Agent 学习笔记：RAG 基础链路跑通</div></div></a></div><div><a href="/2026/06/02/2026-06-02-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-%E5%89%8D%E7%AB%AF%E9%97%AE%E7%AD%94%E4%B8%8E%E6%9D%A5%E6%BA%90%E9%A1%B5%E7%A0%81/" title="多媒体取证 Agent 学习笔记：前端问答与来源页码追踪"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-02</div><div class="title">多媒体取证 Agent 学习笔记：前端问答与来源页码追踪</div></div></a></div><div><a href="/2026/06/06/2026-06-06-%E5%A4%9A%E5%AA%92%E4%BD%93%E5%8F%96%E8%AF%81Agent%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0-Embedding-Chroma%E4%B8%8ELLM%E6%80%BB%E7%BB%93/" title="多媒体取证 Agent 学习笔记：Embedding + Chroma 与 LLM 总结"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-06-06</div><div class="title">多媒体取证 Agent 学习笔记：Embedding + Chroma 与 LLM 总结</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/gou.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">Love</div><div class="author-info__description">归途也还可爱</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">33</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">39</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/nice020310/nice020310.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/nice020310" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_72757552" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1490166708@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E6%AC%A1%E5%8D%87%E7%BA%A7%E7%9C%9F%E6%AD%A3%E8%A7%A3%E5%86%B3%E4%BB%80%E4%B9%88%E9%97%AE%E9%A2%98"><span class="toc-number">1.</span> <span class="toc-text">这次升级真正解决什么问题</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%A4%96%E5%B1%82-Workflow-%E4%B8%8D%E5%8A%A8%EF%BC%8C%E5%8F%AA%E6%8A%8A%E5%8A%A8%E6%80%81%E5%86%B3%E7%AD%96%E6%94%BE%E5%88%B0%E5%86%85%E5%B1%82"><span class="toc-number">2.</span> <span class="toc-text">外层 Workflow 不动，只把动态决策放到内层</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bounded-Agent-%E6%9C%80%E5%B0%8F%E9%97%AD%E7%8E%AF%E9%95%BF%E4%BB%80%E4%B9%88%E6%A0%B7"><span class="toc-number">3.</span> <span class="toc-text">Bounded Agent 最小闭环长什么样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E6%AC%A1%E6%8A%8A%E5%93%AA%E4%BA%9B%E8%BE%B9%E7%95%8C%E7%9C%9F%E6%AD%A3%E5%B7%A5%E7%A8%8B%E5%8C%96%E4%BA%86"><span class="toc-number">4.</span> <span class="toc-text">这次把哪些边界真正工程化了</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#1-%E5%B7%A5%E5%85%B7%E7%99%BD%E5%90%8D%E5%8D%95%E5%92%8C%E7%BB%93%E6%9E%84%E5%8C%96%E5%8A%A8%E4%BD%9C"><span class="toc-number">4.1.</span> <span class="toc-text">1. 工具白名单和结构化动作</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#2-%E9%A2%84%E7%AE%97%E4%B8%8A%E9%99%90"><span class="toc-number">4.2.</span> <span class="toc-text">2. 预算上限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#3-%E9%87%8D%E5%A4%8D%E5%8A%A8%E4%BD%9C%E6%A3%80%E6%B5%8B"><span class="toc-number">4.3.</span> <span class="toc-text">3. 重复动作检测</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#4-%E6%8A%A5%E5%91%8A%E5%B7%A5%E5%85%B7%E5%90%8E%E7%BD%AE"><span class="toc-number">4.4.</span> <span class="toc-text">4. 报告工具后置</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E6%AC%A1%E5%AD%A6%E4%B9%A0%E9%87%8C%E7%9A%84-AI-Infra%EF%BC%8C%E4%B8%8D%E6%98%AF%E6%97%81%E6%94%AF%EF%BC%8C%E8%80%8C%E6%98%AF-Agent-%E7%BA%A6%E6%9D%9F%E7%9A%84%E7%8E%B0%E5%AE%9E%E4%BE%9D%E6%8D%AE"><span class="toc-number">5.</span> <span class="toc-text">这次学习里的 AI Infra，不是旁支，而是 Agent 约束的现实依据</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E7%90%86%E9%93%BE%E8%B7%AF%E4%B8%BA%E4%BB%80%E4%B9%88%E5%86%B3%E5%AE%9A-Agent-%E9%A2%84%E7%AE%97"><span class="toc-number">5.1.</span> <span class="toc-text">推理链路为什么决定 Agent 预算</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GPU-%E8%B0%83%E5%BA%A6%E7%90%86%E8%A7%A3%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%BF%9B%E5%85%A5%E9%A1%B9%E7%9B%AE%E5%A4%8D%E8%BF%B0"><span class="toc-number">5.2.</span> <span class="toc-text">GPU 调度理解为什么要进入项目复述</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Redis%E3%80%81RabbitMQ-%E5%92%8C-JWT-%E4%B8%BA%E4%BB%80%E4%B9%88%E6%AD%A3%E5%A5%BD%E5%9C%A8%E8%BF%99%E4%B8%80%E5%A4%A9%E8%A1%A5%E4%B8%8A"><span class="toc-number">6.</span> <span class="toc-text">Redis、RabbitMQ 和 JWT 为什么正好在这一天补上</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Redis%EF%BC%9ACheckpoint-%E5%8F%AA%E8%B4%9F%E8%B4%A3%E7%9F%AD%E6%9C%9F%E6%81%A2%E5%A4%8D"><span class="toc-number">6.1.</span> <span class="toc-text">Redis：Checkpoint 只负责短期恢复</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RabbitMQ%EF%BC%9A%E5%BC%82%E6%AD%A5%E6%8A%A5%E5%91%8A%E5%BF%85%E9%A1%BB%E6%8A%8A%E5%B9%82%E7%AD%89%E5%92%8C%E6%81%A2%E5%A4%8D%E5%81%9A%E5%85%A8"><span class="toc-number">6.2.</span> <span class="toc-text">RabbitMQ：异步报告必须把幂等和恢复做全</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#JWT%EF%BC%9A%E5%90%88%E6%B3%95-Token-%E4%B8%8D%E7%AD%89%E4%BA%8E%E6%9C%89%E6%9D%83%E8%B0%83%E6%89%80%E6%9C%89%E5%B7%A5%E5%85%B7"><span class="toc-number">6.3.</span> <span class="toc-text">JWT：合法 Token 不等于有权调所有工具</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E6%AC%A1%E6%9C%80%E5%80%BC%E5%BE%97%E4%BF%9D%E7%95%99%E7%9A%84%E9%A1%B9%E7%9B%AE%E8%AF%9D%E6%9C%AF"><span class="toc-number">7.</span> <span class="toc-text">这次最值得保留的项目话术</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Day-6-%E5%AE%8C%E6%88%90%E4%BA%86%E4%BB%80%E4%B9%88%EF%BC%8C%E4%B9%9F%E6%98%8E%E7%A1%AE%E6%B2%A1%E5%AE%8C%E6%88%90%E4%BB%80%E4%B9%88"><span class="toc-number">8.</span> <span class="toc-text">Day 6 完成了什么，也明确没完成什么</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/21/2026-07-21-bounded-agent-loop-ai-infra/" title="多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束">多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束</a><time datetime="2026-07-21T13:30:00.000Z" title="发表于 2026-07-21 21:30:00">2026-07-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/20/2026-07-20-tool-enabled-workflow/" title="多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层">多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层</a><time datetime="2026-07-20T14:15:00.000Z" title="发表于 2026-07-20 22:15:00">2026-07-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/19/2026-07-19-workflow-coverage-verification/" title="多媒体取证 Agent 学习笔记：把串行 RAG 拆成可验证 Workflow">多媒体取证 Agent 学习笔记：把串行 RAG 拆成可验证 Workflow</a><time datetime="2026-07-19T13:30:00.000Z" title="发表于 2026-07-19 21:30:00">2026-07-19</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/18/2026-07-18-rerank-and-relevance-gate/" title="多媒体取证 Agent 学习笔记：Day 3 加入 Cross-Encoder Rerank 与证据不足拒答">多媒体取证 Agent 学习笔记：Day 3 加入 Cross-Encoder Rerank 与证据不足拒答</a><time datetime="2026-07-18T13:00:00.000Z" title="发表于 2026-07-18 21:00:00">2026-07-18</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/17/2026-07-17-hybrid-retrieval-upgrade/" title="多媒体取证 Agent 学习笔记：Day 2 用 Hybrid Retrieval 替换单路 Dense Top-K">多媒体取证 Agent 学习笔记：Day 2 用 Hybrid Retrieval 替换单路 Dense Top-K</a><time datetime="2026-07-17T13:00:00.000Z" title="发表于 2026-07-17 21:00:00">2026-07-17</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2026 By Love</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="60198" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
