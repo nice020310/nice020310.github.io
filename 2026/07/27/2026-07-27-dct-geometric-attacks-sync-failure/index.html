@@ -1,0 +1,366 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>数字水印学习笔记：几何攻击下的同步失效与诊断 | 避风港</title><meta name="author" content="Love"><meta name="copyright" content="Love"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="今天整理的是 Day 3 的一组最小复现实验，主题集中在 DCT 水印面对两类几何变换时的表现差异：裁剪（crop）与缩放（resize）。这次记录的重点不是泛化结论，而是把当天已经完成的接口定义、测试证据、配对实验结果和结论边界整理成一篇可以公开复查的笔记。 这一天实际确认了什么先给出当天最重要的判断：  裁剪造成的问题不只是一部分水印信号被删除，还会打乱分块边界或消息位置，导致同步失效。 缩放">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字水印学习笔记：几何攻击下的同步失效与诊断">
+<meta property="og:url" content="http://example.com/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/index.html">
+<meta property="og:site_name" content="避风港">
+<meta property="og:description" content="今天整理的是 Day 3 的一组最小复现实验，主题集中在 DCT 水印面对两类几何变换时的表现差异：裁剪（crop）与缩放（resize）。这次记录的重点不是泛化结论，而是把当天已经完成的接口定义、测试证据、配对实验结果和结论边界整理成一篇可以公开复查的笔记。 这一天实际确认了什么先给出当天最重要的判断：  裁剪造成的问题不只是一部分水印信号被删除，还会打乱分块边界或消息位置，导致同步失效。 缩放">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/gou.png">
+<meta property="article:published_time" content="2026-07-27T12:30:00.000Z">
+<meta property="article:modified_time" content="2026-07-27T14:04:05.827Z">
+<meta property="article:author" content="Love">
+<meta property="article:tag" content="数字水印">
+<meta property="article:tag" content="图像处理">
+<meta property="article:tag" content="DCT">
+<meta property="article:tag" content="几何攻击">
+<meta property="article:tag" content="鲁棒性实验">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/gou.png"><link rel="shortcut icon" href="/img/meigui.png"><link rel="canonical" href="http://example.com/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '数字水印学习笔记：几何攻击下的同步失效与诊断',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-07-27 22:04:05'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/gou.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">47</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div><div class="menus_item study-menu-entry"><a class="site-page" href="/study/"><i class="fa-fw fas fa-stopwatch"></i><span> 学习打卡</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/luori.png')"><nav id="nav"><span id="blog-info"><a href="/" title="避风港"><span class="site-name">避风港</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div><div class="menus_item study-menu-entry"><a class="site-page" href="/study/"><i class="fa-fw fas fa-stopwatch"></i><span> 学习打卡</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">数字水印学习笔记：几何攻击下的同步失效与诊断</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-27T12:30:00.000Z" title="发表于 2026-07-27 20:30:00">2026-07-27</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-27T14:04:05.827Z" title="更新于 2026-07-27 22:04:05">2026-07-27</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%A7%91%E7%A0%94%E5%AD%A6%E4%B9%A0/">科研学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="数字水印学习笔记：几何攻击下的同步失效与诊断"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('/img/luori.png');"></div><article class="post-content" id="article-container"><p>今天整理的是 Day 3 的一组最小复现实验，主题集中在 DCT 水印面对两类几何变换时的表现差异：裁剪（crop）与缩放（resize）。这次记录的重点不是泛化结论，而是把当天已经完成的接口定义、测试证据、配对实验结果和结论边界整理成一篇可以公开复查的笔记。</p>
+<h2 id="这一天实际确认了什么"><a href="#这一天实际确认了什么" class="headerlink" title="这一天实际确认了什么"></a>这一天实际确认了什么</h2><p>先给出当天最重要的判断：</p>
+<ul>
+<li>裁剪造成的问题不只是一部分水印信号被删除，还会打乱分块边界或消息位置，导致同步失效。</li>
+<li>缩放即使会改变像素值，也不必然破坏当前 DCT 方案中的系数大小关系。</li>
+<li><code>BER</code> 上升不能直接等价成“视觉质量一定变差”；它更可能说明同步、局部载体或解码路径出了问题。</li>
+</ul>
+<p>这次观察基于固定设置：</p>
+<ul>
+<li>方法：DCT coefficient relation</li>
+<li>payload：256-bit</li>
+<li>消息种子：101</li>
+<li>水印强度：<code>delta=40</code></li>
+<li>裁剪：每侧 <code>0.10</code></li>
+<li>缩放：先缩到 <code>0.75</code>，再恢复原尺寸</li>
+</ul>
+<h2 id="两个攻击接口的语义"><a href="#两个攻击接口的语义" class="headerlink" title="两个攻击接口的语义"></a>两个攻击接口的语义</h2><p>当天先把攻击语义收紧，避免后续实验表里出现看似能比较、其实含义不一致的参数。</p>
+<h3 id="CropAttack"><a href="#CropAttack" class="headerlink" title="CropAttack"></a>CropAttack</h3><ul>
+<li><code>severity=r</code> 表示上下左右每一侧都裁掉比例 <code>r</code></li>
+<li>单个维度的保留比例是 <code>1 - 2r</code></li>
+<li>合法范围是 <code>0 &lt;= r &lt; 0.5</code></li>
+</ul>
+<p>核心切片逻辑如下：</p>
+<figure class="highlight python"><table><tbody><tr><td class="code"><pre><span class="line">cropped = image[</span><br><span class="line">    crop_y : height - crop_y,</span><br><span class="line">    crop_x : width - crop_x,</span><br><span class="line">]</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这一定义直接对应“每侧裁掉多少”，适合记录几何偏移对同步的影响。</p>
+<h3 id="ResizeAttack"><a href="#ResizeAttack" class="headerlink" title="ResizeAttack"></a>ResizeAttack</h3><ul>
+<li><code>severity=scale</code> 表示中间图像的边长缩放倍数</li>
+<li>当前只定义“缩小后恢复”的流程</li>
+<li>合法范围是 <code>0 &lt; scale &lt;= 1</code></li>
+<li>当前插值方式为 Bilinear Interpolation</li>
+</ul>
+<p>这里最容易混淆的一点是：<code>scale=0.75</code> 表示保留为原边长的 <code>75%</code>，不是“裁掉 75%”。</p>
+<h2 id="工程证据"><a href="#工程证据" class="headerlink" title="工程证据"></a>工程证据</h2><p>当天已经落到代码和测试里的证据包括：</p>
+<ul>
+<li><code>CropAttack</code>：7 项聚焦测试通过</li>
+<li><code>ResizeAttack</code>：7 项聚焦测试通过</li>
+<li>Day 3 实验运行器：1 项聚焦测试通过</li>
+<li>完整回归测试：72 项通过</li>
+</ul>
+<p>对应的 Git 保存点为：</p>
+<ul>
+<li><code>40e3a78 feat: add deterministic crop attack</code></li>
+<li><code>074d670 feat: add resize resampling attack</code></li>
+<li><code>71a75dd feat: compare paired geometric attack conditions</code></li>
+<li><code>1fdd627 chore: configure Day 3 geometric evaluation</code></li>
+</ul>
+<p>这些证据能说明攻击组件和实验管线在当前仓库配置下已经可以复现，但不能单独证明“所有 DCT 水印都具备相同鲁棒性”。</p>
+<h2 id="配对实验里实际看到的结果"><a href="#配对实验里实际看到的结果" class="headerlink" title="配对实验里实际看到的结果"></a>配对实验里实际看到的结果</h2><p>四张内置样本图像的结果如下：</p>
+<table>
+<thead>
+<tr>
+<th>图像</th>
+<th align="right">无攻击 BER</th>
+<th align="right">裁剪 0.10 BER</th>
+<th align="right">缩放 0.75 BER</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>camera</td>
+<td align="right">0.0000</td>
+<td align="right">0.5703</td>
+<td align="right">0.0000</td>
+</tr>
+<tr>
+<td>coins</td>
+<td align="right">0.0000</td>
+<td align="right">0.4648</td>
+<td align="right">0.0000</td>
+</tr>
+<tr>
+<td>moon</td>
+<td align="right">0.0000</td>
+<td align="right">0.5117</td>
+<td align="right">0.0000</td>
+</tr>
+<tr>
+<td>page</td>
+<td align="right">0.0000</td>
+<td align="right">0.5039</td>
+<td align="right">0.0039</td>
+</tr>
+</tbody></table>
+<p>这组结果的核心观察很直接：</p>
+<ul>
+<li>每侧裁剪 <code>0.10</code> 后，四张图的 <code>BER</code> 都接近 <code>0.5</code></li>
+<li>缩放到 <code>0.75</code> 再恢复后，三张图 <code>BER</code> 仍为 <code>0</code></li>
+<li><code>page</code> 只出现了 1 个 bit 错误，对应 <code>BER=0.0039</code></li>
+</ul>
+<p>如果只看这次实验，当前 DCT 方法对缩放恢复后的耐受性明显强于中心裁剪。但这个说法必须带着边界条件一起读，因为两种攻击强度并没有天然统一的等价标尺，不能据此宣布“裁剪一定比缩放更强”。</p>
+<h2 id="为什么裁剪和缩放会表现得这么不一样"><a href="#为什么裁剪和缩放会表现得这么不一样" class="headerlink" title="为什么裁剪和缩放会表现得这么不一样"></a>为什么裁剪和缩放会表现得这么不一样</h2><p>当前更合理的解释不是“缩放更温和”，而是两种变换破坏系统的方式不同。</p>
+<p>裁剪的问题在于：</p>
+<ul>
+<li>裁掉的区域里，水印载体本身直接消失</li>
+<li>如果偏移量不是 <code>8</code> 的倍数，新 DCT 块会混入原本相邻块的像素</li>
+<li>分块边界和消息位置会一起失去同步</li>
+</ul>
+<p>缩放的问题在于：</p>
+<ul>
+<li>像素样本会被重新插值</li>
+<li>高频信息会有损失</li>
+<li>但恢复原尺寸后，当前实验里的分块网格起点与尺寸没有被打乱</li>
+</ul>
+<p>所以在 <code>delta=40</code> 的设置下，缩放虽然改变了像素，却没有像裁剪那样同时打断分块同步和消息位置同步。</p>
+<h2 id="一个很关键的诊断：整数块裁剪"><a href="#一个很关键的诊断：整数块裁剪" class="headerlink" title="一个很关键的诊断：整数块裁剪"></a>一个很关键的诊断：整数块裁剪</h2><p>当天还做了一个很有价值的诊断：在 <code>camera</code> 上每侧恰好裁掉 8 像素，也就是一个整数 DCT 块。</p>
+<p>结果是：</p>
+<ul>
+<li>朴素顺序解码的 <code>BER</code> 仍然是 <code>0.5117</code></li>
+<li>如果按原块坐标重新配对，<code>BER</code> 可以降到 <code>0</code></li>
+<li>可重新配对的水印位有 186 个</li>
+</ul>
+<p>这说明一个容易被忽略的问题：有时候“信号仍在”，但“系统仍然解不出来”。失败不一定来自信号彻底损坏，也可能来自消息块序号已经偏移，而当前端到端系统缺少同步恢复机制。</p>
+<h2 id="这次结论的边界"><a href="#这次结论的边界" class="headerlink" title="这次结论的边界"></a>这次结论的边界</h2><p>这篇笔记只对应今天这组明确存在的实验事实，不扩写到更大的结论范围。</p>
+<p>当前能成立的是：</p>
+<ul>
+<li>在这 4 张样本图上，<code>delta=40</code> 的 DCT 方法对每侧 <code>0.10</code> 裁剪很敏感</li>
+<li>在同样设置下，对 <code>0.75</code> 缩放恢复相对稳定</li>
+<li>同步失效是解释 BER 异常的重要线索</li>
+</ul>
+<p>当前还不能直接推出的是：</p>
+<ul>
+<li>所有 DCT 水印方法都呈现相同趋势</li>
+<li>所有整数块裁剪都能通过重新配对恢复</li>
+<li>当前系统已经具备几何攻击下的稳定同步恢复能力</li>
+</ul>
+<p>后续如果继续做这条线，更值得补的不是重复描述 BER，而是把同步标记、偏移搜索或重复嵌入等恢复机制放进正式实验里。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Love</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/">http://example.com/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">避风港</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E5%AD%97%E6%B0%B4%E5%8D%B0/">数字水印</a><a class="post-meta__tags" href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/">图像处理</a><a class="post-meta__tags" href="/tags/DCT/">DCT</a><a class="post-meta__tags" href="/tags/%E5%87%A0%E4%BD%95%E6%94%BB%E5%87%BB/">几何攻击</a><a class="post-meta__tags" href="/tags/%E9%B2%81%E6%A3%92%E6%80%A7%E5%AE%9E%E9%AA%8C/">鲁棒性实验</a></div><div class="post_share"><div class="social-share" data-image="/img/gou.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/07/26/2026-07-26-watermark-jpeg-awgn-attacks/" title="数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2026/07/26/2026-07-26-watermark-jpeg-awgn-attacks/" title="数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-26</div><div class="title">数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/gou.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">Love</div><div class="author-info__description">归途也还可爱</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">35</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">47</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/nice020310/nice020310.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/nice020310" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_72757552" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1490166708@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E4%B8%80%E5%A4%A9%E5%AE%9E%E9%99%85%E7%A1%AE%E8%AE%A4%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">这一天实际确认了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%A4%E4%B8%AA%E6%94%BB%E5%87%BB%E6%8E%A5%E5%8F%A3%E7%9A%84%E8%AF%AD%E4%B9%89"><span class="toc-number">2.</span> <span class="toc-text">两个攻击接口的语义</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CropAttack"><span class="toc-number">2.1.</span> <span class="toc-text">CropAttack</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#ResizeAttack"><span class="toc-number">2.2.</span> <span class="toc-text">ResizeAttack</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E7%A8%8B%E8%AF%81%E6%8D%AE"><span class="toc-number">3.</span> <span class="toc-text">工程证据</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E9%85%8D%E5%AF%B9%E5%AE%9E%E9%AA%8C%E9%87%8C%E5%AE%9E%E9%99%85%E7%9C%8B%E5%88%B0%E7%9A%84%E7%BB%93%E6%9E%9C"><span class="toc-number">4.</span> <span class="toc-text">配对实验里实际看到的结果</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A3%81%E5%89%AA%E5%92%8C%E7%BC%A9%E6%94%BE%E4%BC%9A%E8%A1%A8%E7%8E%B0%E5%BE%97%E8%BF%99%E4%B9%88%E4%B8%8D%E4%B8%80%E6%A0%B7"><span class="toc-number">5.</span> <span class="toc-text">为什么裁剪和缩放会表现得这么不一样</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%80%E4%B8%AA%E5%BE%88%E5%85%B3%E9%94%AE%E7%9A%84%E8%AF%8A%E6%96%AD%EF%BC%9A%E6%95%B4%E6%95%B0%E5%9D%97%E8%A3%81%E5%89%AA"><span class="toc-number">6.</span> <span class="toc-text">一个很关键的诊断：整数块裁剪</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E8%BF%99%E6%AC%A1%E7%BB%93%E8%AE%BA%E7%9A%84%E8%BE%B9%E7%95%8C"><span class="toc-number">7.</span> <span class="toc-text">这次结论的边界</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/" title="数字水印学习笔记：几何攻击下的同步失效与诊断">数字水印学习笔记：几何攻击下的同步失效与诊断</a><time datetime="2026-07-27T12:30:00.000Z" title="发表于 2026-07-27 20:30:00">2026-07-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/26/2026-07-26-watermark-jpeg-awgn-attacks/" title="数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验">数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验</a><time datetime="2026-07-26T02:30:00.000Z" title="发表于 2026-07-26 10:30:00">2026-07-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/21/2026-07-21-bounded-agent-loop-ai-infra/" title="多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束">多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束</a><time datetime="2026-07-21T13:30:00.000Z" title="发表于 2026-07-21 21:30:00">2026-07-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/20/2026-07-20-tool-enabled-workflow/" title="多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层">多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层</a><time datetime="2026-07-20T14:15:00.000Z" title="发表于 2026-07-20 22:15:00">2026-07-20</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/19/2026-07-19-workflow-coverage-verification/" title="多媒体取证 Agent 学习笔记：把串行 RAG 拆成可验证 Workflow">多媒体取证 Agent 学习笔记：把串行 RAG 拆成可验证 Workflow</a><time datetime="2026-07-19T13:30:00.000Z" title="发表于 2026-07-19 21:30:00">2026-07-19</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2026 By Love</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="60198" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>

@@ -4,6 +4,39 @@
   
     
     <entry>
+      <title>数字水印学习笔记：几何攻击下的同步失效与诊断</title>
+      <link href="/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/"/>
+      <url>/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/</url>
+      
+        <content type="html"><![CDATA[<p>今天整理的是 Day 3 的一组最小复现实验，主题集中在 DCT 水印面对两类几何变换时的表现差异：裁剪（crop）与缩放（resize）。这次记录的重点不是泛化结论，而是把当天已经完成的接口定义、测试证据、配对实验结果和结论边界整理成一篇可以公开复查的笔记。</p><h2 id="这一天实际确认了什么"><a href="#这一天实际确认了什么" class="headerlink" title="这一天实际确认了什么"></a>这一天实际确认了什么</h2><p>先给出当天最重要的判断：</p><ul><li>裁剪造成的问题不只是一部分水印信号被删除，还会打乱分块边界或消息位置，导致同步失效。</li><li>缩放即使会改变像素值，也不必然破坏当前 DCT 方案中的系数大小关系。</li><li><code>BER</code> 上升不能直接等价成“视觉质量一定变差”；它更可能说明同步、局部载体或解码路径出了问题。</li></ul><p>这次观察基于固定设置：</p><ul><li>方法：DCT coefficient relation</li><li>payload：256-bit</li><li>消息种子：101</li><li>水印强度：<code>delta=40</code></li><li>裁剪：每侧 <code>0.10</code></li><li>缩放：先缩到 <code>0.75</code>，再恢复原尺寸</li></ul><h2 id="两个攻击接口的语义"><a href="#两个攻击接口的语义" class="headerlink" title="两个攻击接口的语义"></a>两个攻击接口的语义</h2><p>当天先把攻击语义收紧，避免后续实验表里出现看似能比较、其实含义不一致的参数。</p><h3 id="CropAttack"><a href="#CropAttack" class="headerlink" title="CropAttack"></a>CropAttack</h3><ul><li><code>severity=r</code> 表示上下左右每一侧都裁掉比例 <code>r</code></li><li>单个维度的保留比例是 <code>1 - 2r</code></li><li>合法范围是 <code>0 &lt;= r &lt; 0.5</code></li></ul><p>核心切片逻辑如下：</p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">cropped = image[</span><br><span class="line">    crop_y : height - crop_y,</span><br><span class="line">    crop_x : width - crop_x,</span><br><span class="line">]</span><br></pre></td></tr></table></figure><p>这一定义直接对应“每侧裁掉多少”，适合记录几何偏移对同步的影响。</p><h3 id="ResizeAttack"><a href="#ResizeAttack" class="headerlink" title="ResizeAttack"></a>ResizeAttack</h3><ul><li><code>severity=scale</code> 表示中间图像的边长缩放倍数</li><li>当前只定义“缩小后恢复”的流程</li><li>合法范围是 <code>0 &lt; scale &lt;= 1</code></li><li>当前插值方式为 Bilinear Interpolation</li></ul><p>这里最容易混淆的一点是：<code>scale=0.75</code> 表示保留为原边长的 <code>75%</code>，不是“裁掉 75%”。</p><h2 id="工程证据"><a href="#工程证据" class="headerlink" title="工程证据"></a>工程证据</h2><p>当天已经落到代码和测试里的证据包括：</p><ul><li><code>CropAttack</code>：7 项聚焦测试通过</li><li><code>ResizeAttack</code>：7 项聚焦测试通过</li><li>Day 3 实验运行器：1 项聚焦测试通过</li><li>完整回归测试：72 项通过</li></ul><p>对应的 Git 保存点为：</p><ul><li><code>40e3a78 feat: add deterministic crop attack</code></li><li><code>074d670 feat: add resize resampling attack</code></li><li><code>71a75dd feat: compare paired geometric attack conditions</code></li><li><code>1fdd627 chore: configure Day 3 geometric evaluation</code></li></ul><p>这些证据能说明攻击组件和实验管线在当前仓库配置下已经可以复现，但不能单独证明“所有 DCT 水印都具备相同鲁棒性”。</p><h2 id="配对实验里实际看到的结果"><a href="#配对实验里实际看到的结果" class="headerlink" title="配对实验里实际看到的结果"></a>配对实验里实际看到的结果</h2><p>四张内置样本图像的结果如下：</p><table><thead><tr><th>图像</th><th align="right">无攻击 BER</th><th align="right">裁剪 0.10 BER</th><th align="right">缩放 0.75 BER</th></tr></thead><tbody><tr><td>camera</td><td align="right">0.0000</td><td align="right">0.5703</td><td align="right">0.0000</td></tr><tr><td>coins</td><td align="right">0.0000</td><td align="right">0.4648</td><td align="right">0.0000</td></tr><tr><td>moon</td><td align="right">0.0000</td><td align="right">0.5117</td><td align="right">0.0000</td></tr><tr><td>page</td><td align="right">0.0000</td><td align="right">0.5039</td><td align="right">0.0039</td></tr></tbody></table><p>这组结果的核心观察很直接：</p><ul><li>每侧裁剪 <code>0.10</code> 后，四张图的 <code>BER</code> 都接近 <code>0.5</code></li><li>缩放到 <code>0.75</code> 再恢复后，三张图 <code>BER</code> 仍为 <code>0</code></li><li><code>page</code> 只出现了 1 个 bit 错误，对应 <code>BER=0.0039</code></li></ul><p>如果只看这次实验，当前 DCT 方法对缩放恢复后的耐受性明显强于中心裁剪。但这个说法必须带着边界条件一起读，因为两种攻击强度并没有天然统一的等价标尺，不能据此宣布“裁剪一定比缩放更强”。</p><h2 id="为什么裁剪和缩放会表现得这么不一样"><a href="#为什么裁剪和缩放会表现得这么不一样" class="headerlink" title="为什么裁剪和缩放会表现得这么不一样"></a>为什么裁剪和缩放会表现得这么不一样</h2><p>当前更合理的解释不是“缩放更温和”，而是两种变换破坏系统的方式不同。</p><p>裁剪的问题在于：</p><ul><li>裁掉的区域里，水印载体本身直接消失</li><li>如果偏移量不是 <code>8</code> 的倍数，新 DCT 块会混入原本相邻块的像素</li><li>分块边界和消息位置会一起失去同步</li></ul><p>缩放的问题在于：</p><ul><li>像素样本会被重新插值</li><li>高频信息会有损失</li><li>但恢复原尺寸后，当前实验里的分块网格起点与尺寸没有被打乱</li></ul><p>所以在 <code>delta=40</code> 的设置下，缩放虽然改变了像素，却没有像裁剪那样同时打断分块同步和消息位置同步。</p><h2 id="一个很关键的诊断：整数块裁剪"><a href="#一个很关键的诊断：整数块裁剪" class="headerlink" title="一个很关键的诊断：整数块裁剪"></a>一个很关键的诊断：整数块裁剪</h2><p>当天还做了一个很有价值的诊断：在 <code>camera</code> 上每侧恰好裁掉 8 像素，也就是一个整数 DCT 块。</p><p>结果是：</p><ul><li>朴素顺序解码的 <code>BER</code> 仍然是 <code>0.5117</code></li><li>如果按原块坐标重新配对，<code>BER</code> 可以降到 <code>0</code></li><li>可重新配对的水印位有 186 个</li></ul><p>这说明一个容易被忽略的问题：有时候“信号仍在”，但“系统仍然解不出来”。失败不一定来自信号彻底损坏，也可能来自消息块序号已经偏移，而当前端到端系统缺少同步恢复机制。</p><h2 id="这次结论的边界"><a href="#这次结论的边界" class="headerlink" title="这次结论的边界"></a>这次结论的边界</h2><p>这篇笔记只对应今天这组明确存在的实验事实，不扩写到更大的结论范围。</p><p>当前能成立的是：</p><ul><li>在这 4 张样本图上，<code>delta=40</code> 的 DCT 方法对每侧 <code>0.10</code> 裁剪很敏感</li><li>在同样设置下，对 <code>0.75</code> 缩放恢复相对稳定</li><li>同步失效是解释 BER 异常的重要线索</li></ul><p>当前还不能直接推出的是：</p><ul><li>所有 DCT 水印方法都呈现相同趋势</li><li>所有整数块裁剪都能通过重新配对恢复</li><li>当前系统已经具备几何攻击下的稳定同步恢复能力</li></ul><p>后续如果继续做这条线，更值得补的不是重复描述 BER，而是把同步标记、偏移搜索或重复嵌入等恢复机制放进正式实验里。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 科研学习 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 数字水印 </tag>
+            
+            <tag> 图像处理 </tag>
+            
+            <tag> DCT </tag>
+            
+            <tag> 几何攻击 </tag>
+            
+            <tag> 鲁棒性实验 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验</title>
       <link href="/2026/07/26/2026-07-26-watermark-jpeg-awgn-attacks/"/>
       <url>/2026/07/26/2026-07-26-watermark-jpeg-awgn-attacks/</url>
