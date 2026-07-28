@@ -4,6 +4,39 @@
   
     
     <entry>
+      <title>数字水印学习笔记：QIM、公平比较与威胁模型</title>
+      <link href="/2026/07/28/2026-07-28-qim-watermark-fair-comparison/"/>
+      <url>/2026/07/28/2026-07-28-qim-watermark-fair-comparison/</url>
+      
+        <content type="html"><![CDATA[<p>今天整理的是 Day 4 的一组最小复现实验，核心不是继续堆更多攻击条件，而是把当天真正确认下来的三件事说清楚：QIM 的判决机制是什么，DCT 与 QIM 应该怎样做相对公平的比较，以及在水印检测场景里最小威胁模型应该怎样表述。</p><p>这篇笔记只记录今天已经落到笔记、代码和实验输出中的内容，不补写尚未完成的结论。</p><h2 id="今天实际确认了什么"><a href="#今天实际确认了什么" class="headerlink" title="今天实际确认了什么"></a>今天实际确认了什么</h2><p>先给出当天最重要的判断：</p><ul><li>QIM 的嵌入阶段是“按目标 bit 选择量化集合”，不是“按距离决定嵌入哪个 bit”。</li><li>DCT 和 QIM 都使用 <code>delta</code>，但两者的物理含义不同，不能拿同名参数直接做公平比较。</li><li>在当前这组失真匹配实验里，QIM 在 JPEG quality 20 下优于当前 DCT 基线；但在所测缩放条件下，当前 DCT 基线平均 BER 更低。</li></ul><h2 id="QIM-的最小工作机制"><a href="#QIM-的最小工作机制" class="headerlink" title="QIM 的最小工作机制"></a>QIM 的最小工作机制</h2><p>QIM（Quantization Index Modulation，量化索引调制）为 bit 0 和 bit 1 规定两套相互错开的量化点。以 <code>delta=10</code> 为例：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">bit 0 集合：0、10、20、30……</span><br><span class="line">bit 1 集合：5、15、25、35……</span><br></pre></td></tr></table></figure><p>在当前实现里：</p><ul><li>嵌入时，消息 bit 已经预先确定，嵌入器把目标系数移动到该 bit 对应集合中的最近点。</li><li>提取时，再根据攻击后系数更接近哪套集合来恢复 bit。</li><li>如果两个集合距离恰好相等，当前规则固定判为 0，用来保证实现的确定性和可复现性。</li></ul><p>这一天补清楚的一个关键点是：距离判决发生在提取阶段，而不是嵌入阶段。</p><h2 id="为什么不能直接拿同名-delta-比方法"><a href="#为什么不能直接拿同名-delta-比方法" class="headerlink" title="为什么不能直接拿同名 delta 比方法"></a>为什么不能直接拿同名 <code>delta</code> 比方法</h2><p>今天最重要的方法论收获，不是“哪种方法更强”，而是“怎么比才算合理”。</p><p>虽然 DCT 与 QIM 都有名为 <code>delta</code> 的参数，但它们控制的对象不同：</p><ul><li>DCT <code>delta</code> 控制的是两个系数之间的目标间隔。</li><li>QIM <code>delta</code> 控制的是单个系数的量化格间距。</li></ul><p>因此，<code>delta</code> 数值相同，不代表失真预算相同。今天采用的做法，是固定相同图像、相同消息种子、相同 payload 和相同攻击条件，再用嵌入后的平均 PSNR 对齐两种方法的失真水平：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">DCT delta=40：平均 Embedding PSNR 45.4833 dB</span><br><span class="line">QIM delta=100：平均 Embedding PSNR 45.5033 dB</span><br><span class="line">平均差距：0.0201 dB</span><br></pre></td></tr></table></figure><p>这个设置能说明“平均失真大致匹配”，但不能推出“每张图像上的失真完全相同”。所以它适合做当前这一步的小规模对照，不适合被扩写成一般性结论。</p><h2 id="今天看到的实验结果"><a href="#今天看到的实验结果" class="headerlink" title="今天看到的实验结果"></a>今天看到的实验结果</h2><p>实验范围是 4 张 <code>skimage.data</code> 内置图、256-bit payload、相同消息种子。</p><h3 id="JPEG-条件"><a href="#JPEG-条件" class="headerlink" title="JPEG 条件"></a>JPEG 条件</h3><table><thead><tr><th align="right">JPEG quality</th><th align="right">DCT BER</th><th align="right">QIM BER</th></tr></thead><tbody><tr><td align="right">30</td><td align="right">0.0000</td><td align="right">0.0000</td></tr><tr><td align="right">20</td><td align="right">0.4355</td><td align="right">0.0000</td></tr><tr><td align="right">10</td><td align="right">0.4834</td><td align="right">0.5000</td></tr></tbody></table><p>可以直接确认的是：</p><ul><li>在 quality 50 到 90 的区间，两种方法都接近零 BER，区分度不高。</li><li>把测试点压到 quality 20 后，QIM 明显优于当前 DCT 基线。</li><li>到 quality 10 时，两者都已经接近随机解码。</li></ul><h3 id="Resize-条件"><a href="#Resize-条件" class="headerlink" title="Resize 条件"></a>Resize 条件</h3><table><thead><tr><th align="right">Resize scale</th><th align="right">DCT BER</th><th align="right">QIM BER</th></tr></thead><tbody><tr><td align="right">0.90</td><td align="right">0.0107</td><td align="right">0.0361</td></tr><tr><td align="right">0.75</td><td align="right">0.0010</td><td align="right">0.0303</td></tr><tr><td align="right">0.50</td><td align="right">0.0186</td><td align="right">0.4951</td></tr></tbody></table><p>这组结果说明，在今天这套实现和参数下：</p><ul><li>当前 DCT 基线在所测缩放条件下平均 BER 更低。</li><li>QIM 在 <code>scale=0.50</code> 时已经接近随机解码。</li></ul><h2 id="最小-Threat-Model-的写法"><a href="#最小-Threat-Model-的写法" class="headerlink" title="最小 Threat Model 的写法"></a>最小 Threat Model 的写法</h2><p>今天还把一个常见混淆点拆开了：攻击者知道什么、被允许付出多少代价、以及什么才算攻击成功，是三件不同的事。</p><p>当前笔记里采用的最小 Threat Model 是：平台检测固定版权水印，攻击者知道算法，但不知道秘密嵌入位置，希望在图像仍可正常使用时，让检测器输出“不存在水印”。</p><table><thead><tr><th>字段</th><th>定义</th></tr></thead><tbody><tr><td>Attack Goal</td><td>Detection Evasion</td></tr><tr><td>Attacker Knowledge</td><td>灰盒：知道算法，不知道秘密嵌入位置</td></tr><tr><td>Attack Budget</td><td>图像质量、查询次数和计算量受限；例如 Attack PSNR 不低于 35 dB</td></tr><tr><td>Success Criterion</td><td>检测器输出“不存在水印”，同时满足预算约束</td></tr></tbody></table><p>其中有两点尤其值得单独记住：</p><ul><li>“不知道秘密嵌入位置”属于知识限制，不是预算限制。</li><li>如果任务输出的只是“存在 &#x2F; 不存在”，应优先报告漏报、误报、TPR、FPR 等检测指标；<code>BER</code> 主要用于消息解码场景。</li></ul><h2 id="工程证据与结论边界"><a href="#工程证据与结论边界" class="headerlink" title="工程证据与结论边界"></a>工程证据与结论边界</h2><p>今天这篇记录背后的工程证据包括：</p><ul><li>QIM 基线实现已完成，9 项聚焦测试通过。</li><li>完整测试 83 项通过。</li><li>对照实验最终输出目录为 <code>outputs/day04-qim-dct-matched/20260728T075213Z</code>。</li><li>对应 Git 保存点包括 <code>dcb4c30</code>、<code>dcdb121</code>、<code>ecaf822</code>、<code>ee20edd</code> 和 <code>0db3543</code>。</li></ul><p>基于今天证据，当前能成立的结论是：</p><ul><li>在这组失真匹配和 4 张样本图上，QIM 在 JPEG quality 20 下优于当前 DCT 基线。</li><li>在所测缩放条件下，当前 DCT 基线平均 BER 低于 QIM。</li><li>同名参数不代表公平比较，方法对照必须先匹配外部预算。</li></ul><p>当前还不能直接推出的是：</p><ul><li>QIM 或 DCT 在整体上更优。</li><li>今天这组结果能代表更大样本、更多攻击类型或正式数据集。</li><li>仅凭 BER 就能完整描述检测型水印系统的安全性。</li></ul><p>如果下一步继续推进，更值得补的是更正式的数据集、更多攻击类型，以及检测指标与容量&#x2F;成本的联合比较，而不是只重复调同一组参数。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 科研学习 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 数字水印 </tag>
+            
+            <tag> 图像处理 </tag>
+            
+            <tag> DCT </tag>
+            
+            <tag> QIM </tag>
+            
+            <tag> 实验设计 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>数字水印学习笔记：几何攻击下的同步失效与诊断</title>
       <link href="/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/"/>
       <url>/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/</url>

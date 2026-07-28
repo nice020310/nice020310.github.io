@@ -1,0 +1,379 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0,viewport-fit=cover"><title>数字水印学习笔记：QIM、公平比较与威胁模型 | 避风港</title><meta name="author" content="Love"><meta name="copyright" content="Love"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="今天整理的是 Day 4 的一组最小复现实验，核心不是继续堆更多攻击条件，而是把当天真正确认下来的三件事说清楚：QIM 的判决机制是什么，DCT 与 QIM 应该怎样做相对公平的比较，以及在水印检测场景里最小威胁模型应该怎样表述。 这篇笔记只记录今天已经落到笔记、代码和实验输出中的内容，不补写尚未完成的结论。 今天实际确认了什么先给出当天最重要的判断：  QIM 的嵌入阶段是“按目标 bit 选择">
+<meta property="og:type" content="article">
+<meta property="og:title" content="数字水印学习笔记：QIM、公平比较与威胁模型">
+<meta property="og:url" content="http://example.com/2026/07/28/2026-07-28-qim-watermark-fair-comparison/index.html">
+<meta property="og:site_name" content="避风港">
+<meta property="og:description" content="今天整理的是 Day 4 的一组最小复现实验，核心不是继续堆更多攻击条件，而是把当天真正确认下来的三件事说清楚：QIM 的判决机制是什么，DCT 与 QIM 应该怎样做相对公平的比较，以及在水印检测场景里最小威胁模型应该怎样表述。 这篇笔记只记录今天已经落到笔记、代码和实验输出中的内容，不补写尚未完成的结论。 今天实际确认了什么先给出当天最重要的判断：  QIM 的嵌入阶段是“按目标 bit 选择">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://example.com/img/gou.png">
+<meta property="article:published_time" content="2026-07-28T12:30:00.000Z">
+<meta property="article:modified_time" content="2026-07-28T14:03:30.914Z">
+<meta property="article:author" content="Love">
+<meta property="article:tag" content="数字水印">
+<meta property="article:tag" content="图像处理">
+<meta property="article:tag" content="DCT">
+<meta property="article:tag" content="QIM">
+<meta property="article:tag" content="实验设计">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/img/gou.png"><link rel="shortcut icon" href="/img/meigui.png"><link rel="canonical" href="http://example.com/2026/07/28/2026-07-28-qim-watermark-fair-comparison/index.html"><link rel="preconnect" href="//cdn.jsdelivr.net"><link rel="preconnect" href="//busuanzi.ibruce.info"><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = {
+  root: '/',
+  algolia: undefined,
+  localSearch: {"path":"/search.xml","preload":false,"top_n_per_article":1,"unescape":false,"languages":{"hits_empty":"找不到您查询的内容：${query}","hits_stats":"共找到 ${hits} 篇文章"}},
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  dateSuffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false,
+  percent: {
+    toc: true,
+    rightside: true,
+  },
+  autoDarkmode: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '数字水印学习笔记：QIM、公平比较与威胁模型',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2026-07-28 22:03:30'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+    win.getCSS = (url,id = false) => new Promise((resolve, reject) => {
+      const link = document.createElement('link')
+      link.rel = 'stylesheet'
+      link.href = url
+      if (id) link.id = id
+      link.onerror = reject
+      link.onload = link.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        link.onload = link.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(link)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 6.3.0"></head><body><div id="web_bg"></div><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/gou.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">36</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">49</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><hr><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div><div class="menus_item study-menu-entry"><a class="site-page" href="/study/"><i class="fa-fw fas fa-stopwatch"></i><span> 学习打卡</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('/img/luori.png')"><nav id="nav"><span id="blog-info"><a href="/" title="避风港"><span class="site-name">避风港</span></a></span><div id="menus"><div id="search-button"><a class="site-page social-icon search" href="javascript:void(0);"><i class="fas fa-search fa-fw"></i><span> 搜索</span></a></div><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fas fa-home"></i><span> 主页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-graduation-cap"></i><span> 博文</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/"><i class="fa-fw fa fa-archive"></i><span> 分类</span></a></li><li><a class="site-page child" href="/tags/"><i class="fa-fw fa fa-tags"></i><span> 标签</span></a></li><li><a class="site-page child" href="/archives/"><i class="fa-fw fa fa-folder-open"></i><span> 归档</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fas fa-list"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/shuoshuo/"><i class="fa-fw fa fa-comments-o"></i><span> 分享</span></a></li><li><a class="site-page child" href="/photos/"><i class="fa-fw fa fa-camera-retro"></i><span> 相册</span></a></li><li><a class="site-page child" href="/music/"><i class="fa-fw fa fa-music"></i><span> 音乐</span></a></li><li><a class="site-page child" href="/movies/"><i class="fa-fw fas fa-video"></i><span> 影视</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/links/"><i class="fa-fw fa fa-link"></i><span> 友链</span></a></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-paper-plane"></i><span> 留言板</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fas fa-heart"></i><span> 关于笔者</span></a></div><div class="menus_item study-menu-entry"><a class="site-page" href="/study/"><i class="fa-fw fas fa-stopwatch"></i><span> 学习打卡</span></a></div></div><div id="toggle-menu"><a class="site-page" href="javascript:void(0);"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">数字水印学习笔记：QIM、公平比较与威胁模型</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2026-07-28T12:30:00.000Z" title="发表于 2026-07-28 20:30:00">2026-07-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2026-07-28T14:03:30.914Z" title="更新于 2026-07-28 22:03:30">2026-07-28</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E7%A7%91%E7%A0%94%E5%AD%A6%E4%B9%A0/">科研学习</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="数字水印学习笔记：QIM、公平比较与威胁模型"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><div class="top-img" style="background-image: url('/img/luori.png');"></div><article class="post-content" id="article-container"><p>今天整理的是 Day 4 的一组最小复现实验，核心不是继续堆更多攻击条件，而是把当天真正确认下来的三件事说清楚：QIM 的判决机制是什么，DCT 与 QIM 应该怎样做相对公平的比较，以及在水印检测场景里最小威胁模型应该怎样表述。</p>
+<p>这篇笔记只记录今天已经落到笔记、代码和实验输出中的内容，不补写尚未完成的结论。</p>
+<h2 id="今天实际确认了什么"><a href="#今天实际确认了什么" class="headerlink" title="今天实际确认了什么"></a>今天实际确认了什么</h2><p>先给出当天最重要的判断：</p>
+<ul>
+<li>QIM 的嵌入阶段是“按目标 bit 选择量化集合”，不是“按距离决定嵌入哪个 bit”。</li>
+<li>DCT 和 QIM 都使用 <code>delta</code>，但两者的物理含义不同，不能拿同名参数直接做公平比较。</li>
+<li>在当前这组失真匹配实验里，QIM 在 JPEG quality 20 下优于当前 DCT 基线；但在所测缩放条件下，当前 DCT 基线平均 BER 更低。</li>
+</ul>
+<h2 id="QIM-的最小工作机制"><a href="#QIM-的最小工作机制" class="headerlink" title="QIM 的最小工作机制"></a>QIM 的最小工作机制</h2><p>QIM（Quantization Index Modulation，量化索引调制）为 bit 0 和 bit 1 规定两套相互错开的量化点。以 <code>delta=10</code> 为例：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">bit 0 集合：0、10、20、30……</span><br><span class="line">bit 1 集合：5、15、25、35……</span><br></pre></td></tr></tbody></table></figure>
+
+<p>在当前实现里：</p>
+<ul>
+<li>嵌入时，消息 bit 已经预先确定，嵌入器把目标系数移动到该 bit 对应集合中的最近点。</li>
+<li>提取时，再根据攻击后系数更接近哪套集合来恢复 bit。</li>
+<li>如果两个集合距离恰好相等，当前规则固定判为 0，用来保证实现的确定性和可复现性。</li>
+</ul>
+<p>这一天补清楚的一个关键点是：距离判决发生在提取阶段，而不是嵌入阶段。</p>
+<h2 id="为什么不能直接拿同名-delta-比方法"><a href="#为什么不能直接拿同名-delta-比方法" class="headerlink" title="为什么不能直接拿同名 delta 比方法"></a>为什么不能直接拿同名 <code>delta</code> 比方法</h2><p>今天最重要的方法论收获，不是“哪种方法更强”，而是“怎么比才算合理”。</p>
+<p>虽然 DCT 与 QIM 都有名为 <code>delta</code> 的参数，但它们控制的对象不同：</p>
+<ul>
+<li>DCT <code>delta</code> 控制的是两个系数之间的目标间隔。</li>
+<li>QIM <code>delta</code> 控制的是单个系数的量化格间距。</li>
+</ul>
+<p>因此，<code>delta</code> 数值相同，不代表失真预算相同。今天采用的做法，是固定相同图像、相同消息种子、相同 payload 和相同攻击条件，再用嵌入后的平均 PSNR 对齐两种方法的失真水平：</p>
+<figure class="highlight text"><table><tbody><tr><td class="code"><pre><span class="line">DCT delta=40：平均 Embedding PSNR 45.4833 dB</span><br><span class="line">QIM delta=100：平均 Embedding PSNR 45.5033 dB</span><br><span class="line">平均差距：0.0201 dB</span><br></pre></td></tr></tbody></table></figure>
+
+<p>这个设置能说明“平均失真大致匹配”，但不能推出“每张图像上的失真完全相同”。所以它适合做当前这一步的小规模对照，不适合被扩写成一般性结论。</p>
+<h2 id="今天看到的实验结果"><a href="#今天看到的实验结果" class="headerlink" title="今天看到的实验结果"></a>今天看到的实验结果</h2><p>实验范围是 4 张 <code>skimage.data</code> 内置图、256-bit payload、相同消息种子。</p>
+<h3 id="JPEG-条件"><a href="#JPEG-条件" class="headerlink" title="JPEG 条件"></a>JPEG 条件</h3><table>
+<thead>
+<tr>
+<th align="right">JPEG quality</th>
+<th align="right">DCT BER</th>
+<th align="right">QIM BER</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">30</td>
+<td align="right">0.0000</td>
+<td align="right">0.0000</td>
+</tr>
+<tr>
+<td align="right">20</td>
+<td align="right">0.4355</td>
+<td align="right">0.0000</td>
+</tr>
+<tr>
+<td align="right">10</td>
+<td align="right">0.4834</td>
+<td align="right">0.5000</td>
+</tr>
+</tbody></table>
+<p>可以直接确认的是：</p>
+<ul>
+<li>在 quality 50 到 90 的区间，两种方法都接近零 BER，区分度不高。</li>
+<li>把测试点压到 quality 20 后，QIM 明显优于当前 DCT 基线。</li>
+<li>到 quality 10 时，两者都已经接近随机解码。</li>
+</ul>
+<h3 id="Resize-条件"><a href="#Resize-条件" class="headerlink" title="Resize 条件"></a>Resize 条件</h3><table>
+<thead>
+<tr>
+<th align="right">Resize scale</th>
+<th align="right">DCT BER</th>
+<th align="right">QIM BER</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="right">0.90</td>
+<td align="right">0.0107</td>
+<td align="right">0.0361</td>
+</tr>
+<tr>
+<td align="right">0.75</td>
+<td align="right">0.0010</td>
+<td align="right">0.0303</td>
+</tr>
+<tr>
+<td align="right">0.50</td>
+<td align="right">0.0186</td>
+<td align="right">0.4951</td>
+</tr>
+</tbody></table>
+<p>这组结果说明，在今天这套实现和参数下：</p>
+<ul>
+<li>当前 DCT 基线在所测缩放条件下平均 BER 更低。</li>
+<li>QIM 在 <code>scale=0.50</code> 时已经接近随机解码。</li>
+</ul>
+<h2 id="最小-Threat-Model-的写法"><a href="#最小-Threat-Model-的写法" class="headerlink" title="最小 Threat Model 的写法"></a>最小 Threat Model 的写法</h2><p>今天还把一个常见混淆点拆开了：攻击者知道什么、被允许付出多少代价、以及什么才算攻击成功，是三件不同的事。</p>
+<p>当前笔记里采用的最小 Threat Model 是：平台检测固定版权水印，攻击者知道算法，但不知道秘密嵌入位置，希望在图像仍可正常使用时，让检测器输出“不存在水印”。</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>定义</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Attack Goal</td>
+<td>Detection Evasion</td>
+</tr>
+<tr>
+<td>Attacker Knowledge</td>
+<td>灰盒：知道算法，不知道秘密嵌入位置</td>
+</tr>
+<tr>
+<td>Attack Budget</td>
+<td>图像质量、查询次数和计算量受限；例如 Attack PSNR 不低于 35 dB</td>
+</tr>
+<tr>
+<td>Success Criterion</td>
+<td>检测器输出“不存在水印”，同时满足预算约束</td>
+</tr>
+</tbody></table>
+<p>其中有两点尤其值得单独记住：</p>
+<ul>
+<li>“不知道秘密嵌入位置”属于知识限制，不是预算限制。</li>
+<li>如果任务输出的只是“存在 / 不存在”，应优先报告漏报、误报、TPR、FPR 等检测指标；<code>BER</code> 主要用于消息解码场景。</li>
+</ul>
+<h2 id="工程证据与结论边界"><a href="#工程证据与结论边界" class="headerlink" title="工程证据与结论边界"></a>工程证据与结论边界</h2><p>今天这篇记录背后的工程证据包括：</p>
+<ul>
+<li>QIM 基线实现已完成，9 项聚焦测试通过。</li>
+<li>完整测试 83 项通过。</li>
+<li>对照实验最终输出目录为 <code>outputs/day04-qim-dct-matched/20260728T075213Z</code>。</li>
+<li>对应 Git 保存点包括 <code>dcb4c30</code>、<code>dcdb121</code>、<code>ecaf822</code>、<code>ee20edd</code> 和 <code>0db3543</code>。</li>
+</ul>
+<p>基于今天证据，当前能成立的结论是：</p>
+<ul>
+<li>在这组失真匹配和 4 张样本图上，QIM 在 JPEG quality 20 下优于当前 DCT 基线。</li>
+<li>在所测缩放条件下，当前 DCT 基线平均 BER 低于 QIM。</li>
+<li>同名参数不代表公平比较，方法对照必须先匹配外部预算。</li>
+</ul>
+<p>当前还不能直接推出的是：</p>
+<ul>
+<li>QIM 或 DCT 在整体上更优。</li>
+<li>今天这组结果能代表更大样本、更多攻击类型或正式数据集。</li>
+<li>仅凭 BER 就能完整描述检测型水印系统的安全性。</li>
+</ul>
+<p>如果下一步继续推进，更值得补的是更正式的数据集、更多攻击类型，以及检测指标与容量/成本的联合比较，而不是只重复调同一组参数。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://example.com">Love</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://example.com/2026/07/28/2026-07-28-qim-watermark-fair-comparison/">http://example.com/2026/07/28/2026-07-28-qim-watermark-fair-comparison/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://example.com" target="_blank">避风港</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/%E6%95%B0%E5%AD%97%E6%B0%B4%E5%8D%B0/">数字水印</a><a class="post-meta__tags" href="/tags/%E5%9B%BE%E5%83%8F%E5%A4%84%E7%90%86/">图像处理</a><a class="post-meta__tags" href="/tags/DCT/">DCT</a><a class="post-meta__tags" href="/tags/QIM/">QIM</a><a class="post-meta__tags" href="/tags/%E5%AE%9E%E9%AA%8C%E8%AE%BE%E8%AE%A1/">实验设计</a></div><div class="post_share"><div class="social-share" data-image="/img/gou.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer=""></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/" title="数字水印学习笔记：几何攻击下的同步失效与诊断"><div class="cover" style="background: var(--default-bg-color)"></div><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">数字水印学习笔记：几何攻击下的同步失效与诊断</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/" title="数字水印学习笔记：几何攻击下的同步失效与诊断"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-27</div><div class="title">数字水印学习笔记：几何攻击下的同步失效与诊断</div></div></a></div><div><a href="/2026/07/26/2026-07-26-watermark-jpeg-awgn-attacks/" title="数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验"><div class="cover" style="background: var(--default-bg-color)"></div><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2026-07-26</div><div class="title">数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/gou.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"></div><div class="author-info__name">Love</div><div class="author-info__description">归途也还可爱</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">36</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">49</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">16</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/nice020310/nice020310.github.io"><i class="fab fa-github"></i><span>Follow Me</span></a><div class="card-info-social-icons is-center"><a class="social-icon" href="https://github.com/nice020310" target="_blank" title="Github"><i class="fab fa-github" style="color: #24292e;"></i></a><a class="social-icon" href="https://blog.csdn.net/m0_72757552" target="_blank" title="CSDN"><i class="fa fa-book-open"></i></a><a class="social-icon" href="mailto:1490166708@qq.com" target="_blank" title="Email"><i class="fas fa-envelope" style="color: #4a7dbe;"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8A%E5%A4%A9%E5%AE%9E%E9%99%85%E7%A1%AE%E8%AE%A4%E4%BA%86%E4%BB%80%E4%B9%88"><span class="toc-number">1.</span> <span class="toc-text">今天实际确认了什么</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#QIM-%E7%9A%84%E6%9C%80%E5%B0%8F%E5%B7%A5%E4%BD%9C%E6%9C%BA%E5%88%B6"><span class="toc-number">2.</span> <span class="toc-text">QIM 的最小工作机制</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%B8%8D%E8%83%BD%E7%9B%B4%E6%8E%A5%E6%8B%BF%E5%90%8C%E5%90%8D-delta-%E6%AF%94%E6%96%B9%E6%B3%95"><span class="toc-number">3.</span> <span class="toc-text">为什么不能直接拿同名 delta 比方法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8A%E5%A4%A9%E7%9C%8B%E5%88%B0%E7%9A%84%E5%AE%9E%E9%AA%8C%E7%BB%93%E6%9E%9C"><span class="toc-number">4.</span> <span class="toc-text">今天看到的实验结果</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#JPEG-%E6%9D%A1%E4%BB%B6"><span class="toc-number">4.1.</span> <span class="toc-text">JPEG 条件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Resize-%E6%9D%A1%E4%BB%B6"><span class="toc-number">4.2.</span> <span class="toc-text">Resize 条件</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%9C%80%E5%B0%8F-Threat-Model-%E7%9A%84%E5%86%99%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">最小 Threat Model 的写法</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%B7%A5%E7%A8%8B%E8%AF%81%E6%8D%AE%E4%B8%8E%E7%BB%93%E8%AE%BA%E8%BE%B9%E7%95%8C"><span class="toc-number">6.</span> <span class="toc-text">工程证据与结论边界</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/28/2026-07-28-qim-watermark-fair-comparison/" title="数字水印学习笔记：QIM、公平比较与威胁模型">数字水印学习笔记：QIM、公平比较与威胁模型</a><time datetime="2026-07-28T12:30:00.000Z" title="发表于 2026-07-28 20:30:00">2026-07-28</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/27/2026-07-27-dct-geometric-attacks-sync-failure/" title="数字水印学习笔记：几何攻击下的同步失效与诊断">数字水印学习笔记：几何攻击下的同步失效与诊断</a><time datetime="2026-07-27T12:30:00.000Z" title="发表于 2026-07-27 20:30:00">2026-07-27</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/26/2026-07-26-watermark-jpeg-awgn-attacks/" title="数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验">数字水印学习笔记：JPEG 与 AWGN 攻击的最小可复现实验</a><time datetime="2026-07-26T02:30:00.000Z" title="发表于 2026-07-26 10:30:00">2026-07-26</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/21/2026-07-21-bounded-agent-loop-ai-infra/" title="多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束">多媒体取证 Agent 学习笔记：Bounded Agent 闭环与 AI Infra 约束</a><time datetime="2026-07-21T13:30:00.000Z" title="发表于 2026-07-21 21:30:00">2026-07-21</time></div></div><div class="aside-list-item no-cover"><div class="content"><a class="title" href="/2026/07/20/2026-07-20-tool-enabled-workflow/" title="多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层">多媒体取证 Agent 学习笔记：给 RAG Workflow 加上受约束工具层</a><time datetime="2026-07-20T14:15:00.000Z" title="发表于 2026-07-20 22:15:00">2026-07-20</time></div></div></div></div></div></div></main><footer id="footer" style="background: transparent"><div id="footer-wrap"><div class="copyright">©2020 - 2026 By Love</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><span class="scroll-percent"></span><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox/fancybox.umd.min.js"></script><div class="js-pjax"></div><div class="aplayer no-destroy" data-id="60198" data-server="netease" data-type="playlist" data-fixed="true" data-autoplay="true"> </div><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/activate-power-mode.min.js"></script><script>POWERMODE.colorful = true;
+POWERMODE.shake = true;
+POWERMODE.mobile = true;
+document.body.addEventListener('input', POWERMODE);
+</script><script id="click-heart" src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/dist/click-heart.min.js" async="async" mobile="false"></script><script src="https://cdn.jsdelivr.net/npm/pjax/pjax.min.js"></script><script>let pjaxSelectors = ["head > title","#config-diff","#body-wrap","#rightside-config-hide","#rightside-config-show",".js-pjax"]
+
+var pjax = new Pjax({
+  elements: 'a:not([target="_blank"])',
+  selectors: pjaxSelectors,
+  cacheBust: false,
+  analytics: false,
+  scrollRestoration: false
+})
+
+document.addEventListener('pjax:send', function () {
+
+  // removeEventListener scroll 
+  window.tocScrollFn && window.removeEventListener('scroll', window.tocScrollFn)
+  window.scrollCollect && window.removeEventListener('scroll', scrollCollect)
+
+  document.getElementById('rightside').style.cssText = "opacity: ''; transform: ''"
+  
+  if (window.aplayers) {
+    for (let i = 0; i < window.aplayers.length; i++) {
+      if (!window.aplayers[i].options.fixed) {
+        window.aplayers[i].destroy()
+      }
+    }
+  }
+
+  typeof typed === 'object' && typed.destroy()
+
+  //reset readmode
+  const $bodyClassList = document.body.classList
+  $bodyClassList.contains('read-mode') && $bodyClassList.remove('read-mode')
+
+  typeof disqusjs === 'object' && disqusjs.destroy()
+})
+
+document.addEventListener('pjax:complete', function () {
+  window.refreshFn()
+
+  document.querySelectorAll('script[data-pjax]').forEach(item => {
+    const newScript = document.createElement('script')
+    const content = item.text || item.textContent || item.innerHTML || ""
+    Array.from(item.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value))
+    newScript.appendChild(document.createTextNode(content))
+    item.parentNode.replaceChild(newScript, item)
+  })
+
+  GLOBAL_CONFIG.islazyload && window.lazyLoadInstance.update()
+
+  typeof chatBtnFn === 'function' && chatBtnFn()
+  typeof panguInit === 'function' && panguInit()
+
+  // google analytics
+  typeof gtag === 'function' && gtag('config', '', {'page_path': window.location.pathname});
+
+  // baidu analytics
+  typeof _hmt === 'object' && _hmt.push(['_trackPageview',window.location.pathname]);
+
+  typeof loadMeting === 'function' && document.getElementsByClassName('aplayer').length && loadMeting()
+
+  // prismjs
+  typeof Prism === 'object' && Prism.highlightAll()
+})
+
+document.addEventListener('pjax:error', (e) => {
+  if (e.request.status === 404) {
+    pjax.loadUrl('/404.html')
+  }
+})</script><script async="" data-pjax="" src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script><div id="local-search"><div class="search-dialog"><nav class="search-nav"><span class="search-dialog-title">搜索</span><span id="loading-status"></span><button class="search-close-button"><i class="fas fa-times"></i></button></nav><div class="is-center" id="loading-database"><i class="fas fa-spinner fa-pulse"></i><span>  数据库加载中</span></div><div class="search-wrap"><div id="local-search-input"><div class="local-search-box"><input class="local-search-box--input" placeholder="搜索文章" type="text"></div></div><hr><div class="no-result" id="local-search-results"></div><div id="local-search-stats-wrap"></div></div></div><div id="search-mask"></div><script src="/js/search/local-search.js"></script></div></div></body></html>
