@@ -4,6 +4,72 @@
   
     
     <entry>
+      <title>今日学习记录：Softmax、交叉熵与 PyTorch Autograd</title>
+      <link href="/2026/08/02/2026-08-02-softmax-cross-entropy-autograd-notes/"/>
+      <url>/2026/08/02/2026-08-02-softmax-cross-entropy-autograd-notes/</url>
+      
+        <content type="html"><![CDATA[<p>今天整理的是 2026-08-02 已经写入 Obsidian 的两部分学习内容：一部分是对 Softmax、交叉熵、链式法则与 PyTorch autograd 的集中复盘，另一部分是把当天可确认的实验结果和证据边界收紧成可公开表述的事实。这里只记录原始笔记里已经出现的学习结论、测试结果和失败案例，不补写尚未完成的训练能力或工程成果。</p><h2 id="今天实际确认了什么"><a href="#今天实际确认了什么" class="headerlink" title="今天实际确认了什么"></a>今天实际确认了什么</h2><p>先收敛成几条当天已经能站住的判断：</p><ul><li>logits 是模型输出的原始打分，不是概率分布。</li><li>Softmax 负责把同一样本的一组 logits 转成和为 1 的概率。</li><li>class-index 分类里的交叉熵，本质上是对真实类别概率取负对数。</li><li>PyTorch <code>cross_entropy</code> 接收的是未归一化的 logits，而不是先做完 Softmax 的概率。</li><li><code>autograd</code> 通过 <code>requires_grad</code> 追踪计算图，再由 <code>backward()</code> 按链式法则回传梯度。</li><li><code>target</code> 在 class-index 场景下必须是 <code>torch.long</code>；若误传 <code>float</code>，会直接触发 dtype 错误。</li></ul><h2 id="Softmax、交叉熵和链式法则"><a href="#Softmax、交叉熵和链式法则" class="headerlink" title="Softmax、交叉熵和链式法则"></a>Softmax、交叉熵和链式法则</h2><p>当天笔记里最核心的一个手算例子是：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">softmax([0, ln3]) = [1/4, 3/4]</span><br><span class="line">cross entropy = -log(3/4)</span><br></pre></td></tr></table></figure><p>这组例子对应了两个关键点。</p><p>第一，Softmax 的结果来自指数归一化，而不是把原始分数直接当概率读。当天笔记特别纠正了一个容易混淆的点：<code>[1, 3]</code> 只是指数分子，不是最终概率；还必须除以总和 <code>4</code>，才得到 <code>[1/4, 3/4]</code>。</p><p>第二，交叉熵在 class-index 分类里关心的是“真实类别被分到的概率有多大”。如果真实类别概率越低，<code>-log(p_target)</code> 就越大，损失也越大。这次两样本例子里，最终记录下来的 loss 是：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">0.28768207245178085</span><br></pre></td></tr></table></figure><p>它与 <code>-log(3/4)</code> 一致，说明这个最小例子上的手算与程序结果对齐。</p><p>链式法则部分，当天不是停留在定义层面，而是做了两段确定性标量例子的梯度核对，最终得到两个结果：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">(u, y, dy/dx) = (7, 49, 42)</span><br><span class="line">(u, y, dy/dx) = (2, 8, 24)</span><br></pre></td></tr></table></figure><p>这组结果后来又被放进 <code>autograd</code> 示例和测试里，用来验证手算梯度与 <code>backward()</code> 的输出一致。</p><h2 id="PyTorch-autograd-与-dtype-故障复现"><a href="#PyTorch-autograd-与-dtype-故障复现" class="headerlink" title="PyTorch autograd 与 dtype 故障复现"></a>PyTorch autograd 与 dtype 故障复现</h2><p>今天真正有价值的一点，不只是“知道了概念”，而是把它落实成了可验证的最小实验。</p><p>当天确认下来的工程事实包括：</p><ul><li>两个 <code>autograd</code> 标量例子已经通过聚焦测试 <code>2/2</code>，并在全量回归里通过 <code>51/51</code>。</li><li>两样本 Softmax &#x2F; Cross Entropy 例子已经通过聚焦测试 <code>1/1</code>。</li><li>两样本 logits 对应的 Softmax 概率为 <code>[[0.25, 0.75], [0.75, 0.25]]</code>。</li><li>class-index target 为 <code>[1, 0]</code>，dtype 为 <code>torch.int64</code> 时，loss 可正常计算。</li></ul><p>当天还专门保留了一个失败案例，因为它比“顺利跑通”更能说明接口约束：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">expected scalar type Long but found Float</span><br></pre></td></tr></table></figure><p>这个错误出现在把 class-index target 误传成 <code>float</code> 的时候。改成 <code>torch.long</code> 之后，loss 恢复正常。这条记录的意义在于把 “target 要用 long” 从抽象规则，变成了一个已经实际复现并修正过的问题。</p><h2 id="今天能说到哪一步，不能说到哪一步"><a href="#今天能说到哪一步，不能说到哪一步" class="headerlink" title="今天能说到哪一步，不能说到哪一步"></a>今天能说到哪一步，不能说到哪一步</h2><p>当天笔记对证据边界写得比较克制，这一点值得保留。</p><p>目前可以公开确认的是：</p><ul><li>公式层面的最小例子已经被手算和测试同时验证。</li><li><code>requires_grad</code>、<code>backward()</code>、<code>grad</code> 和 <code>cross_entropy</code> 的基础接口约束已经在小样例上跑通。</li><li><code>float target</code> 导致的 dtype 错误已经被真实复现，并能通过 <code>torch.long</code> 修复。</li></ul><p>但同样不能把这一天的学习扩写成以下结论：</p><ul><li>不能据此声称已经完成完整训练循环。</li><li>不能据此声称已经验证模型收敛。</li><li>不能据此声称已经完成 GPU 性能实验。</li><li>不能据此声称已经通过 PyTorch 的独立限时考核。</li></ul><p>原因很直接：当天全部证据仍然来自固定 CPU 的小样例、聚焦测试和接口级故障复现。它足以说明概念和 API 约束正在被收紧，但还不足以证明更大规模训练与性能结论。</p><h2 id="还缺什么"><a href="#还缺什么" class="headerlink" title="还缺什么"></a>还缺什么</h2><p>按原始笔记，当前仍然明确未完成的内容包括：</p><ul><li>数学正式维度 20 题与 90% 考核尚未完成。</li><li>概率与梯度的综合题仍未完成。</li><li>PyTorch 方向还缺 Tensor 操作、广播、<code>nn.Module</code>、训练循环、显存与 profiler。</li><li>C++ 方向仍缺独立限时 B 门与独立 T 门。</li></ul><p>因此，今天更准确的定位不是“已经掌握完整深度学习训练链路”，而是“先把 Softmax、交叉熵、链式法则和 autograd 的最小闭环搞清楚，并把一个常见 dtype 坑踩实了”。</p><h2 id="明天的衔接点"><a href="#明天的衔接点" class="headerlink" title="明天的衔接点"></a>明天的衔接点</h2><p>原始笔记已经给出了下一学习块：</p><ul><li>PyTorch Tensor</li><li>广播</li><li><code>nn.Module</code></li><li>loss shape 故障</li></ul><p>这也是今天这篇公开记录的边界。它只负责把 2026 年 8 月 2 日已经学到、手算过、测试过、复现过的问题整理清楚，为后续继续进入 Tensor、模块化建模和训练流程打基础。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 科研学习 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 每日学习 </tag>
+            
+            <tag> PyTorch </tag>
+            
+            <tag> Softmax </tag>
+            
+            <tag> 交叉熵 </tag>
+            
+            <tag> Autograd </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>今日学习记录：ECC 纠错复盘与 C++ 文件统计实验</title>
+      <link href="/2026/08/01/2026-08-01-ecc-cpp-study-notes/"/>
+      <url>/2026/08/01/2026-08-01-ecc-cpp-study-notes/</url>
+      
+        <content type="html"><![CDATA[<p>今天整理的是 2026-08-01 两组已经完成并写入笔记的学习内容：一组来自数字水印方向，聚焦 ECC、有效载荷与最小水印链路诊断；另一组来自 C++ 基础训练，聚焦 <code>std::vector</code>、文件流、错误处理，以及 <code>-O0/-O2</code> 的端到端测量。这里仅记录当天已经在笔记、测试或实验结果中出现的内容，不补写尚未完成的成果。</p><h2 id="今天实际确认了什么"><a href="#今天实际确认了什么" class="headerlink" title="今天实际确认了什么"></a>今天实际确认了什么</h2><p>先给出当天最重要的几个判断：</p><ul><li>ECC 通过增加冗余换取纠错能力，但不会增加物理嵌入容量。</li><li>相同的 Raw BER 不一定对应相同的解码结果，错误分布会直接影响纠错是否成功。</li><li>当前最小水印链路已经接入 ECC，但这次诊断中解码前 Raw BER 为 0，因此不能把结果写成“ECC 把非零 BER 降为 0”。</li><li>在 C++ 练习里，<code>const</code> 引用、输出参数与标准错误&#x2F;退出码的区分，都是把程序从“能跑”推进到“可诊断”的关键。</li><li>在当前机器、当前编译器和当前输入下，<code>-O2</code> 相比 <code>-O0</code> 的端到端文件统计中位时间更低，但这个结果只说明本次测量环境下的观察，不能泛化成所有程序都同比例提速。</li></ul><h2 id="ECC、有效-Payload-与链路诊断"><a href="#ECC、有效-Payload-与链路诊断" class="headerlink" title="ECC、有效 Payload 与链路诊断"></a>ECC、有效 Payload 与链路诊断</h2><h3 id="ECC-在最小水印链路里的位置"><a href="#ECC-在最小水印链路里的位置" class="headerlink" title="ECC 在最小水印链路里的位置"></a>ECC 在最小水印链路里的位置</h3><p>当天笔记把 ECC 的最小工作链路整理成了下面这个顺序：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">原始消息 → ECC编码 → 冗余码字 → 水印嵌入</span><br><span class="line">攻击</span><br><span class="line">水印提取 → 含错误码字 → ECC解码 → 恢复原始消息</span><br></pre></td></tr></table></figure><p>这里最关键的理解是：ECC（Error-Correcting Code，纠错码）是用冗余换纠错，不是凭空增加载荷。物理嵌入容量固定时，编码后码字更长，有效信息位就会更少。</p><h3 id="三重复码与有效载荷"><a href="#三重复码与有效载荷" class="headerlink" title="三重复码与有效载荷"></a>三重复码与有效载荷</h3><p>这一天复盘的核心例子是三重复码：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">0 → 000</span><br><span class="line">1 → 111</span><br></pre></td></tr></table></figure><p>解码方式是 Majority Vote（多数表决）。如果某组三个 bit 里最多只有 1 个错误，就还能恢复；如果同组出现 2 个或 3 个错误，就会失败。</p><p>这对应的码率是：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">R = k / n = 1 / 3</span><br></pre></td></tr></table></figure><p>因此，若物理嵌入容量是 300 bit，三重复码最多只携带 100 个有效信息 bit。当天学习里一个重要收获，就是把“物理嵌入容量”“编码后 payload”“有效 payload”严格区分开，避免把编码后的总 bit 数误写成真实信息量。</p><h3 id="三类结果指标不能混写"><a href="#三类结果指标不能混写" class="headerlink" title="三类结果指标不能混写"></a>三类结果指标不能混写</h3><p>当天笔记明确区分了三个指标：</p><ul><li>Raw BER：纠错前码字比特错误率。</li><li>Decoded BER：纠错后消息比特错误率。</li><li>Message Success Rate：整条消息一位不差恢复的样本比例。</li></ul><p>这组区分很重要，因为即使 Raw BER 一样，错误是否集中在同一个重复组里，也可能让最终纠错结果完全不同。只报告平均 Raw BER，可能会掩盖 ECC 是否真正改善了解码结果。</p><h3 id="当前工程证据与边界"><a href="#当前工程证据与边界" class="headerlink" title="当前工程证据与边界"></a>当前工程证据与边界</h3><p>这一天已经落到工程侧的证据包括：</p><ul><li>重复码实现完成，12 项聚焦测试通过。</li><li>完整测试 95 项通过。</li><li>Git 保存点记录为 <code>0a0408d feat: add repetition-code ECC baseline</code>。</li></ul><p>最小水印链路诊断记录的是一组具体配置：<code>camera</code>、32-bit 有效消息、三重复码、96-bit 编码码字、DCT <code>delta=40</code>、Resize <code>scale=0.90</code>、消息种子 101。对应结果是：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">Raw bit errors = 0</span><br><span class="line">Raw BER = 0</span><br><span class="line">Decoded BER = 0</span><br><span class="line">Message Success = True</span><br></pre></td></tr></table></figure><p>这个结果能证明 ECC 已经接入“编码→嵌入→攻击→提取→解码”链路，但不能证明 ECC 在这次实验中展示了纠错收益。原因很直接：纠错前 Raw BER 已经为 0，没有发生需要纠正的错误。</p><h2 id="C-容器、文件流与-O0-O2-测量"><a href="#C-容器、文件流与-O0-O2-测量" class="headerlink" title="C++ 容器、文件流与 -O0/-O2 测量"></a>C++ 容器、文件流与 <code>-O0/-O2</code> 测量</h2><h3 id="当天补清楚的几个基础概念"><a href="#当天补清楚的几个基础概念" class="headerlink" title="当天补清楚的几个基础概念"></a>当天补清楚的几个基础概念</h3><p>这一部分记录的是 C++ 基础训练里当天真正确认下来的内容：</p><ul><li><code>std::vector</code> 是可动态增长的顺序容器。</li><li><code>const std::vector&lt;int&gt;&amp;</code> 适合只读的大容器参数，避免复制且禁止通过该引用修改原容器。</li><li><code>std::vector&lt;int&gt;&amp;</code> 直接引用原容器，允许函数原地修改调用者数据。</li><li><code>.at()</code> 会做边界检查并在越界时抛出 <code>std::out_of_range</code>，<code>[]</code> 不保证做同样的保护。</li><li><code>std::ifstream</code> 与 <code>std::getline</code> 适合实现基础文件读取；而 stdout、stderr 与退出码需要分开设计，才能让错误被正确诊断。</li></ul><p>当日笔记还特别强调了一个接口设计点：函数可以同时返回“是否成功”和“统计结果”。例如让 <code>bool</code> 表示成功或失败，再通过 <code>FileStats&amp;</code> 写回行数和词数，比把错误情况伪装成 <code>0/0</code> 更清晰。</p><h3 id="当天实际做过的实验"><a href="#当天实际做过的实验" class="headerlink" title="当天实际做过的实验"></a>当天实际做过的实验</h3><p>公开可确认的工作包括：</p><ul><li>在 Windows 本机确认使用 MSYS2 UCRT64 <code>g++ 14.2.0</code>，将实验环境从 Codespaces 切到本地。</li><li>编译运行 <code>vector_demo.cpp</code>，验证只读引用、原地修改和 <code>.at()</code> 越界异常捕获。</li><li>实现 <code>file_stats.cpp</code>，统计行数与词数，并区分成功、空文件、缺失文件和参数错误。</li><li>使用 <code>cmd</code> 原始重定向确认：缺失文件时 stdout 为 0 字节，错误信息写入 stderr，退出码为 1。</li><li>对同一份源码分别编译 <code>-O0</code> 与 <code>-O2</code> 版本，在 500,000 行输入上各预热 2 次、测量 5 次。</li></ul><p>这里真正有价值的，不只是“跑出了一个时间表”，而是把测量的公平性条件收紧到只改变一个变量：优化级别。</p><h3 id="当前测量结果"><a href="#当前测量结果" class="headerlink" title="当前测量结果"></a>当前测量结果</h3><p>当天笔记中的端到端测量结果如下：</p><table><thead><tr><th>编译级别</th><th>5 次时间（ms）</th><th align="right">中位数</th></tr></thead><tbody><tr><td><code>-O0</code></td><td>202.22、190.77、189.85、186.17、158.61</td><td align="right">189.85</td></tr><tr><td><code>-O2</code></td><td>140.24、143.40、153.85、166.55、140.54</td><td align="right">143.40</td></tr></tbody></table><p>据此可得出的当天观察是：</p><ul><li>在固定环境下，<code>-O2</code> 的中位数比 <code>-O0</code> 少 46.45 ms。</li><li>这相当于约 24.5% 的下降，或约 1.32× 的速度比。</li></ul><p>但同样需要保留边界：这只能证明当前机器、当前 G++、当前源码和当前输入条件下的端到端表现，不能直接推出某个具体优化 pass 的贡献，也不能外推到所有程序。</p><h3 id="一个实际失败案例：Windows-DLL-启动失败"><a href="#一个实际失败案例：Windows-DLL-启动失败" class="headerlink" title="一个实际失败案例：Windows DLL 启动失败"></a>一个实际失败案例：Windows DLL 启动失败</h3><p>这部分笔记还记录了一个很典型的本地环境问题：</p><ul><li>症状：<code>vector_demo.exe</code> 编译成功，但运行时无输出退出，状态为 <code>-1073741511</code>（<code>0xC0000139</code>）。</li><li>记录下来的根因：MSYS2 UCRT64 与 Anaconda MinGW 同时存在同名 GCC 运行时 DLL，存在搜索优先级兼容性冲突风险。</li><li>当天采取的修复：在当前终端前置 UCRT64 路径，即执行 <code>$env:PATH = &quot;E:\c++\ucrt64\bin;$env:PATH&quot;</code>。</li><li>验证结果：同一程序恢复正常输出，退出码为 0。</li></ul><p>这条记录的价值在于把“程序跑不起来”从模糊现象收敛成了可复现、可修复、可验证的问题单，而不是简单记成“环境出了点问题”。</p><h2 id="今天还没完成什么"><a href="#今天还没完成什么" class="headerlink" title="今天还没完成什么"></a>今天还没完成什么</h2><p>按原始笔记，当前仍有几项明确未完成内容：</p><ul><li>C++ 方向还缺 60 分钟独立文件统计 B 门，以及不同故障版本的独立 T 门。</li><li>数学维度正式 20 题、90% 考核尚未完成。</li><li>数字水印方向还没有在多图、多条件下验证真实攻击场景里的 ECC 收益。</li></ul><p>因此，今天更适合把结论写成“基础概念和最小链路进一步收紧”，而不是把它扩写成“已经完成鲁棒性证明”或“已经掌握完整训练能力”。</p><h2 id="明天的衔接点"><a href="#明天的衔接点" class="headerlink" title="明天的衔接点"></a>明天的衔接点</h2><p>原始笔记里已经给出了下一步方向：</p><ul><li>数字水印学习进入第一周概念复习与缺口检查。</li><li>后续正式实验再比较有无 ECC 的 Message Success Rate。</li><li>C++&#x2F;数学部分切换到概率、Softmax、交叉熵、链式法则，以及 PyTorch Tensor&#x2F;autograd。</li></ul><p>这也是今天这篇记录的边界：它只负责把已经学到、做过、测过、验证过的内容整理清楚，为后续实验和复盘提供一个公开可追溯的起点。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 科研学习 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 数字水印 </tag>
+            
+            <tag> 每日学习 </tag>
+            
+            <tag> ECC </tag>
+            
+            <tag> C++ </tag>
+            
+            <tag> 性能测量 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>数字水印学习笔记：QIM、公平比较与威胁模型</title>
       <link href="/2026/07/28/2026-07-28-qim-watermark-fair-comparison/"/>
       <url>/2026/07/28/2026-07-28-qim-watermark-fair-comparison/</url>
