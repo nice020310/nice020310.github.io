@@ -4,6 +4,39 @@
   
     
     <entry>
+      <title>今日学习记录：MSE、PSNR、BER 与水印恢复指标</title>
+      <link href="/2026/11/03/2026-11-03-image-quality-watermark-metrics/"/>
+      <url>/2026/11/03/2026-11-03-image-quality-watermark-metrics/</url>
+      
+        <content type="html"><![CDATA[<p>今天复习图像质量与水印恢复中常用的四个指标：均方误差（MSE）、峰值信噪比（PSNR）、比特错误率（BER）和比特准确率（Bit Accuracy）。它们回答的是两类不同的问题：图像被改动了多少，以及嵌入的消息能否被逐位恢复。不能用其中一个指标替代另一个。</p><h2 id="两类指标分别回答什么"><a href="#两类指标分别回答什么" class="headerlink" title="两类指标分别回答什么"></a>两类指标分别回答什么</h2><ul><li>MSE &#x2F; PSNR：比较两幅形状相同的图像，衡量像素数值失真。</li><li>BER &#x2F; Bit Accuracy：比较两个形状相同、逐位对齐的二进制消息，衡量 payload 恢复情况。</li></ul><p>核心定义如下：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">MSE = (1/N) Σ(I_i - K_i)²</span><br><span class="line">PSNR = 10 log10(MAX² / MSE)</span><br><span class="line">BER = 错误比特数 / 总比特数</span><br><span class="line">Bit Accuracy = 正确比特数 / 总比特数 = 1 - BER</span><br></pre></td></tr></table></figure><p>当两幅图像完全相同，MSE 为 0，PSNR 记为正无穷。对于逐位对齐的消息，若 8 个 bit 中有 2 个错误，则 BER 为 0.25，Bit Accuracy 为 0.75。</p><h2 id="8-bit-图像中的-PSNR-直觉"><a href="#8-bit-图像中的-PSNR-直觉" class="headerlink" title="8-bit 图像中的 PSNR 直觉"></a>8-bit 图像中的 PSNR 直觉</h2><p>对像素范围为 0–255 的 8-bit 图像，PSNR 可写成：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">PSNR = 48.13 - 10 log10(MSE)   (dB)</span><br></pre></td></tr></table></figure><p>由此可以快速得到三条实用规则：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">MSE 翻倍    -&gt; PSNR 减 3.01 dB</span><br><span class="line">MSE 变 4 倍 -&gt; PSNR 减 6.02 dB</span><br><span class="line">PSNR 高 6 dB -&gt; RMSE（误差幅度）约减半</span><br></pre></td></tr></table></figure><table><thead><tr><th>MSE</th><th align="right">RMSE</th><th align="right">PSNR (dB)</th></tr></thead><tbody><tr><td>0</td><td align="right">0.00</td><td align="right">+∞</td></tr><tr><td>1</td><td align="right">1.00</td><td align="right">48.13</td></tr><tr><td>2</td><td align="right">1.41</td><td align="right">45.11</td></tr><tr><td>4</td><td align="right">2.00</td><td align="right">42.11</td></tr><tr><td>8</td><td align="right">2.83</td><td align="right">39.10</td></tr><tr><td>10</td><td align="right">3.16</td><td align="right">38.13</td></tr><tr><td>100</td><td align="right">10.00</td><td align="right">28.13</td></tr></tbody></table><p>RMSE 往往更便于形成直觉。例如 PSNR 约 42.1 dB 对应 MSE 为 4、RMSE 为 2，意味着平均每个像素的数值改动约为 2 个灰度级。</p><h2 id="PSNR-不能替代视觉判断"><a href="#PSNR-不能替代视觉判断" class="headerlink" title="PSNR 不能替代视觉判断"></a>PSNR 不能替代视觉判断</h2><p>PSNR 来自整体像素平方误差，不理解图像内容和误差在空间中的位置。两幅图像可以有相同的 MSE 和 PSNR，但视觉影响截然不同：误差可能均匀分散成轻微噪声，也可能集中在物体边缘或平坦天空中的条纹。</p><p>结构相似性指标 SSIM 会比较局部亮度、对比度和结构关系，通常比 PSNR 更接近对结构变化的感受；但 SSIM 同样不能替代失败案例可视化或必要的主观检查。</p><p>因此，PSNR 有三个重要边界：</p><ol><li>它是全局平均值，可能掩盖小区域的严重损坏。</li><li>它不理解内容：纹理区与平坦区的同等数值误差，未必有相同可见性。</li><li>指标口径必须记录。RGB 或亮度通道、<code>[0,1]</code> 或 <code>[0,255]</code> 的取值范围、彩色图的处理方式，都会改变数值；不同口径下的结果不能直接比较。</li></ol><p>高 PSNR 表示数值失真通常较小，但不等于不可感知，更不说明水印在攻击下仍然鲁棒。</p><h2 id="BER-需要明确攻击条件"><a href="#BER-需要明确攻击条件" class="headerlink" title="BER 需要明确攻击条件"></a>BER 需要明确攻击条件</h2><p>BER 衡量的是消息恢复错误率。BER 为 0 只能说明当前对齐的消息全部恢复正确，不能证明视觉质量、跨攻击鲁棒性或安全性。</p><p>例如，JPEG 处理后 BER 上升，能说明当前 JPEG 条件下的恢复性能下降；要报告“鲁棒性”，还必须写清攻击类型与强度、payload、图像范围和统计方式。图像 SSIM 为 0.99 但 BER 为 0.40，也并不矛盾：前者表示结构保持较好，后者表示 payload 恢复较差。</p><h2 id="一个容易忽略的实现陷阱：uint8-溢出"><a href="#一个容易忽略的实现陷阱：uint8-溢出" class="headerlink" title="一个容易忽略的实现陷阱：uint8 溢出"></a>一个容易忽略的实现陷阱：<code>uint8</code> 溢出</h2><p>计算 MSE 前必须先把图像转成浮点类型。<code>uint8</code> 不能表示负数，直接相减会发生模 256 环绕：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">uint8(0) - uint8(255) -&gt; 1</span><br><span class="line">1² -&gt; 1</span><br></pre></td></tr></table></figure><p>这并不是真实误差。正确的浮点计算应为：</p><figure class="highlight text"><table><tr><td class="code"><pre><span class="line">float64(0) - float64(255) -&gt; -255</span><br><span class="line">(-255)² -&gt; 65025</span><br></pre></td></tr></table></figure><p>即使 <code>255 - 0</code> 在 <code>uint8</code> 中暂时得到 255，后续平方也仍可能溢出：<code>uint8(255) × uint8(255)</code> 会得到 1，而不是 65025。因此类型转换必须发生在减法和平方之前。</p><p>同样，图像 shape 不同、消息长度或 shape 不同、消息并非二进制，都是应当拒绝直接计算的输入；需要先定义图像对齐或消息同步策略。</p><h2 id="本次复习的结论"><a href="#本次复习的结论" class="headerlink" title="本次复习的结论"></a>本次复习的结论</h2><p>MSE 和 PSNR 衡量原图与含水印图之间的数值失真；BER 和 Bit Accuracy 衡量 payload 的恢复准确率。PSNR 越高通常表示数值失真越小，BER 越低表示恢复越好，但水印评价必须把保真度、攻击条件下的恢复性能和必要的可视化检查一起报告。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 科研学习 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 数字水印 </tag>
+            
+            <tag> 每日学习 </tag>
+            
+            <tag> 图像质量 </tag>
+            
+            <tag> PSNR </tag>
+            
+            <tag> BER </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>今日学习记录：Softmax、交叉熵与 PyTorch Autograd</title>
       <link href="/2026/08/02/2026-08-02-softmax-cross-entropy-autograd-notes/"/>
       <url>/2026/08/02/2026-08-02-softmax-cross-entropy-autograd-notes/</url>
