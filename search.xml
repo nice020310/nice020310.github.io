@@ -4,6 +4,37 @@
   
     
     <entry>
+      <title>今日学习记录：Python 的引用、拷贝与函数返回约定</title>
+      <link href="/2026/11/05/2026-11-05-python-reference-copy-return-conventions/"/>
+      <url>/2026/11/05/2026-11-05-python-reference-copy-return-conventions/</url>
+      
+        <content type="html"><![CDATA[<p>今天通过一段可直接运行的 Python 脚本，复习了几个容易混淆、却会直接影响程序行为的基础概念：变量赋值时的引用关系、切片拷贝、函数未显式返回时的结果、查找失败的返回约定，以及标准输出、标准错误和进程退出码。</p><h2 id="赋值并不会复制列表"><a href="#赋值并不会复制列表" class="headerlink" title="赋值并不会复制列表"></a>赋值并不会复制列表</h2><p>把一个列表赋给另一个变量时，两个变量指向同一个列表对象：</p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">a = [<span class="number">1</span>, <span class="number">2</span>]</span><br><span class="line">b = a</span><br><span class="line">b.append(<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(a)       <span class="comment"># [1, 2, 3]</span></span><br><span class="line"><span class="built_in">print</span>(a <span class="keyword">is</span> b)  <span class="comment"># True</span></span><br></pre></td></tr></table></figure><p><code>b.append(3)</code> 修改的是同一个对象，因此 <code>a</code> 也会看到这个变化。<code>is</code> 的结果为 <code>True</code>，说明它们的对象身份相同。</p><p>如果希望得到一个新的列表，可以使用完整切片：</p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line">a = [<span class="number">1</span>, <span class="number">2</span>]</span><br><span class="line">c = a[:]</span><br><span class="line">c.append(<span class="number">3</span>)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(a)       <span class="comment"># [1, 2]</span></span><br><span class="line"><span class="built_in">print</span>(a <span class="keyword">is</span> c)  <span class="comment"># False</span></span><br></pre></td></tr></table></figure><p>这里 <code>c</code> 是一个新的列表，修改它不会改变 <code>a</code>。这个示例讨论的是列表本身的复制；列表内若仍包含可变对象，是否需要更深层的复制需要根据实际数据结构单独判断。</p><h2 id="没有找到结果时，函数会返回什么"><a href="#没有找到结果时，函数会返回什么" class="headerlink" title="没有找到结果时，函数会返回什么"></a>没有找到结果时，函数会返回什么</h2><p>Python 函数若执行到末尾仍没有运行 <code>return</code>，会自动返回 <code>None</code>：</p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">find_big</span>(<span class="params">nums</span>):</span><br><span class="line">    <span class="keyword">for</span> n <span class="keyword">in</span> nums:</span><br><span class="line">        <span class="keyword">if</span> n &gt; <span class="number">10</span>:</span><br><span class="line">            <span class="keyword">return</span> n</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(find_big([<span class="number">1</span>, <span class="number">2</span>, <span class="number">3</span>]))  <span class="comment"># None</span></span><br></pre></td></tr></table></figure><p>这使得调用方能够区分“找到了一个值”和“没有匹配项”。但接口设计时要明确约定：若 <code>None</code> 也可能是合法结果，调用方就难以判断它到底表示什么。</p><h2 id="查找失败的返回值要成为约定"><a href="#查找失败的返回值要成为约定" class="headerlink" title="查找失败的返回值要成为约定"></a>查找失败的返回值要成为约定</h2><p>另一种常见做法是为“未找到”保留一个明确的哨兵值：</p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">def</span> <span class="title function_">find_index</span>(<span class="params">nums, target</span>):</span><br><span class="line">    <span class="keyword">for</span> i, n <span class="keyword">in</span> <span class="built_in">enumerate</span>(nums):</span><br><span class="line">        <span class="keyword">if</span> n == target:</span><br><span class="line">            <span class="keyword">return</span> i</span><br><span class="line">    <span class="keyword">return</span> -<span class="number">1</span></span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(find_index([<span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>], <span class="number">6</span>))  <span class="comment"># 1</span></span><br><span class="line"><span class="built_in">print</span>(find_index([<span class="number">5</span>, <span class="number">6</span>, <span class="number">7</span>], <span class="number">9</span>))  <span class="comment"># -1</span></span><br></pre></td></tr></table></figure><p>这个函数返回索引，因此 <code>-1</code> 可以表示查找失败；同时它不会与有效索引冲突。关键不在于必须使用 <code>-1</code>，而在于函数的成功值、失败值和调用方的处理方式要保持一致。</p><h2 id="stdout、stderr-与退出码"><a href="#stdout、stderr-与退出码" class="headerlink" title="stdout、stderr 与退出码"></a>stdout、stderr 与退出码</h2><p>命令行程序通常把正常信息写到标准输出（stdout），把诊断信息写到标准错误（stderr）：</p><figure class="highlight python"><table><tr><td class="code"><pre><span class="line"><span class="keyword">import</span> sys</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;这行在 stdout&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;这行在 stderr&quot;</span>, file=sys.stderr)</span><br></pre></td></tr></table></figure><p>两者可被终端分别显示，也可以被调用脚本分别重定向。程序正常结束且不调用 <code>sys.exit()</code> 时，退出码保持为 <code>0</code>；调用方可据此判断脚本是否成功执行。</p><h2 id="本次复习的结论"><a href="#本次复习的结论" class="headerlink" title="本次复习的结论"></a>本次复习的结论</h2><p><code>b = a</code> 表示共享同一个对象，而 <code>a[:]</code> 会创建一个新的列表。函数没有显式返回值时结果是 <code>None</code>，查找类函数则应明确约定失败结果。对命令行脚本而言，区分 stdout、stderr，并让退出码准确表达执行状态，能让脚本更容易被其他程序调用和排查。</p>]]></content>
+      
+      
+      <categories>
+          
+          <category> 编程学习 </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> 每日学习 </tag>
+            
+            <tag> Python </tag>
+            
+            <tag> 基础编程 </tag>
+            
+            <tag> 函数 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>今日学习记录：MSE、PSNR、BER 与水印恢复指标</title>
       <link href="/2026/11/03/2026-11-03-image-quality-watermark-metrics/"/>
       <url>/2026/11/03/2026-11-03-image-quality-watermark-metrics/</url>
